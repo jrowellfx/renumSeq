@@ -1,7 +1,7 @@
 #!/usr/bin/python2.7
 
-# renum - renumber images sequences listed on the command line
-# via output from lsseq native format.
+# renum - renumber images sequences on the command line
+#         specify the sequences using lsseq's native format
 #
 # Copyright (c) 2008-2016, James Philip Rowell,
 # Orange Imagination & Concepts, Inc.
@@ -41,17 +41,18 @@ import re
 import argparse
 import os
 import sys
-import subprocess
 import seqLister
 import textwrap
-import math
-import time
-from operator import itemgetter
+
+def warnSeqSyntax(silent, basename, seq) :
+    if not silent :
+        print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+            ": warning: invalid syntax of range [" + seq + "] for seq " + basename
 
 def main():
 
     # Redefine the exception handling routine so that it does NOT
-    # do a trace dump if the user types ^C while lsseq is running.
+    # do a trace dump if the user types ^C while renum is running.
     #
     old_excepthook = sys.excepthook
     def new_hook(exceptionType, value, traceback):
@@ -64,37 +65,206 @@ def main():
     p = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent('''\
-            to be done
+            Renumber the frame range(s) of the sequence(s) listed on the command line.
+            The sequence(s) should be specified using lsseq's native format.
             '''),
         usage="%(prog)s [OPTION]... [SEQ]...")
 
-    p.add_argument("--version", action="version", version="0.100")
+    p.add_argument("--version", action="version", version="0.200")
 
     p.add_argument("--offset", "-o", action="store", type=int,
        dest="offsetFrames", default=0,
-       metavar="FRAMECOUNT",
-       help="offset the sequence by this number of frames. i becomes i+offset")
+       metavar="FRAME_OFFSET",
+       help="offset the sequence by this number of frames (can be negative). Frame i becomes i + FRAME_OFFSET")
 
-    p.add_argument("files", metavar="FILE", nargs="*",
-        help="file names")
+    p.add_argument("--force", action="store_true",
+        dest="clobber", default=False,
+        help="if renumbering a frame in the sequence will result in overwriting \
+        an existing file (which isn't itself going to be renumbered) \
+        then go ahead and overwrite the file" )
+    p.add_argument("--skip", action="store_false",
+        dest="clobber",
+        help="the opposite of --force. i.e.; if renumbering a frame in \
+        the sequence will result in overwriting \
+        an existing file then skip renumbering the entire sequence (default)" )
+
+    # Note: the following default for "pad" of "-1" means to leave
+    # the padding on any given frame sequence unchanged.
+    #
+    p.add_argument("--pad", action="store", type=int,
+       dest="pad", default=-1,
+       metavar="PAD",
+       help="set the padding of the frame numbers to be <PAD> digits")
+    p.add_argument("--silent", "--quiet", "-s", action="store_true",
+        dest="silent", default=False,
+        help="supress all output, warning etc.")
+    p.add_argument("--verbose", "-v", action="store_true",
+        dest="verbose", default=False,
+        help="list the mapping from old frames to new frames")
+
+    p.add_argument("files", metavar="SEQ", nargs="*",
+        help="image sequence in lsseq native format")
 
     args = p.parse_args()
 
-    if args.offsetFrames == 0 :
+    # The following logic means "do nothing" - so just exit cleanly (**a**)
+    #
+    if args.offsetFrames == 0 and args.pad < 0 :
+        if not args.silent :
+            print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                ": warning: no offset, no padding change etc., nothing to do"
         sys.exit(0)
 
-    tmpArray = []
     for arg in args.files :
+        abortSeq = False
+
+        # The following regular expression is not robust. Doesn't handle
+        # odd filename with '.[' and '.]' strings in the name properly.
+        # Should fix this... JPR
 	seq = re.split('\.\[|\]\.', arg)
-        # print seq
-        frameList = seqLister.expandSeq([seq[1]], tmpArray)
+
+        ## print seq
+
+        # Check if the 'seq' is in valid lsseq native format 
+        #
+        if len(seq) != 3 :
+            if not args.silent :
+                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                    ": warning: invalid syntax for " + arg
+            continue
+
+        # seq might be range with neg numbers. Say N,M >= 0,
+        # then there are only 5 seq cases: N, -N, N-M, -N-M, -N--M,
+        # where -N or N is always less than or equal to -M or M.
+        #
+        negStart = 1.0
+        negEnd = 1.0
+        startStr = ""
+        endStr = ""
+        range = seq[1].split("-")
+
+        ## print range
+
+        if len(range) > 4 :
+            warnSeqSyntax(args.silent, seq[0], seq[1])
+            continue # Invalid syntax for range
+
+        if len(range) == 1 : # Just N
+            startStr = range[0]
+            endStr = range[0]
+
+        elif len(range) == 2 : # minus-N OR N-M
+            if range[0] == '' : # Leading minus sign.
+                negStart = -1.0
+                negEnd = -1.0
+                startStr = range[1]
+                endStr = range[1]
+            else :
+                startStr = range[0]
+                endStr = range[1]
+
+        elif len(range) == 3 : # neg-N to M
+            if range[0] != '' : # Not leading minus sign!
+                warnSeqSyntax(args.silent, seq[0], seq[1])
+                continue # Invalid syntax for range
+            negStart = -1.0
+            startStr = range[1]
+            endStr = range[2]
+
+        elif len(range) == 4 : # neg-N to neg-M
+            if range[0] != '' or range[2] != '' : # Not leading minus signs!
+                warnSeqSyntax(args.silent, seq[0], seq[1])
+                continue # Invalid syntax for range
+            negStart = -1.0
+            negEnd = -1.0
+            startStr = range[1]
+            endStr = range[3]
+
+        try :
+            start = int(startStr)
+        except ValueError : # Invalid syntax for range
+            warnSeqSyntax(args.silent, seq[0], seq[1])
+            continue
+
+        try :
+            end = int(endStr)
+        except ValueError : # Invalid syntax for range
+            warnSeqSyntax(args.silent, seq[0], seq[1])
+            continue
+
+        start *= negStart
+        end *= negEnd
+
+        if start > end : # Invalid syntax for range
+            warnSeqSyntax(args.silent, seq[0], seq[1])
+            continue
+
+        startPad = len(startStr)
+        currentPad = 0
+        if negStart < 0.0 :
+            startPad += 1
+        endPad = len(endStr)
+        if negEnd < 0.0 :
+            endPad += 1
+        if startPad < endPad :
+            currentPad = startPad
+        else :
+            currentPad = endPad
+        ## print currentPad
+        formatStr = "{0:0=-" + str(currentPad) + "d}"
+
+        frameList = seqLister.expandSeq(seq[1])
+
+        if frameList == [] :
+            warnSeqSyntax(args.silent, seq[0], seq[1])
+            continue # Invalid syntax for range
 
         frameList.sort(reverse=(args.offsetFrames > 0))
 
-        print frameList
+        origNames = []
+        newNames = []
+        checkNames = []
+
         for i in frameList :
-            # print seq[0] + '.' + "%04d" % i + '.' + seq[2]
-            print "mv " + seq[0] + '.' + "%04d" % i + '.' + seq[2] + ' ' + seq[0] + '.' + "%04d" % (i+args.offsetFrames) + '.' + seq[2]
+            origFile = seq[0] + '.' + formatStr.format(i) + '.' + seq[2]
+            if os.path.exists(origFile) :
+                origNames.append(origFile)
+                newNames.append(seq[0] + '.' + formatStr.format(i+args.offsetFrames) + '.' + seq[2])
+
+        if not args.clobber :
+            ## print origNames
+            ## print newNames
+            checkNames = [ x for x in newNames if x not in origNames ]
+            ## print checkNames
+
+            for f in checkNames :
+                if os.path.exists(f) :
+                    abortSeq = True
+                    break
+
+            if abortSeq :
+                if not args.silent :
+                    print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                        ": warning: skipping " + arg + ": renum would have overwritten a file outside the sequence being renumbered"
+                continue
+
+        # Note: there will be at least one entry in list so the following test catches
+        # the case missed by the test above (**a**). This case will be missed above if
+        # the pad size was explicitly specificed but is already the same as the existing sequence.
+        #
+        if (origNames[0] == newNames[0]) :
+            if not args.silent :
+                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                    ": warning: no changes being made to " + arg + ": skipping"
+            continue
+
+        i = 0
+        numFiles = len(origNames)
+        while i < numFiles :
+            if args.verbose and not args.silent :
+                print origNames[i] + " -> " + newNames[i]
+            os.rename(origNames[i], newNames[i])
+            i += 1
 
 if __name__ == '__main__':
     main()
