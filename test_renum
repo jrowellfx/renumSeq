@@ -1,0 +1,28 @@
+#!/bin/bash
+
+\rm */*.*.jpg
+touch `cat create.?Test.files`
+
+lsseq -ZRP
+
+set -f
+echo ---
+renum -o 100 \
+    aaa.[0100-0133].jpg \
+    b.[555].jpg \
+    x.[-11--03].jpg \
+    y.[-011-0002].jpg \
+    c.[011--003].jpg \
+    c.[11-03].jpg \
+
+echo ---
+renum -o 20 \
+    aa.[0100-0120].jpg \
+
+echo ---
+renum -o 30 \
+    a.[0100-0110].jpg \
+
+echo ---
+set +f
+lsseq -ZRP
