@@ -70,7 +70,7 @@ def main():
             '''),
         usage="%(prog)s [OPTION]... [SEQ]...")
 
-    p.add_argument("--version", action="version", version="0.200")
+    p.add_argument("--version", action="version", version="1.000")
 
     p.add_argument("--offset", "-o", action="store", type=int,
        dest="offsetFrames", default=0,

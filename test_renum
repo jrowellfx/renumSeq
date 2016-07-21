@@ -65,6 +65,34 @@ renum -o 1 \
 renum -o 30 \
     testdir/a03/a.[0100-0110].jpg
 
+renum -s -o 1 \
+    testdir/null/foo.jpg
+
+renum -s -o 1 \
+    testdir/null/foo.[bar].jpg
+
+renum -s -o 1 \
+    testdir/null/foo.[a-b].jpg
+
+renum -s -o 1 \
+    testdir/null/foo.[-a-b].jpg
+
+renum -s -o 1 \
+    testdir/null/foo.[-a--b].jpg
+
+renum -s -o 1 \
+    testdir/null/foo.[xx-a-b].jpg
+
+renum -s -o 1 \
+    testdir/c01/c.[011--003].jpg \
+    testdir/c02/c.[11-03].jpg
+
+renum -s -o 30 \
+    testdir/a03/a.[0100-0110].jpg
+
+renum -v -o 30 --force \
+    testdir/a03/a.[0100-0110].jpg
+
 renum -v -o 20 \
     testdir/a02/a.[0100-0120].jpg
 

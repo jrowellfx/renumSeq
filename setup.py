@@ -5,9 +5,9 @@ import os
 import shutil
 
 setup(name='renum',
-      version='0.100',
+      version='1.000',
       description='tool to renumber image sequences',
-      long_description='',
+      long_description='Uses lsseq native format to specify sequence to renumber - with various options.  Very safe in terms on not overwriting files accidentally. lsseq must be installed on the system as renum uses a python library (seqLister) that is installed by that package',
       author='James Philip Rowell',
       author_email='james@oic-inc.net',
       url='http://www.orangeimagination.com/',
