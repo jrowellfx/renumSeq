@@ -47,7 +47,7 @@ import textwrap
 def warnSeqSyntax(silent, basename, seq) :
     if not silent :
         print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-            ": warning: invalid syntax of range [" + seq + "] for seq " + basename
+            ": warning: invalid range [" + seq + "] for seq " + basename
 
 def main():
 
@@ -107,6 +107,9 @@ def main():
 
     args = p.parse_args()
 
+    if args.files == [] :
+        sys.exit(0)
+
     # The following logic means "do nothing" - so just exit cleanly (**a**)
     #
     if args.offsetFrames == 0 and args.pad < 0 :
@@ -130,7 +133,7 @@ def main():
         if len(seq) != 3 :
             if not args.silent :
                 print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                    ": warning: invalid syntax for " + arg
+                    ": warning: " + arg + " not a sequence or not in lsseq native format"
             continue
 
         # seq might be range with neg numbers. Say N,M >= 0,
@@ -195,7 +198,7 @@ def main():
         start *= negStart
         end *= negEnd
 
-        if start > end : # Invalid syntax for range
+        if start > end :
             warnSeqSyntax(args.silent, seq[0], seq[1])
             continue
 
@@ -210,8 +213,13 @@ def main():
             currentPad = startPad
         else :
             currentPad = endPad
-        ## print currentPad
-        formatStr = "{0:0=-" + str(currentPad) + "d}"
+        newPad = currentPad
+        
+        if args.pad >= 0 :
+            newPad = args.pad
+
+        currentFormatStr = "{0:0=-" + str(currentPad) + "d}"
+        newFormatStr = "{0:0=-" + str(newPad) + "d}"
 
         frameList = seqLister.expandSeq(seq[1])
 
@@ -226,10 +234,16 @@ def main():
         checkNames = []
 
         for i in frameList :
-            origFile = seq[0] + '.' + formatStr.format(i) + '.' + seq[2]
+            origFile = seq[0] + '.' + currentFormatStr.format(i) + '.' + seq[2]
             if os.path.exists(origFile) :
                 origNames.append(origFile)
-                newNames.append(seq[0] + '.' + formatStr.format(i+args.offsetFrames) + '.' + seq[2])
+                newNames.append(seq[0] + '.' + newFormatStr.format(i+args.offsetFrames) + '.' + seq[2])
+
+        if origNames == [] :
+            if not args.silent :
+                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                    ": warning: " + arg + " is nonexistent."
+            continue
 
         if not args.clobber :
             ## print origNames
@@ -245,7 +259,7 @@ def main():
             if abortSeq :
                 if not args.silent :
                     print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                        ": warning: skipping " + arg + ": renum would have overwritten a file outside the sequence being renumbered"
+                        ": warning: skipping " + arg + ": renum would have overwritten a file outside the sequence being renumbered. eg.: " + f
                 continue
 
         # Note: there will be at least one entry in list so the following test catches
