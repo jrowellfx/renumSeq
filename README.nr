@@ -26,17 +26,19 @@ renum also has a handy use to optionally change files of this form:
 .ti 4
 <filename>_[n-m].extension
 
-\&... by replacing the underscore separator to be a dot so that the filenames are this:
+\&... by replacing the underscore separator to be a dot so that the filenames become this:
 
 .ti 4
 <filename>.[n-m].extension
+
+which can be done even if you don't need to offset the frames.
 
 To install renum on your system follow these steps (you need
 root privileges).
 
 First install the latest version of lsseq on your system. You can get it from jrowellfx's github repo.
 
-n +3
+.in +3
 .ti -3
 1) Download renum-1.000.tar.gz
 assuming that the latest version is 1.000 (if not

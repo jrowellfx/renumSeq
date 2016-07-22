@@ -24,9 +24,11 @@ renum also has a handy use to optionally change files of this form:
     <filename>_[n-m].extension
 
 ... by replacing the underscore separator to be a dot so that the filenames
-are this:
+become this:
 
     <filename>.[n-m].extension
+
+which can be done even if you don't need to offset the frames.
 
 To install renum on your system follow these steps (you need root
 privileges).
@@ -34,16 +36,15 @@ privileges).
 First install the latest version of lsseq on your system. You can get it
 from jrowellfx's github repo.
 
-n +3
 1) Download renum-1.000.tar.gz assuming that the latest version is 1.000 (if
-not just grab the latest one).
+   not just grab the latest one).
 
 2) Uncompress the file:
-$ tar -xvf renum-1.000.tar.gz
+   $ tar -xvf renum-1.000.tar.gz
 
 3) install the command
-$ cd renum-1.000
-$ sudo python setup.py install
+   $ cd renum-1.000
+   $ sudo python setup.py install
 
 4) ...that's it! You should be able to run the commands "renum" now
 
