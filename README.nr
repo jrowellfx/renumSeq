@@ -15,6 +15,22 @@ Having this connection to lsseq makes it pretty easy to run renum, cutting and
 pasting output from lsseq to the arguments of renum with appropriate optional arguments
 setting the amount of frames to offset the sequence by etc.
 
+renum was written to be quite safe in that it first checks to see if it's safe to rename
+the ALL files with the new frame numbers before actually renaming any files.  That is, if it
+finds that by renumbering a sequence you will write over another frame outside the range
+specified then it will skip renumbering
+that sequence (printing a warning) and go onto the next sequence in the list.
+
+renum also has a handy use to optionally change files of this form:
+
+.ti 4
+<filename>_[n-m].extension
+
+\&... by replacing the underscore separator to be a dot so that the filenames are this:
+
+.ti 4
+<filename>.[n-m].extension
+
 To install renum on your system follow these steps (you need
 root privileges).
 
