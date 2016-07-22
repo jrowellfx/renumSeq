@@ -67,6 +67,13 @@ def main():
         description=textwrap.dedent('''\
             Renumber the frame range(s) of the sequence(s) listed on the command line.
             The sequence(s) should be specified using lsseq's native format.
+
+            For example:
+                $ lsseq
+                aaa.[001-005].tif
+                $ renum -o 10 aaa.[001-005].tif
+                $ lsseq
+                aaa.[011-015].tif
             '''),
         usage="%(prog)s [OPTION]... [SEQ]...")
 
@@ -94,7 +101,7 @@ def main():
     p.add_argument("--pad", action="store", type=int,
        dest="pad", default=-1,
        metavar="PAD",
-       help="set the padding of the frame numbers to be <PAD> digits")
+       help="set the padding of the frame numbers to be <PAD> digits. The default action is to leave the padding unchanged. Note, lsseq's native format output properly lists the sequence range with appropriate padding.")
     p.add_argument("--replaceUnderscore", action="store_true",
         dest="fixUnderscore", default=False,
         help="in the case that the sequence uses an underscore ('_') as opposed to \

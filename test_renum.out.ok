@@ -7,6 +7,52 @@ testdir/d01/d_[0100-0125].jpg m:[105,121-124]
 testdir/x01/x.[-11--03].jpg 
 testdir/y01/y.[-011-0002].jpg 
 ++ renum
+++ renum --version
+1.000
+++ renum --help
+usage: renum [OPTION]... [SEQ]...
+
+Renumber the frame range(s) of the sequence(s) listed on the command line.
+The sequence(s) should be specified using lsseq's native format.
+
+For example:
+    $ lsseq
+    aaa.[001-005].tif
+    $ renum -o 10 aaa.[001-005].tif
+    $ lsseq
+    aaa.[011-015].tif
+
+positional arguments:
+  SEQ                   image sequence in lsseq native format
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --offset FRAME_OFFSET, -o FRAME_OFFSET
+                        offset the sequence by this number of frames (can be
+                        negative). Frame i becomes i + FRAME_OFFSET
+  --force               if renumbering a frame in the sequence will result in
+                        overwriting an existing file (which isn't itself going
+                        to be renumbered) then go ahead and overwrite the file
+  --skip                the opposite of --force. i.e.; if renumbering a frame
+                        in the sequence will result in overwriting an existing
+                        file then skip renumbering the entire sequence
+                        (default)
+  --pad PAD             set the padding of the frame numbers to be <PAD>
+                        digits. The default action is to leave the padding
+                        unchanged. Note, lsseq's native format output properly
+                        lists the sequence range with appropriate padding.
+  --replaceUnderscore   in the case that the sequence uses an underscore ('_')
+                        as opposed to a dot ('.') separating the filename from
+                        the frame number then when renumbering the sequence
+                        replace the underscore with the preferable dot-
+                        separator. Note that as a nice side effect of using
+                        renum in this way is that you can use an offset of
+                        zero (default) to simple replace the underscrore with
+                        a dot leaving all else the same.
+  --silent, --quiet, -s
+                        supress all output, warning etc.
+  --verbose, -v         list the mapping from old frames to new frames
 ++ renum testdir/null/foo.jpg
 renum: warning: no offset, no padding change etc., nothing to do
 ++ renum -o 1 testdir/null/foo.jpg

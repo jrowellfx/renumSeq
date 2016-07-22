@@ -38,6 +38,10 @@ lsseq -ZRPl testdir
 
 renum
 
+renum --version
+
+renum --help
+
 renum \
     testdir/null/foo.jpg
 
