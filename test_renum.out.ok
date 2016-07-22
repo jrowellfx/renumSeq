@@ -1,8 +1,9 @@
-++ lsseq -ZRP testdir
+++ lsseq -ZRPl testdir
 testdir/a01/a.[0100-0140].jpg m:[101,134-139]
 testdir/a02/a.[0100-0125].jpg m:[105,121-124]
 testdir/a03/a.[0100-0133].jpg m:[101]
 testdir/b01/b.[555].jpg 
+testdir/d01/d_[0100-0125].jpg m:[105,121-124]
 testdir/x01/x.[-11--03].jpg 
 testdir/y01/y.[-011-0002].jpg 
 ++ renum
@@ -25,6 +26,25 @@ renum: warning: invalid range [011--003] for seq testdir/c01/c
 renum: warning: invalid range [11-03] for seq testdir/c02/c
 ++ renum -o 30 'testdir/a03/a.[0100-0110].jpg'
 renum: warning: skipping testdir/a03/a.[0100-0110].jpg: renum would have overwritten a file outside the sequence being renumbered. eg.: testdir/a03/a.0133.jpg
+++ renum -s -o 1 testdir/null/foo.jpg
+++ renum -s -o 1 'testdir/null/foo.[bar].jpg'
+++ renum -s -o 1 'testdir/null/foo.[a-b].jpg'
+++ renum -s -o 1 'testdir/null/foo.[-a-b].jpg'
+++ renum -s -o 1 'testdir/null/foo.[-a--b].jpg'
+++ renum -s -o 1 'testdir/null/foo.[xx-a-b].jpg'
+++ renum -s -o 1 'testdir/c01/c.[011--003].jpg' 'testdir/c02/c.[11-03].jpg'
+++ renum -s -o 30 'testdir/a03/a.[0100-0110].jpg'
+++ renum -v -o 30 --force 'testdir/a03/a.[0100-0110].jpg'
+testdir/a03/a.0110.jpg -> testdir/a03/a.0140.jpg
+testdir/a03/a.0109.jpg -> testdir/a03/a.0139.jpg
+testdir/a03/a.0108.jpg -> testdir/a03/a.0138.jpg
+testdir/a03/a.0107.jpg -> testdir/a03/a.0137.jpg
+testdir/a03/a.0106.jpg -> testdir/a03/a.0136.jpg
+testdir/a03/a.0105.jpg -> testdir/a03/a.0135.jpg
+testdir/a03/a.0104.jpg -> testdir/a03/a.0134.jpg
+testdir/a03/a.0103.jpg -> testdir/a03/a.0133.jpg
+testdir/a03/a.0102.jpg -> testdir/a03/a.0132.jpg
+testdir/a03/a.0100.jpg -> testdir/a03/a.0130.jpg
 ++ renum -v -o 20 'testdir/a02/a.[0100-0120].jpg'
 testdir/a02/a.0120.jpg -> testdir/a02/a.0140.jpg
 testdir/a02/a.0119.jpg -> testdir/a02/a.0139.jpg
@@ -72,11 +92,12 @@ testdir/y01/y.-008.jpg -> testdir/y01/y.0092.jpg
 testdir/y01/y.-009.jpg -> testdir/y01/y.0091.jpg
 testdir/y01/y.-010.jpg -> testdir/y01/y.0090.jpg
 testdir/y01/y.-011.jpg -> testdir/y01/y.0089.jpg
-++ lsseq -ZRP testdir
+++ lsseq -ZRPl testdir
 testdir/a01/a.[0140-0233].jpg m:[141-199,201]
 testdir/a02/a.[0120-0140].jpg 
-testdir/a03/a.[0100-0133].jpg m:[101]
+testdir/a03/a.[0111-0140].jpg 
 testdir/b01/b.[655].jpg 
+testdir/d01/d_[0100-0125].jpg m:[105,121-124]
 testdir/x01/x.[089-097].jpg 
 testdir/y01/y.[0089-0102].jpg 
 ++ renum -v -o 10 'testdir/a02/a.[0120-0140].jpg'
@@ -151,4 +172,55 @@ testdir/a02/a.0139.jpg -> testdir/a02/a.138.jpg
 testdir/a02/a.0140.jpg -> testdir/a02/a.139.jpg
 ++ lsseq -ZRP testdir/a02
 testdir/a02/a.[119-139].jpg 
+++ lsseq -ZRPl testdir/d01
+testdir/d01/d_[0100-0125].jpg m:[105,121-124]
+++ renum -v -o 20 'testdir/d01/d_[0100-0120].jpg'
+testdir/d01/d_0120.jpg -> testdir/d01/d_0140.jpg
+testdir/d01/d_0119.jpg -> testdir/d01/d_0139.jpg
+testdir/d01/d_0118.jpg -> testdir/d01/d_0138.jpg
+testdir/d01/d_0117.jpg -> testdir/d01/d_0137.jpg
+testdir/d01/d_0116.jpg -> testdir/d01/d_0136.jpg
+testdir/d01/d_0115.jpg -> testdir/d01/d_0135.jpg
+testdir/d01/d_0114.jpg -> testdir/d01/d_0134.jpg
+testdir/d01/d_0113.jpg -> testdir/d01/d_0133.jpg
+testdir/d01/d_0112.jpg -> testdir/d01/d_0132.jpg
+testdir/d01/d_0111.jpg -> testdir/d01/d_0131.jpg
+testdir/d01/d_0110.jpg -> testdir/d01/d_0130.jpg
+testdir/d01/d_0109.jpg -> testdir/d01/d_0129.jpg
+testdir/d01/d_0108.jpg -> testdir/d01/d_0128.jpg
+testdir/d01/d_0107.jpg -> testdir/d01/d_0127.jpg
+testdir/d01/d_0106.jpg -> testdir/d01/d_0126.jpg
+testdir/d01/d_0104.jpg -> testdir/d01/d_0124.jpg
+testdir/d01/d_0103.jpg -> testdir/d01/d_0123.jpg
+testdir/d01/d_0102.jpg -> testdir/d01/d_0122.jpg
+testdir/d01/d_0101.jpg -> testdir/d01/d_0121.jpg
+testdir/d01/d_0100.jpg -> testdir/d01/d_0120.jpg
+++ lsseq -ZRPl testdir/d01
+testdir/d01/d_[0120-0140].jpg 
+++ renum -v 'testdir/d01/d_[0120-0140].jpg'
+renum: warning: no offset, no padding change etc., nothing to do
+++ renum -v --replaceUnderscore 'testdir/d01/d_[0120-0140].jpg'
+testdir/d01/d_0120.jpg -> testdir/d01/d.0120.jpg
+testdir/d01/d_0121.jpg -> testdir/d01/d.0121.jpg
+testdir/d01/d_0122.jpg -> testdir/d01/d.0122.jpg
+testdir/d01/d_0123.jpg -> testdir/d01/d.0123.jpg
+testdir/d01/d_0124.jpg -> testdir/d01/d.0124.jpg
+testdir/d01/d_0125.jpg -> testdir/d01/d.0125.jpg
+testdir/d01/d_0126.jpg -> testdir/d01/d.0126.jpg
+testdir/d01/d_0127.jpg -> testdir/d01/d.0127.jpg
+testdir/d01/d_0128.jpg -> testdir/d01/d.0128.jpg
+testdir/d01/d_0129.jpg -> testdir/d01/d.0129.jpg
+testdir/d01/d_0130.jpg -> testdir/d01/d.0130.jpg
+testdir/d01/d_0131.jpg -> testdir/d01/d.0131.jpg
+testdir/d01/d_0132.jpg -> testdir/d01/d.0132.jpg
+testdir/d01/d_0133.jpg -> testdir/d01/d.0133.jpg
+testdir/d01/d_0134.jpg -> testdir/d01/d.0134.jpg
+testdir/d01/d_0135.jpg -> testdir/d01/d.0135.jpg
+testdir/d01/d_0136.jpg -> testdir/d01/d.0136.jpg
+testdir/d01/d_0137.jpg -> testdir/d01/d.0137.jpg
+testdir/d01/d_0138.jpg -> testdir/d01/d.0138.jpg
+testdir/d01/d_0139.jpg -> testdir/d01/d.0139.jpg
+testdir/d01/d_0140.jpg -> testdir/d01/d.0140.jpg
+++ lsseq -ZRPl testdir/d01
+testdir/d01/d.[0120-0140].jpg 
 ++ set +x

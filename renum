@@ -95,6 +95,13 @@ def main():
        dest="pad", default=-1,
        metavar="PAD",
        help="set the padding of the frame numbers to be <PAD> digits")
+    p.add_argument("--replaceUnderscore", action="store_true",
+        dest="fixUnderscore", default=False,
+        help="in the case that the sequence uses an underscore ('_') as opposed to \
+        a dot ('.') separating the filename from the frame number then when renumbering \
+        the sequence replace the underscore with the preferable dot-separator. Note that \
+        as a nice side effect of using renum in this way is that you can use an offset \
+        of zero (default) to simple replace the underscrore with a dot leaving all else the same.")
     p.add_argument("--silent", "--quiet", "-s", action="store_true",
         dest="silent", default=False,
         help="supress all output, warning etc.")
@@ -112,7 +119,7 @@ def main():
 
     # The following logic means "do nothing" - so just exit cleanly (**a**)
     #
-    if args.offsetFrames == 0 and args.pad < 0 :
+    if args.offsetFrames == 0 and args.pad < 0 and not args.fixUnderscore :
         if not args.silent :
             print >> sys.stderr, os.path.basename(sys.argv[0]) + \
                 ": warning: no offset, no padding change etc., nothing to do"
@@ -120,23 +127,31 @@ def main():
 
     for arg in args.files :
         abortSeq = False
+        usesUnderscore = False
 
         # The following regular expression is not robust. Doesn't handle
-        # odd filename with '.[' and '.]' strings in the name properly.
+        # odd filenames with '.[' and '.]' strings in the name properly.
         # Should fix this... JPR
+        #
 	seq = re.split('\.\[|\]\.', arg)
-
-        ## print seq
 
         # Check if the 'seq' is in valid lsseq native format 
         #
         if len(seq) != 3 :
-            if not args.silent :
-                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                    ": warning: " + arg + " not a sequence or not in lsseq native format"
-            continue
 
-        # seq might be range with neg numbers. Say N,M >= 0,
+            # Try to see if the sequence uses the 'loose number separator'
+            # of an underscore ahead of the frame sequence.
+            #
+            seq = re.split('\_\[|\]\.', arg)
+            if len(seq) != 3 :
+                if not args.silent :
+                    print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                        ": warning: " + arg + " not a sequence or not in lsseq native format"
+                continue
+            else :
+                usesUnderscore = True
+
+        # seq might be range with neg numbers. Assume N,M >= 0,
         # then there are only 5 seq cases: N, -N, N-M, -N-M, -N--M,
         # where -N or N is always less than or equal to -M or M.
         #
@@ -233,11 +248,21 @@ def main():
         newNames = []
         checkNames = []
 
+        if usesUnderscore :
+            currentSeparator = '_'
+            if args.fixUnderscore :
+                newSeparator = '.'
+            else :
+                newSeparator = '_'
+        else :
+            currentSeparator = '.'
+            newSeparator = '.'
+
         for i in frameList :
-            origFile = seq[0] + '.' + currentFormatStr.format(i) + '.' + seq[2]
+            origFile = seq[0] + currentSeparator + currentFormatStr.format(i) + '.' + seq[2]
             if os.path.exists(origFile) :
                 origNames.append(origFile)
-                newNames.append(seq[0] + '.' + newFormatStr.format(i+args.offsetFrames) + '.' + seq[2])
+                newNames.append(seq[0] + newSeparator + newFormatStr.format(i+args.offsetFrames) + '.' + seq[2])
 
         if origNames == [] :
             if not args.silent :

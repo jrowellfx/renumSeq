@@ -24,6 +24,7 @@ mkdir -p \
     testdir/b01 \
     testdir/c01 \
     testdir/c02 \
+    testdir/d01 \
     testdir/x01 \
     testdir/y01
 
@@ -33,7 +34,7 @@ cat << EOF > $tmpfile
 set -f # Turn off globbing
 set -x
 
-lsseq -ZRP testdir
+lsseq -ZRPl testdir
 
 renum
 
@@ -104,7 +105,7 @@ renum -v -o 100 \
     testdir/x01/x.[-11--03].jpg \
     testdir/y01/y.[-011-0002].jpg
 
-lsseq -ZRP testdir
+lsseq -ZRPl testdir
 
 renum -v -o 10 \
     testdir/a02/a.[0120-0140].jpg 
@@ -120,6 +121,21 @@ renum --verbose -o -1 --pad 3 \
     testdir/a02/a.[0120-0140].jpg 
 
 lsseq -ZRP testdir/a02
+
+lsseq -ZRPl testdir/d01
+
+renum -v -o 20 \
+    testdir/d01/d_[0100-0120].jpg
+
+lsseq -ZRPl testdir/d01
+
+renum -v \
+    testdir/d01/d_[0120-0140].jpg
+
+renum -v --replaceUnderscore \
+    testdir/d01/d_[0120-0140].jpg
+
+lsseq -ZRPl testdir/d01
 
 set +x
 set +f
