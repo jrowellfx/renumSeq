@@ -4,6 +4,7 @@ testdir/a02/a.[0100-0125].jpg m:[105,121-124]
 testdir/a03/a.[0100-0133].jpg m:[101]
 testdir/b01/b.[555].jpg 
 testdir/d01/d_[0100-0125].jpg m:[105,121-124]
+testdir/d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
 testdir/x01/x.[-11--03].jpg 
 testdir/y01/y.[-011-0002].jpg 
 ++ renum
@@ -58,15 +59,15 @@ renum: warning: no offset, no padding change etc., nothing to do
 ++ renum -o 1 testdir/null/foo.jpg
 renum: warning: testdir/null/foo.jpg not a sequence or not in lsseq native format
 ++ renum -o 1 'testdir/null/foo.[bar].jpg'
-renum: warning: invalid range [bar] for seq testdir/null/foo
+renum: warning: testdir/null/foo.[bar].jpg not a sequence or not in lsseq native format
 ++ renum -o 1 'testdir/null/foo.[a-b].jpg'
-renum: warning: invalid range [a-b] for seq testdir/null/foo
+renum: warning: testdir/null/foo.[a-b].jpg not a sequence or not in lsseq native format
 ++ renum -o 1 'testdir/null/foo.[-a-b].jpg'
-renum: warning: invalid range [-a-b] for seq testdir/null/foo
+renum: warning: testdir/null/foo.[-a-b].jpg not a sequence or not in lsseq native format
 ++ renum -o 1 'testdir/null/foo.[-a--b].jpg'
-renum: warning: invalid range [-a--b] for seq testdir/null/foo
+renum: warning: testdir/null/foo.[-a--b].jpg not a sequence or not in lsseq native format
 ++ renum -o 1 'testdir/null/foo.[xx-a-b].jpg'
-renum: warning: invalid range [xx-a-b] for seq testdir/null/foo
+renum: warning: testdir/null/foo.[xx-a-b].jpg not a sequence or not in lsseq native format
 ++ renum -o 1 'testdir/c01/c.[011--003].jpg' 'testdir/c02/c.[11-03].jpg'
 renum: warning: invalid range [011--003] for seq testdir/c01/c
 renum: warning: invalid range [11-03] for seq testdir/c02/c
@@ -144,6 +145,7 @@ testdir/a02/a.[0120-0140].jpg
 testdir/a03/a.[0111-0140].jpg 
 testdir/b01/b.[655].jpg 
 testdir/d01/d_[0100-0125].jpg m:[105,121-124]
+testdir/d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
 testdir/x01/x.[089-097].jpg 
 testdir/y01/y.[0089-0102].jpg 
 ++ renum -v -o 10 'testdir/a02/a.[0120-0140].jpg'
@@ -269,4 +271,12 @@ testdir/d01/d_0139.jpg -> testdir/d01/d.0139.jpg
 testdir/d01/d_0140.jpg -> testdir/d01/d.0140.jpg
 ++ lsseq -ZRPl testdir/d01
 testdir/d01/d.[0120-0140].jpg 
+++ lsseq -ZRPl testdir/d02
+testdir/d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
+++ renum -o 20 'testdir/d02/d.[hi]_[0100-0120].jpg'
+++ lsseq -ZRPl testdir/d02
+testdir/d02/d.[hi]_[0120-0140].jpg 
+++ renum --replaceUnderscore 'testdir/d02/d.[hi]_[0120-0140].jpg'
+++ lsseq -ZRPl testdir/d02
+testdir/d02/d.[hi].[0120-0140].jpg 
 ++ set +x
