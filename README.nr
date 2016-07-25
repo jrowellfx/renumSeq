@@ -20,6 +20,7 @@ the ALL files with the new frame numbers before actually renaming any files.  Th
 finds that by renumbering a sequence you will write over another frame outside the range
 specified then it will skip renumbering
 that sequence (printing a warning) and go onto the next sequence in the list.
+Naturally there is an option to force renum to overwrite those files if desired.
 
 renum also has a handy use to optionally change files of this form:
 
@@ -31,7 +32,8 @@ renum also has a handy use to optionally change files of this form:
 .ti 4
 <filename>.[n-m].extension
 
-which can be done even if you don't need to offset the frames.
+which can even be done even with a zero offset, effectively just renaming the files to
+replace the underscore separator with a dot.
 
 To install renum on your system follow these steps (you need
 root privileges).
