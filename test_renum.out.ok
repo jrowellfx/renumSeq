@@ -9,7 +9,7 @@ testdir/x01/x.[-11--03].jpg
 testdir/y01/y.[-011-0002].jpg 
 ++ renum
 ++ renum --version
-1.000
+1.010
 ++ renum --help
 usage: renum [OPTION]... [SEQ]...
 
