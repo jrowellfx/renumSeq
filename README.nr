@@ -2,27 +2,37 @@
 .na
 .hy 0
 .pl 1
-renum is one of those basic utilities that one needs around a CG production studio.
-renum is for renumbering frame sequences.
-Surprisingly a good version of this command doesn't exist in the public domain,
-so this version of renum should forever fill that need.
+renum is a simple command-line-utility
+for renumbering frame sequences
+that is often-times
+needed in CG production.
+Surprisingly a decent version of this command
+doesn't exist in the public domain,
+so this version of renum should fill that need.
 
-renum allows you to renumber sequences, and optionally adjust the padding of the
+renum allows you to renumber sequences with an offset,
+and optionally adjust the padding of the
 frame numbers. renum relies on the util lsseq also having been installed on
-your system as renum uses a library provided by the lsseq package. Furthermore,
-renum uses the syntax of the native output of lsseq to specify the sequence to be renumbered.
-Having this connection to lsseq makes it pretty easy to run renum, cutting and 
+your system as renum uses a python
+library provided by the lsseq package. Furthermore,
+renum borrows the syntax of the native output of lsseq to specify the sequence to be renumbered.
+Having this connection to lsseq makes it pretty easy to run renum, for example,
+cutting and 
 pasting output from lsseq to the arguments of renum with appropriate optional arguments
-setting the amount of frames to offset the sequence by etc.
+for setting the offset etc.
 
-renum was written to be quite safe in that it first checks to see if it's safe to rename
-the ALL files with the new frame numbers before actually renaming any files.  That is, if it
-finds that by renumbering a sequence you will write over another frame outside the range
+renum was written to be safe in that it won't overwrite any existing files (outside
+of the range of files to be renumbered) during the renumbering.
+If renum finds that by renumbering a sequence it will write
+over another frame outside the range
 specified then it will skip renumbering
 that sequence (printing a warning) and go onto the next sequence in the list.
 Naturally there is an option to force renum to overwrite those files if desired.
 
-renum also has a handy use to optionally change files of this form:
+renum doesn't need to make temporary copies of files during
+the renumbering (it does a move of the file), so it's fast.
+
+renum also has a useful extra option to change files of this form:
 
 .ti 4
 <filename>_[n-m].extension
@@ -32,35 +42,38 @@ renum also has a handy use to optionally change files of this form:
 .ti 4
 <filename>.[n-m].extension
 
-which can even be done even with a zero offset, effectively just renaming the files to
-replace the underscore separator with a dot.
+which can be done with a zero offset, effectively renaming the files to
+replace the underscore separator with a dot. (Which leads to a more readable
+filename and frequently standard practice at big studios).
 
 To install renum on your system follow these steps (you need
 root privileges).
 
-First install the latest version of lsseq on your system. You can get it from jrowellfx's github repo.
-
 .in +3
 .ti -3
-1) Download renum-1.000.tar.gz
+1) First install the latest version of lsseq on your system.
+You can get it from jrowellfx's github repo.
+
+.ti -3
+2) Download renum-1.000.tar.gz
 assuming that the latest version is 1.000 (if not
 just grab the latest one).
 
 .ti -3
-2) Uncompress the file:
+3) Uncompress the file:
 .nf
 $ tar -xvf renum-1.000.tar.gz
 .fi
 
 .ti -3
-3) install the command
+4) install the command
 .nf
 $ cd renum-1.000
 $ sudo python setup.py install
 .fi
 
 .ti -3
-4) ...that's it! You should be able to run the commands "renum" now
+5) ...that's it! You should be able to run the commands "renum" now
 .in -3
 
 To test renum try the following:

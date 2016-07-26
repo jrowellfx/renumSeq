@@ -9,7 +9,7 @@ testdir/x01/x.[-11--03].jpg
 testdir/y01/y.[-011-0002].jpg 
 ++ renum
 ++ renum --version
-1.010
+1.011
 ++ renum --help
 usage: renum [OPTION]... [SEQ]...
 
@@ -32,9 +32,10 @@ optional arguments:
   --offset FRAME_OFFSET, -o FRAME_OFFSET
                         offset the sequence by this number of frames (can be
                         negative). Frame i becomes i + FRAME_OFFSET
-  --force               if renumbering a frame in the sequence will result in
-                        overwriting an existing file (which isn't itself going
-                        to be renumbered) then go ahead and overwrite the file
+  --force               the opposite of --skip. i.e.; if renumbering a frame
+                        in the sequence will result in overwriting an existing
+                        file (which isn't itself going to be renumbered) then
+                        go ahead and overwrite the file
   --skip                the opposite of --force. i.e.; if renumbering a frame
                         in the sequence will result in overwriting an existing
                         file then skip renumbering the entire sequence
