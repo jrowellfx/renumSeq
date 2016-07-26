@@ -16,6 +16,7 @@ cleanup() {
 
 trap cleanup INT
 
+mkdir -p testdir
 /bin/rm `find ./testdir -name '*.jpg'` > /dev/null 2>&1
 mkdir -p \
     testdir/a01 \
