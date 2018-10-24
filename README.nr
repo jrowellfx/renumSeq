@@ -126,6 +126,6 @@ $ renum --help
 
 for much more useful info.
 
-Please contact j a m e s <at> o i c - i n c . n e t with any bug reports, suggestions
+Please contact j a m e s <at> a l p h a - e l e v e n . c o m with any bug reports, suggestions
 or oodles of praise as the case may be.
 
