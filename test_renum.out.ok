@@ -310,6 +310,11 @@ testdir/e01/e_1002.jpg -> testdir/e01/e.1002.jpg
 testdir/e01/e_1003.jpg -> testdir/e01/e.1003.jpg
 testdir/e01/e_1004.jpg -> testdir/e01/e.1004.jpg
 testdir/e01/e_1005.jpg -> testdir/e01/e.1005.jpg
+testdir/e01/e_9995.jpg -> testdir/e01/e.9995.jpg
+testdir/e01/e_9996.jpg -> testdir/e01/e.9996.jpg
+testdir/e01/e_9997.jpg -> testdir/e01/e.9997.jpg
+testdir/e01/e_9998.jpg -> testdir/e01/e.9998.jpg
+testdir/e01/e_9999.jpg -> testdir/e01/e.9999.jpg
 ++ renum -v --replaceUnderscore --pad 4 'testdir/e02/e_[5-9999].jpg'
 testdir/e02/e_5.jpg -> testdir/e02/e.0005.jpg
 testdir/e02/e_6.jpg -> testdir/e02/e.0006.jpg
@@ -344,6 +349,11 @@ testdir/e02/e_1002.jpg -> testdir/e02/e.1002.jpg
 testdir/e02/e_1003.jpg -> testdir/e02/e.1003.jpg
 testdir/e02/e_1004.jpg -> testdir/e02/e.1004.jpg
 testdir/e02/e_1005.jpg -> testdir/e02/e.1005.jpg
+testdir/e02/e_9995.jpg -> testdir/e02/e.9995.jpg
+testdir/e02/e_9996.jpg -> testdir/e02/e.9996.jpg
+testdir/e02/e_9997.jpg -> testdir/e02/e.9997.jpg
+testdir/e02/e_9998.jpg -> testdir/e02/e.9998.jpg
+testdir/e02/e_9999.jpg -> testdir/e02/e.9999.jpg
 ++ renum -v --replaceUnderscore --pad 4 'testdir/e03/e_[5-10005].jpg'
 testdir/e03/e_5.jpg -> testdir/e03/e.0005.jpg
 testdir/e03/e_6.jpg -> testdir/e03/e.0006.jpg
@@ -378,6 +388,11 @@ testdir/e03/e_1002.jpg -> testdir/e03/e.1002.jpg
 testdir/e03/e_1003.jpg -> testdir/e03/e.1003.jpg
 testdir/e03/e_1004.jpg -> testdir/e03/e.1004.jpg
 testdir/e03/e_1005.jpg -> testdir/e03/e.1005.jpg
+testdir/e03/e_9995.jpg -> testdir/e03/e.9995.jpg
+testdir/e03/e_9996.jpg -> testdir/e03/e.9996.jpg
+testdir/e03/e_9997.jpg -> testdir/e03/e.9997.jpg
+testdir/e03/e_9998.jpg -> testdir/e03/e.9998.jpg
+testdir/e03/e_9999.jpg -> testdir/e03/e.9999.jpg
 testdir/e03/e_10000.jpg -> testdir/e03/e.10000.jpg
 testdir/e03/e_10001.jpg -> testdir/e03/e.10001.jpg
 testdir/e03/e_10002.jpg -> testdir/e03/e.10002.jpg
