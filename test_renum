@@ -27,6 +27,9 @@ mkdir -p \
     testdir/c02 \
     testdir/d01 \
     testdir/d02 \
+    testdir/e01 \
+    testdir/e02 \
+    testdir/e03 \
     testdir/x01 \
     testdir/y01
 
@@ -140,6 +143,15 @@ renum -v \
 
 renum -v --replaceUnderscore \
     testdir/d01/d_[0120-0140].jpg
+
+renum -v --replaceUnderscore \
+    testdir/e01/e_[5-9999].jpg
+
+renum -v --replaceUnderscore --pad 4 \
+    testdir/e02/e_[5-9999].jpg
+
+renum -v --replaceUnderscore --pad 4 \
+    testdir/e03/e_[5-10005].jpg
 
 lsseq -ZRPl testdir/d01
 

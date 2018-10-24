@@ -5,11 +5,14 @@ testdir/a03/a.[0100-0133].jpg m:[101]
 testdir/b01/b.[555].jpg 
 testdir/d01/d_[0100-0125].jpg m:[105,121-124]
 testdir/d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
+testdir/e01/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+testdir/e02/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+testdir/e03/e_[5-10005].jpg m:[16-94,106-994,1006-9994]
 testdir/x01/x.[-11--03].jpg 
 testdir/y01/y.[-011-0002].jpg 
 ++ renum
 ++ renum --version
-1.011
+1.012
 ++ renum --help
 usage: renum [OPTION]... [SEQ]...
 
@@ -147,6 +150,9 @@ testdir/a03/a.[0111-0140].jpg
 testdir/b01/b.[655].jpg 
 testdir/d01/d_[0100-0125].jpg m:[105,121-124]
 testdir/d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
+testdir/e01/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+testdir/e02/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+testdir/e03/e_[5-10005].jpg m:[16-94,106-994,1006-9994]
 testdir/x01/x.[089-097].jpg 
 testdir/y01/y.[0089-0102].jpg 
 ++ renum -v -o 10 'testdir/a02/a.[0120-0140].jpg'
@@ -270,6 +276,114 @@ testdir/d01/d_0137.jpg -> testdir/d01/d.0137.jpg
 testdir/d01/d_0138.jpg -> testdir/d01/d.0138.jpg
 testdir/d01/d_0139.jpg -> testdir/d01/d.0139.jpg
 testdir/d01/d_0140.jpg -> testdir/d01/d.0140.jpg
+++ renum -v --replaceUnderscore 'testdir/e01/e_[5-9999].jpg'
+testdir/e01/e_5.jpg -> testdir/e01/e.5.jpg
+testdir/e01/e_6.jpg -> testdir/e01/e.6.jpg
+testdir/e01/e_7.jpg -> testdir/e01/e.7.jpg
+testdir/e01/e_8.jpg -> testdir/e01/e.8.jpg
+testdir/e01/e_9.jpg -> testdir/e01/e.9.jpg
+testdir/e01/e_10.jpg -> testdir/e01/e.10.jpg
+testdir/e01/e_11.jpg -> testdir/e01/e.11.jpg
+testdir/e01/e_12.jpg -> testdir/e01/e.12.jpg
+testdir/e01/e_13.jpg -> testdir/e01/e.13.jpg
+testdir/e01/e_14.jpg -> testdir/e01/e.14.jpg
+testdir/e01/e_15.jpg -> testdir/e01/e.15.jpg
+testdir/e01/e_95.jpg -> testdir/e01/e.95.jpg
+testdir/e01/e_96.jpg -> testdir/e01/e.96.jpg
+testdir/e01/e_97.jpg -> testdir/e01/e.97.jpg
+testdir/e01/e_98.jpg -> testdir/e01/e.98.jpg
+testdir/e01/e_99.jpg -> testdir/e01/e.99.jpg
+testdir/e01/e_100.jpg -> testdir/e01/e.100.jpg
+testdir/e01/e_101.jpg -> testdir/e01/e.101.jpg
+testdir/e01/e_102.jpg -> testdir/e01/e.102.jpg
+testdir/e01/e_103.jpg -> testdir/e01/e.103.jpg
+testdir/e01/e_104.jpg -> testdir/e01/e.104.jpg
+testdir/e01/e_105.jpg -> testdir/e01/e.105.jpg
+testdir/e01/e_995.jpg -> testdir/e01/e.995.jpg
+testdir/e01/e_996.jpg -> testdir/e01/e.996.jpg
+testdir/e01/e_997.jpg -> testdir/e01/e.997.jpg
+testdir/e01/e_998.jpg -> testdir/e01/e.998.jpg
+testdir/e01/e_999.jpg -> testdir/e01/e.999.jpg
+testdir/e01/e_1000.jpg -> testdir/e01/e.1000.jpg
+testdir/e01/e_1001.jpg -> testdir/e01/e.1001.jpg
+testdir/e01/e_1002.jpg -> testdir/e01/e.1002.jpg
+testdir/e01/e_1003.jpg -> testdir/e01/e.1003.jpg
+testdir/e01/e_1004.jpg -> testdir/e01/e.1004.jpg
+testdir/e01/e_1005.jpg -> testdir/e01/e.1005.jpg
+++ renum -v --replaceUnderscore --pad 4 'testdir/e02/e_[5-9999].jpg'
+testdir/e02/e_5.jpg -> testdir/e02/e.0005.jpg
+testdir/e02/e_6.jpg -> testdir/e02/e.0006.jpg
+testdir/e02/e_7.jpg -> testdir/e02/e.0007.jpg
+testdir/e02/e_8.jpg -> testdir/e02/e.0008.jpg
+testdir/e02/e_9.jpg -> testdir/e02/e.0009.jpg
+testdir/e02/e_10.jpg -> testdir/e02/e.0010.jpg
+testdir/e02/e_11.jpg -> testdir/e02/e.0011.jpg
+testdir/e02/e_12.jpg -> testdir/e02/e.0012.jpg
+testdir/e02/e_13.jpg -> testdir/e02/e.0013.jpg
+testdir/e02/e_14.jpg -> testdir/e02/e.0014.jpg
+testdir/e02/e_15.jpg -> testdir/e02/e.0015.jpg
+testdir/e02/e_95.jpg -> testdir/e02/e.0095.jpg
+testdir/e02/e_96.jpg -> testdir/e02/e.0096.jpg
+testdir/e02/e_97.jpg -> testdir/e02/e.0097.jpg
+testdir/e02/e_98.jpg -> testdir/e02/e.0098.jpg
+testdir/e02/e_99.jpg -> testdir/e02/e.0099.jpg
+testdir/e02/e_100.jpg -> testdir/e02/e.0100.jpg
+testdir/e02/e_101.jpg -> testdir/e02/e.0101.jpg
+testdir/e02/e_102.jpg -> testdir/e02/e.0102.jpg
+testdir/e02/e_103.jpg -> testdir/e02/e.0103.jpg
+testdir/e02/e_104.jpg -> testdir/e02/e.0104.jpg
+testdir/e02/e_105.jpg -> testdir/e02/e.0105.jpg
+testdir/e02/e_995.jpg -> testdir/e02/e.0995.jpg
+testdir/e02/e_996.jpg -> testdir/e02/e.0996.jpg
+testdir/e02/e_997.jpg -> testdir/e02/e.0997.jpg
+testdir/e02/e_998.jpg -> testdir/e02/e.0998.jpg
+testdir/e02/e_999.jpg -> testdir/e02/e.0999.jpg
+testdir/e02/e_1000.jpg -> testdir/e02/e.1000.jpg
+testdir/e02/e_1001.jpg -> testdir/e02/e.1001.jpg
+testdir/e02/e_1002.jpg -> testdir/e02/e.1002.jpg
+testdir/e02/e_1003.jpg -> testdir/e02/e.1003.jpg
+testdir/e02/e_1004.jpg -> testdir/e02/e.1004.jpg
+testdir/e02/e_1005.jpg -> testdir/e02/e.1005.jpg
+++ renum -v --replaceUnderscore --pad 4 'testdir/e03/e_[5-10005].jpg'
+testdir/e03/e_5.jpg -> testdir/e03/e.0005.jpg
+testdir/e03/e_6.jpg -> testdir/e03/e.0006.jpg
+testdir/e03/e_7.jpg -> testdir/e03/e.0007.jpg
+testdir/e03/e_8.jpg -> testdir/e03/e.0008.jpg
+testdir/e03/e_9.jpg -> testdir/e03/e.0009.jpg
+testdir/e03/e_10.jpg -> testdir/e03/e.0010.jpg
+testdir/e03/e_11.jpg -> testdir/e03/e.0011.jpg
+testdir/e03/e_12.jpg -> testdir/e03/e.0012.jpg
+testdir/e03/e_13.jpg -> testdir/e03/e.0013.jpg
+testdir/e03/e_14.jpg -> testdir/e03/e.0014.jpg
+testdir/e03/e_15.jpg -> testdir/e03/e.0015.jpg
+testdir/e03/e_95.jpg -> testdir/e03/e.0095.jpg
+testdir/e03/e_96.jpg -> testdir/e03/e.0096.jpg
+testdir/e03/e_97.jpg -> testdir/e03/e.0097.jpg
+testdir/e03/e_98.jpg -> testdir/e03/e.0098.jpg
+testdir/e03/e_99.jpg -> testdir/e03/e.0099.jpg
+testdir/e03/e_100.jpg -> testdir/e03/e.0100.jpg
+testdir/e03/e_101.jpg -> testdir/e03/e.0101.jpg
+testdir/e03/e_102.jpg -> testdir/e03/e.0102.jpg
+testdir/e03/e_103.jpg -> testdir/e03/e.0103.jpg
+testdir/e03/e_104.jpg -> testdir/e03/e.0104.jpg
+testdir/e03/e_105.jpg -> testdir/e03/e.0105.jpg
+testdir/e03/e_995.jpg -> testdir/e03/e.0995.jpg
+testdir/e03/e_996.jpg -> testdir/e03/e.0996.jpg
+testdir/e03/e_997.jpg -> testdir/e03/e.0997.jpg
+testdir/e03/e_998.jpg -> testdir/e03/e.0998.jpg
+testdir/e03/e_999.jpg -> testdir/e03/e.0999.jpg
+testdir/e03/e_1000.jpg -> testdir/e03/e.1000.jpg
+testdir/e03/e_1001.jpg -> testdir/e03/e.1001.jpg
+testdir/e03/e_1002.jpg -> testdir/e03/e.1002.jpg
+testdir/e03/e_1003.jpg -> testdir/e03/e.1003.jpg
+testdir/e03/e_1004.jpg -> testdir/e03/e.1004.jpg
+testdir/e03/e_1005.jpg -> testdir/e03/e.1005.jpg
+testdir/e03/e_10000.jpg -> testdir/e03/e.10000.jpg
+testdir/e03/e_10001.jpg -> testdir/e03/e.10001.jpg
+testdir/e03/e_10002.jpg -> testdir/e03/e.10002.jpg
+testdir/e03/e_10003.jpg -> testdir/e03/e.10003.jpg
+testdir/e03/e_10004.jpg -> testdir/e03/e.10004.jpg
+testdir/e03/e_10005.jpg -> testdir/e03/e.10005.jpg
 ++ lsseq -ZRPl testdir/d01
 testdir/d01/d.[0120-0140].jpg 
 ++ lsseq -ZRPl testdir/d02
