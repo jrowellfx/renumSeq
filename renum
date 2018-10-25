@@ -3,6 +3,8 @@
 # renum - renumber images sequences on the command line
 #         specify the sequences using lsseq's native format
 #
+# BSD 3-Clause License
+# 
 # Copyright (c) 2008-2018, James Philip Rowell,
 # Alpha Eleven Incorporated
 # www.alpha-eleven.com
