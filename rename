@@ -1,0 +1,321 @@
+#!/usr/bin/python2.7
+
+# rename - rename images sequences on the command line
+#         specify the sequences using lsseq's native format
+#
+# BSD 3-Clause License
+# 
+# Copyright (c) 2008-2020, James Philip Rowell,
+# Alpha Eleven Incorporated
+# www.alpha-eleven.com
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#   - Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#
+#   - Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in
+#     the documentation and/or other materials provided with the
+#     distribution.
+#
+#   - Neither the name of "Alpha Eleven, Inc."  nor the names of its
+#     contributors may be used to endorse or promote products derived
+#     from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT
+# HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+import re
+import argparse
+import os
+import sys
+import seqLister
+import textwrap
+
+def warnSeqSyntax(silent, basename, seq) :
+    if not silent :
+        print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+            ": warning: invalid range [" + seq + "] for seq " + basename
+
+def main():
+
+    # Redefine the exception handling routine so that it does NOT
+    # do a trace dump if the user types ^C while renum is running.
+    #
+    old_excepthook = sys.excepthook
+    def new_hook(exceptionType, value, traceback):
+        if exceptionType != KeyboardInterrupt and exceptionType != IOError:
+            old_excepthook(exceptionType, value, traceback)
+        else:
+            pass
+    sys.excepthook = new_hook
+
+    p = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent('''\
+            Rename the files listed on the command line by replacing
+	    the part of the filename that matches "sourceName" with "destName".
+
+            For example:
+	        $ ls -1
+		abbbc01.jpg
+		abbbc02.jpg
+		abbbc03.jpg
+		abbbc04.jpg
+		abbbc05.jpg
+                $ rename --sourceName bbc --destName _XXX. abbbc*.jpg
+                $ lsseq
+		ab_XXX.[01-05].jpg
+            '''),
+        usage="%(prog)s [OPTION]... [SEQ]...")
+
+    p.add_argument("--version", action="version", version="0.100")
+
+    p.add_argument("--offset", "-o", action="store", type=int,
+       dest="offsetFrames", default=0,
+       metavar="FRAME_OFFSET",
+       help="offset the sequence by this number of frames (can be negative). Frame i becomes i + FRAME_OFFSET")
+
+    p.add_argument("--force", action="store_true",
+        dest="clobber", default=False,
+        help="the opposite of --skip. i.e.; if \
+	renumbering a frame in the sequence will result in overwriting \
+        an existing file (which isn't itself going to be renumbered) \
+        then go ahead and overwrite the file" )
+    p.add_argument("--skip", action="store_false",
+        dest="clobber",
+        help="the opposite of --force. i.e.; if renumbering a frame in \
+        the sequence will result in overwriting \
+        an existing file then skip renumbering the entire sequence (default)" )
+
+    # Note: the following default for "pad" of "-1" means to leave
+    # the padding on any given frame sequence unchanged.
+    #
+    p.add_argument("--pad", action="store", type=int,
+       dest="pad", default=-1,
+       metavar="PAD",
+       help="set the padding of the frame numbers to be <PAD> digits. The default action is to leave the padding unchanged. Note, lsseq's native format output properly lists the sequence range with appropriate padding.")
+    p.add_argument("--replaceUnderscore", action="store_true",
+        dest="fixUnderscore", default=False,
+        help="in the case that the sequence uses an underscore ('_') as opposed to \
+        a dot ('.') separating the filename from the frame number then when renumbering \
+        the sequence replace the underscore with the preferable dot-separator. Note that \
+        as a nice side effect of using renum in this way is that you can use an offset \
+        of zero (default) to simple replace the underscrore with a dot leaving all else the same.")
+    p.add_argument("--silent", "--quiet", "-s", action="store_true",
+        dest="silent", default=False,
+        help="supress all output, warning etc.")
+    p.add_argument("--verbose", "-v", action="store_true",
+        dest="verbose", default=False,
+        help="list the mapping from old frames to new frames")
+
+    p.add_argument("files", metavar="SEQ", nargs="*",
+        help="image sequence in lsseq native format")
+
+    args = p.parse_args()
+
+    if args.files == [] :
+        sys.exit(0)
+
+    # The following logic means "do nothing" - so just exit cleanly (**a**)
+    #
+    if args.offsetFrames == 0 and args.pad < 0 and not args.fixUnderscore :
+        if not args.silent :
+            print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                ": warning: no offset, no padding change etc., nothing to do"
+        sys.exit(0)
+
+    # The following regular expression is created to match lsseq native sequence syntax
+    # which means (number labels refer to parenthesis groupings):
+    #
+    # 1 - one or more of anything, followed by
+    # 2 - a dot or underscore, followed by
+    # an open square bracket, followed by
+    # 3 - one or more digits or minus signs, followed by
+    # a close square bracket then a dot, followed by
+    # 4 - one or more letters or digits (starting with a letter)
+    # 
+    pattern = re.compile(r"(.+)([._])\[([0-9-]+)\]\.([a-zA-Z]+[a-zA-Z0-9]*)")
+
+    for arg in args.files :
+        abortSeq = False
+
+        # Check if 'arg' is a sequence in valid lsseq native format 
+        #
+        match = pattern.search(arg)
+        if not match :
+            if not args.silent :
+                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                    ": warning: " + arg + " not a sequence or not in lsseq native format"
+            continue
+
+        v = match.groups()
+
+        usesUnderscore = (v[1] == '_')
+        seq = [v[0], v[2], v[3]] # base filename, range, file-extension.
+
+        # seq might be range with neg numbers. Assume N,M >= 0,
+        # then there are only 5 seq cases that we need to be 
+        # concerned with: N, -N, N-M, -N-M, -N--M,
+        # where -N or N is always less than or equal to -M or M.
+        #
+        negStart = 1.0
+        negEnd = 1.0
+        startStr = ""
+        endStr = ""
+        range = seq[1].split("-")
+
+        if len(range) > 4 :
+            warnSeqSyntax(args.silent, seq[0], seq[1])
+            continue # Invalid syntax for range
+
+        if len(range) == 1 : # Just N
+            startStr = range[0]
+            endStr = range[0]
+
+        elif len(range) == 2 : # minus-N OR N-M
+            if range[0] == '' : # Leading minus sign.
+                negStart = -1.0
+                negEnd = -1.0
+                startStr = range[1]
+                endStr = range[1]
+            else :
+                startStr = range[0]
+                endStr = range[1]
+
+        elif len(range) == 3 : # neg-N to M
+            if range[0] != '' : # Not leading minus sign!
+                warnSeqSyntax(args.silent, seq[0], seq[1])
+                continue # Invalid syntax for range
+            negStart = -1.0
+            startStr = range[1]
+            endStr = range[2]
+
+        elif len(range) == 4 : # neg-N to neg-M
+            if range[0] != '' or range[2] != '' : # Not leading minus signs!
+                warnSeqSyntax(args.silent, seq[0], seq[1])
+                continue # Invalid syntax for range
+            negStart = -1.0
+            negEnd = -1.0
+            startStr = range[1]
+            endStr = range[3]
+
+        try :
+            start = int(startStr)
+        except ValueError : # Invalid syntax for range
+            warnSeqSyntax(args.silent, seq[0], seq[1])
+            continue
+
+        try :
+            end = int(endStr)
+        except ValueError : # Invalid syntax for range
+            warnSeqSyntax(args.silent, seq[0], seq[1])
+            continue
+
+        start *= negStart
+        end *= negEnd
+
+        if start > end :
+            warnSeqSyntax(args.silent, seq[0], seq[1])
+            continue
+
+        startPad = len(startStr)
+        currentPad = 0
+        if negStart < 0.0 :
+            startPad += 1
+        endPad = len(endStr)
+        if negEnd < 0.0 :
+            endPad += 1
+        if startPad < endPad :
+            currentPad = startPad
+        else :
+            currentPad = endPad
+        newPad = currentPad
+        
+        if args.pad >= 0 :
+            newPad = args.pad
+
+        currentFormatStr = "{0:0=-" + str(currentPad) + "d}"
+        newFormatStr = "{0:0=-" + str(newPad) + "d}"
+
+        frameList = seqLister.expandSeq(seq[1])
+
+        if frameList == [] :
+            warnSeqSyntax(args.silent, seq[0], seq[1])
+            continue # Invalid syntax for range
+
+        frameList.sort(reverse=(args.offsetFrames > 0))
+
+        origNames = []
+        newNames = []
+        checkNames = []
+
+        if usesUnderscore :
+            currentSeparator = '_'
+            if args.fixUnderscore :
+                newSeparator = '.'
+            else :
+                newSeparator = '_'
+        else :
+            currentSeparator = '.'
+            newSeparator = '.'
+
+        for i in frameList :
+            origFile = seq[0] + currentSeparator + currentFormatStr.format(i) + '.' + seq[2]
+            if os.path.exists(origFile) :
+                origNames.append(origFile)
+                newNames.append(seq[0] + newSeparator + newFormatStr.format(i+args.offsetFrames) + '.' + seq[2])
+
+        if origNames == [] :
+            if not args.silent :
+                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                    ": warning: " + arg + " is nonexistent."
+            continue
+
+        if not args.clobber :
+            checkNames = [ x for x in newNames if x not in origNames ]
+
+            for f in checkNames :
+                if os.path.exists(f) :
+                    abortSeq = True
+                    break
+
+            if abortSeq :
+                if not args.silent :
+                    print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                        ": warning: skipping " + arg + ": renum would have overwritten a file outside the sequence being renumbered. eg.: " + f
+                continue
+
+        # Note: there will be at least one entry in list so the following test catches
+        # the case missed by the test above (**a**). This case will be missed above if
+        # the pad size was explicitly specificed but is already the same as the existing sequence.
+        #
+        if (origNames[0] == newNames[0]) :
+            if not args.silent :
+                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                    ": warning: no changes being made to " + arg + ": skipping"
+            continue
+
+        i = 0
+        numFiles = len(origNames)
+        while i < numFiles :
+            if args.verbose and not args.silent :
+                print origNames[i] + " -> " + newNames[i]
+            os.rename(origNames[i], newNames[i])
+            i += 1
+
+if __name__ == '__main__':
+    main()
