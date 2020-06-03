@@ -1,31 +1,32 @@
-#!/usr/bin/python2.7
-
-# rename - rename images sequences on the command line
-#         specify the sequences using lsseq's native format
+#!/bin/bash 
 #
+# for f in *.jpg; do
+#     echo mv "$f" "${f/Sh1000VrLong/sh1000_long_v0602.}" ;
+# done
+
 # BSD 3-Clause License
 # 
 # Copyright (c) 2008-2020, James Philip Rowell,
 # Alpha Eleven Incorporated
 # www.alpha-eleven.com
 # All rights reserved.
-#
+# 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
-#
+# 
 #   - Redistributions of source code must retain the above copyright
 #     notice, this list of conditions and the following disclaimer.
-#
+# 
 #   - Redistributions in binary form must reproduce the above copyright
 #     notice, this list of conditions and the following disclaimer in
 #     the documentation and/or other materials provided with the
 #     distribution.
-#
+# 
 #   - Neither the name of "Alpha Eleven, Inc."  nor the names of its
 #     contributors may be used to endorse or promote products derived
 #     from this software without specific prior written permission.
-#
+# 
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -38,284 +39,157 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import re
-import argparse
-import os
-import sys
-import seqLister
-import textwrap
+# tstamp: Adjust the timestamp of files.
+#
+# Usage: tstamp [OPTIONS] -N | +N [FILE]...
+#
+# Description: Change the access and modification timestamps on
+#              files/directories. Useful when dealing with files that
+#              have been created or mofified in a different timezone,
+#              to "normalize" the timestamps.
+#
+#              For example, files modified in EST would appear 3 hours
+#              in the future if being processed very soon thereafter by
+#              a computer in PST.
+#
+#              In this example, to fix the time on these files, you could run:
+#
+#              tstamp -3 file1 file2 file3...
+#
+#              To put the timestamps back to EST, you could run:
+#
+#              tstamp +3 file1 file2 file3...
+#
+# Options:
+#
+# -R       Recursively descend sub-directories.
+# -a       Change only the access time.
+# -m       Change only the modification time.
+#
+# -N | +N  Subtract (or add) N hours from (or to) the existing timestamp;
+#          N must be a whole number.  This option is mandatory.
 
-def warnSeqSyntax(silent, basename, seq) :
-    if not silent :
-        print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-            ": warning: invalid range [" + seq + "] for seq " + basename
+Usage_exit() {
+    echo "Usage: ${0##*/} [-h | --help] [-R] [-a | -m] -N | +N file..."
+    if [ "$1" = help ]; then
+	cat - <<@eof
 
-def main():
+Options:
 
-    # Redefine the exception handling routine so that it does NOT
-    # do a trace dump if the user types ^C while renum is running.
-    #
-    old_excepthook = sys.excepthook
-    def new_hook(exceptionType, value, traceback):
-        if exceptionType != KeyboardInterrupt and exceptionType != IOError:
-            old_excepthook(exceptionType, value, traceback)
-        else:
-            pass
-    sys.excepthook = new_hook
+ -R       Recursively descend sub-directories.
+ -a       Change only the access time.
+ -m       Change only the modification time.
 
-    p = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description=textwrap.dedent('''\
-            Rename the files listed on the command line by replacing
-	    the part of the filename that matches "sourceName" with "destName".
+ -N | +N  Subtract (or add) N hours from (or to) the existing timestamp;
+          N must be a whole number. THIS OPTION IS MANDATORY.
 
-            For example:
-	        $ ls -1
-		abbbc01.jpg
-		abbbc02.jpg
-		abbbc03.jpg
-		abbbc04.jpg
-		abbbc05.jpg
-                $ rename --sourceName bbc --destName _XXX. abbbc*.jpg
-                $ lsseq
-		ab_XXX.[01-05].jpg
-            '''),
-        usage="%(prog)s [OPTION]... [SEQ]...")
+@eof
+    fi
+    exit 1
+}
 
-    p.add_argument("--version", action="version", version="0.100")
+#
+# Parse options.  Stop when you get to the file list.
+#
+shopt -s extglob
+while :
+do
+    case "$1" in
+        -h|--help) Usage_exit help
+        ;;
 
-    p.add_argument("--offset", "-o", action="store", type=int,
-       dest="offsetFrames", default=0,
-       metavar="FRAME_OFFSET",
-       help="offset the sequence by this number of frames (can be negative). Frame i becomes i + FRAME_OFFSET")
+        -R) recurse=yes
+             shift
+        ;;
 
-    p.add_argument("--force", action="store_true",
-        dest="clobber", default=False,
-        help="the opposite of --skip. i.e.; if \
-	renumbering a frame in the sequence will result in overwriting \
-        an existing file (which isn't itself going to be renumbered) \
-        then go ahead and overwrite the file" )
-    p.add_argument("--skip", action="store_false",
-        dest="clobber",
-        help="the opposite of --force. i.e.; if renumbering a frame in \
-        the sequence will result in overwriting \
-        an existing file then skip renumbering the entire sequence (default)" )
+        -a|-m) if [ "$touch_option" != "" ]; then
+                echo "${0##*/}: ERROR: Only one of -a & -m may be specified."
+                Usage_exit
+            fi
+            touch_option="$1"
+            shift
+        ;;
 
-    # Note: the following default for "pad" of "-1" means to leave
-    # the padding on any given frame sequence unchanged.
-    #
-    p.add_argument("--pad", action="store", type=int,
-       dest="pad", default=-1,
-       metavar="PAD",
-       help="set the padding of the frame numbers to be <PAD> digits. The default action is to leave the padding unchanged. Note, lsseq's native format output properly lists the sequence range with appropriate padding.")
-    p.add_argument("--replaceUnderscore", action="store_true",
-        dest="fixUnderscore", default=False,
-        help="in the case that the sequence uses an underscore ('_') as opposed to \
-        a dot ('.') separating the filename from the frame number then when renumbering \
-        the sequence replace the underscore with the preferable dot-separator. Note that \
-        as a nice side effect of using renum in this way is that you can use an offset \
-        of zero (default) to simple replace the underscrore with a dot leaving all else the same.")
-    p.add_argument("--silent", "--quiet", "-s", action="store_true",
-        dest="silent", default=False,
-        help="supress all output, warning etc.")
-    p.add_argument("--verbose", "-v", action="store_true",
-        dest="verbose", default=False,
-        help="list the mapping from old frames to new frames")
+        -+([0-9])|++([0-9])) if [ "$inc_or_dec" != "" ]; then
+                echo "${0##*/}: ERROR: Only 1 increment/decrement may be specified."
+                Usage_exit
+            fi
 
-    p.add_argument("files", metavar="SEQ", nargs="*",
-        help="image sequence in lsseq native format")
+            # Verify that the arg is a whole number.  In other words,
+            # everything after the initial +/- should be a digit.
+            #
+            should_be_null=$(echo "$1" | awk '{gsub("^[-+][0-9]*","");print}')
+            if [ "$should_be_null" != "" ]; then
+                echo "${0##*/}: ERROR: Timestamp increment/decrement must be a whole number."
+                Usage_exit
+            fi
 
-    args = p.parse_args()
+            inc_or_dec="$1"
+            shift
+        ;;
 
-    if args.files == [] :
-        sys.exit(0)
+        -*) echo "${0##*/}: ERROR: Invalid option '$1'."
+             Usage_exit
+        ;;
 
-    # The following logic means "do nothing" - so just exit cleanly (**a**)
-    #
-    if args.offsetFrames == 0 and args.pad < 0 and not args.fixUnderscore :
-        if not args.silent :
-            print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                ": warning: no offset, no padding change etc., nothing to do"
-        sys.exit(0)
+        *) break # We're done processing arguments, so let's get on with it. :-)
+    esac
+done
 
-    # The following regular expression is created to match lsseq native sequence syntax
-    # which means (number labels refer to parenthesis groupings):
-    #
-    # 1 - one or more of anything, followed by
-    # 2 - a dot or underscore, followed by
-    # an open square bracket, followed by
-    # 3 - one or more digits or minus signs, followed by
-    # a close square bracket then a dot, followed by
-    # 4 - one or more letters or digits (starting with a letter)
-    # 
-    pattern = re.compile(r"(.+)([._])\[([0-9-]+)\]\.([a-zA-Z]+[a-zA-Z0-9]*)")
+# Verify that the mandatory increment/decrement has been specified.
+#
+if [ "$inc_or_dec" = "" ]; then
+    echo "${0##*/}: ERROR: Missing mandatory increment/decrement parameter."
+    Usage_exit
+fi
 
-    for arg in args.files :
-        abortSeq = False
+if [ "$recurse" = yes ]; then
+    while [ $# -ne 0 ]
+    do
+	f="$1"
+        # If it's a directory, let "find" do our work.
+        if [ -d "$f" ]; then
+            # Note use of -print0 and -0 to deal with spaces in names.
+            find "$f" -print0 | xargs -0 $0 $touch_option $inc_or_dec
+        else # ...just deal with this file.
+            $0 $touch_option $inc_or_dec "$f"
+        fi
+	shift
+    done
+    exit
+fi
 
-        # Check if 'arg' is a sequence in valid lsseq native format 
-        #
-        match = pattern.search(arg)
-        if not match :
-            if not args.silent :
-                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                    ": warning: " + arg + " not a sequence or not in lsseq native format"
-            continue
+# Convert the HOURS to increment/decrement into SECONDS.
+secs_to_inc_or_dec=$(($inc_or_dec * 60 * 60))
 
-        v = match.groups()
+while  [ $# -ne 0 ]
+do
+    f="$1"
+    # Get the existing modification and last access timestamps for this file/dir.
+    modtime=$(ls -d --full-time "$f" | awk '{print $6,$7}' | sed 's/[:-]/ /g;s/\.000000000//')
+    acctime=$(ls -d -u --full-time "$f" | awk '{print $6,$7}' | sed 's/[:-]/ /g;s/\.000000000//')
 
-        usesUnderscore = (v[1] == '_')
-        seq = [v[0], v[2], v[3]] # base filename, range, file-extension.
+    modtime_in_secs=$(awk -v m="$modtime" 'BEGIN{print mktime(m)}')
+    acctime_in_secs=$(awk -v a="$acctime" 'BEGIN{print mktime(a)}')
 
-        # seq might be range with neg numbers. Assume N,M >= 0,
-        # then there are only 5 seq cases that we need to be 
-        # concerned with: N, -N, N-M, -N-M, -N--M,
-        # where -N or N is always less than or equal to -M or M.
-        #
-        negStart = 1.0
-        negEnd = 1.0
-        startStr = ""
-        endStr = ""
-        range = seq[1].split("-")
+    adjusted_modtime_in_secs=$(($modtime_in_secs + $secs_to_inc_or_dec))
+    adjusted_acctime_in_secs=$(($acctime_in_secs + $secs_to_inc_or_dec))
 
-        if len(range) > 4 :
-            warnSeqSyntax(args.silent, seq[0], seq[1])
-            continue # Invalid syntax for range
+    adjusted_modtime=$(awk -v a=$adjusted_modtime_in_secs 'BEGIN{print strftime("%Y%m%d%H%M.%S", a)}')
+    adjusted_acctime=$(awk -v a=$adjusted_acctime_in_secs 'BEGIN{print strftime("%Y%m%d%H%M.%S", a)}')
 
-        if len(range) == 1 : # Just N
-            startStr = range[0]
-            endStr = range[0]
-
-        elif len(range) == 2 : # minus-N OR N-M
-            if range[0] == '' : # Leading minus sign.
-                negStart = -1.0
-                negEnd = -1.0
-                startStr = range[1]
-                endStr = range[1]
-            else :
-                startStr = range[0]
-                endStr = range[1]
-
-        elif len(range) == 3 : # neg-N to M
-            if range[0] != '' : # Not leading minus sign!
-                warnSeqSyntax(args.silent, seq[0], seq[1])
-                continue # Invalid syntax for range
-            negStart = -1.0
-            startStr = range[1]
-            endStr = range[2]
-
-        elif len(range) == 4 : # neg-N to neg-M
-            if range[0] != '' or range[2] != '' : # Not leading minus signs!
-                warnSeqSyntax(args.silent, seq[0], seq[1])
-                continue # Invalid syntax for range
-            negStart = -1.0
-            negEnd = -1.0
-            startStr = range[1]
-            endStr = range[3]
-
-        try :
-            start = int(startStr)
-        except ValueError : # Invalid syntax for range
-            warnSeqSyntax(args.silent, seq[0], seq[1])
-            continue
-
-        try :
-            end = int(endStr)
-        except ValueError : # Invalid syntax for range
-            warnSeqSyntax(args.silent, seq[0], seq[1])
-            continue
-
-        start *= negStart
-        end *= negEnd
-
-        if start > end :
-            warnSeqSyntax(args.silent, seq[0], seq[1])
-            continue
-
-        startPad = len(startStr)
-        currentPad = 0
-        if negStart < 0.0 :
-            startPad += 1
-        endPad = len(endStr)
-        if negEnd < 0.0 :
-            endPad += 1
-        if startPad < endPad :
-            currentPad = startPad
-        else :
-            currentPad = endPad
-        newPad = currentPad
-        
-        if args.pad >= 0 :
-            newPad = args.pad
-
-        currentFormatStr = "{0:0=-" + str(currentPad) + "d}"
-        newFormatStr = "{0:0=-" + str(newPad) + "d}"
-
-        frameList = seqLister.expandSeq(seq[1])
-
-        if frameList == [] :
-            warnSeqSyntax(args.silent, seq[0], seq[1])
-            continue # Invalid syntax for range
-
-        frameList.sort(reverse=(args.offsetFrames > 0))
-
-        origNames = []
-        newNames = []
-        checkNames = []
-
-        if usesUnderscore :
-            currentSeparator = '_'
-            if args.fixUnderscore :
-                newSeparator = '.'
-            else :
-                newSeparator = '_'
-        else :
-            currentSeparator = '.'
-            newSeparator = '.'
-
-        for i in frameList :
-            origFile = seq[0] + currentSeparator + currentFormatStr.format(i) + '.' + seq[2]
-            if os.path.exists(origFile) :
-                origNames.append(origFile)
-                newNames.append(seq[0] + newSeparator + newFormatStr.format(i+args.offsetFrames) + '.' + seq[2])
-
-        if origNames == [] :
-            if not args.silent :
-                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                    ": warning: " + arg + " is nonexistent."
-            continue
-
-        if not args.clobber :
-            checkNames = [ x for x in newNames if x not in origNames ]
-
-            for f in checkNames :
-                if os.path.exists(f) :
-                    abortSeq = True
-                    break
-
-            if abortSeq :
-                if not args.silent :
-                    print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                        ": warning: skipping " + arg + ": renum would have overwritten a file outside the sequence being renumbered. eg.: " + f
-                continue
-
-        # Note: there will be at least one entry in list so the following test catches
-        # the case missed by the test above (**a**). This case will be missed above if
-        # the pad size was explicitly specificed but is already the same as the existing sequence.
-        #
-        if (origNames[0] == newNames[0]) :
-            if not args.silent :
-                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                    ": warning: no changes being made to " + arg + ": skipping"
-            continue
-
-        i = 0
-        numFiles = len(origNames)
-        while i < numFiles :
-            if args.verbose and not args.silent :
-                print origNames[i] + " -> " + newNames[i]
-            os.rename(origNames[i], newNames[i])
-            i += 1
-
-if __name__ == '__main__':
-    main()
+    if [ "$touch_option" = "" ]; then  # No -m/-a option specified, so adjust
+                                       # BOTH the modification time AND the
+                                       # access time.
+        touch -m -t $adjusted_modtime "$f"
+        touch -a -t $adjusted_acctime "$f"
+    else
+        case "$touch_option" in
+            -m) touch -m -t $adjusted_modtime "$f"
+            ;;
+            -a) touch -a -t $adjusted_acctime "$f"
+            ;;
+        esac
+    fi
+    shift
+done
