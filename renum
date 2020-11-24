@@ -4,7 +4,7 @@
 #         specify the sequences using lsseq's native format
 #
 # BSD 3-Clause License
-# 
+#
 # Copyright (c) 2008-2020, James Philip Rowell,
 # Alpha Eleven Incorporated
 # www.alpha-eleven.com
@@ -88,7 +88,7 @@ def main():
     p.add_argument("--force", action="store_true",
         dest="clobber", default=False,
         help="the opposite of --skip. i.e.; if \
-	renumbering a frame in the sequence will result in overwriting \
+        renumbering a frame in the sequence will result in overwriting \
         an existing file (which isn't itself going to be renumbered) \
         then go ahead and overwrite the file" )
     p.add_argument("--skip", action="store_false",
@@ -143,13 +143,13 @@ def main():
     # 3 - one or more digits or minus signs, followed by
     # a close square bracket then a dot, followed by
     # 4 - one or more letters or digits (starting with a letter)
-    # 
+    #
     pattern = re.compile(r"(.+)([._])\[([0-9-]+)\]\.([a-zA-Z]+[a-zA-Z0-9]*)")
 
     for arg in args.files :
         abortSeq = False
 
-        # Check if 'arg' is a sequence in valid lsseq native format 
+        # Check if 'arg' is a sequence in valid lsseq native format
         #
         match = pattern.search(arg)
         if not match :
@@ -164,7 +164,7 @@ def main():
         seq = [v[0], v[2], v[3]] # base filename, range, file-extension.
 
         # seq might be range with neg numbers. Assume N,M >= 0,
-        # then there are only 5 seq cases that we need to be 
+        # then there are only 5 seq cases that we need to be
         # concerned with: N, -N, N-M, -N-M, -N--M,
         # where -N or N is always less than or equal to -M or M.
         #
@@ -240,7 +240,7 @@ def main():
         else :
             currentPad = endPad
         newPad = currentPad
-        
+
         if args.pad >= 0 :
             newPad = args.pad
 
