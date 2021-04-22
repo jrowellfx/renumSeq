@@ -30,6 +30,7 @@ mkdir -p \
     testdir/e01 \
     testdir/e02 \
     testdir/e03 \
+    testdir/f01 \
     testdir/x01 \
     testdir/y01
 
@@ -163,9 +164,13 @@ renum --replaceUnderscore \
     testdir/d02/d.[hi]_[0120-0140].jpg
 lsseq -ZRPl testdir/d02
 
+lsseq -ZRPl testdir/f01
+renum -v --pad 4 \
+    testdir/f01/f_[05-1005].jpg
+
 set +x
 set +f
 EOF
 
-source $tmpfile > test_renum.out 2>&1
+source $tmpfile > test_renum.out.new 2>&1
 cleanup

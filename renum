@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.6
 
 # renum - renumber images sequences on the command line
 #         specify the sequences using lsseq's native format
@@ -42,13 +42,16 @@ import re
 import argparse
 import os
 import sys
-import seqLister
 import textwrap
+import seqLister
 
 def warnSeqSyntax(silent, basename, seq) :
     if not silent :
-        print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-            ": warning: invalid range [" + seq + "] for seq " + basename
+        # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+        #     ": warning: invalid range [" + seq + "] for seq " + basename
+        print( os.path.basename(sys.argv[0]), \
+            ": warning: invalid range [", seq, "] for seq ", basename, \
+            file=sys.stderr, sep='')
 
 def main():
 
@@ -130,8 +133,11 @@ def main():
     #
     if args.offsetFrames == 0 and args.pad < 0 and not args.fixUnderscore :
         if not args.silent :
-            print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                ": warning: no offset, no padding change etc., nothing to do"
+            # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+            #     ": warning: no offset, no padding change etc., nothing to do"
+            print(os.path.basename(sys.argv[0]), \
+                ": warning: no offset, no padding change etc., nothing to do", \
+                file=sys.stderr, sep='')
         sys.exit(0)
 
     # The following regular expression is created to match lsseq native sequence syntax
@@ -154,8 +160,11 @@ def main():
         match = pattern.search(arg)
         if not match :
             if not args.silent :
-                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                    ": warning: " + arg + " not a sequence or not in lsseq native format"
+                # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                #     ": warning: " + arg + " not a sequence or not in lsseq native format"
+                print(os.path.basename(sys.argv[0]), ": warning: ", arg, \
+                    " not a sequence or not in lsseq native format", \
+                    file=sys.stderr, sep='')
             continue
 
         v = match.groups()
@@ -172,42 +181,42 @@ def main():
         negEnd = 1.0
         startStr = ""
         endStr = ""
-        range = seq[1].split("-")
+        frRange = seq[1].split("-")
 
-        if len(range) > 4 :
+        if len(frRange) > 4 :
             warnSeqSyntax(args.silent, seq[0], seq[1])
             continue # Invalid syntax for range
 
-        if len(range) == 1 : # Just N
-            startStr = range[0]
-            endStr = range[0]
+        if len(frRange) == 1 : # Just N
+            startStr = frRange[0]
+            endStr = frRange[0]
 
-        elif len(range) == 2 : # minus-N OR N-M
-            if range[0] == '' : # Leading minus sign.
+        elif len(frRange) == 2 : # minus-N OR N-M
+            if frRange[0] == '' : # Leading minus sign.
                 negStart = -1.0
                 negEnd = -1.0
-                startStr = range[1]
-                endStr = range[1]
+                startStr = frRange[1]
+                endStr = frRange[1]
             else :
-                startStr = range[0]
-                endStr = range[1]
+                startStr = frRange[0]
+                endStr = frRange[1]
 
-        elif len(range) == 3 : # neg-N to M
-            if range[0] != '' : # Not leading minus sign!
+        elif len(frRange) == 3 : # neg-N to M
+            if frRange[0] != '' : # Not leading minus sign!
                 warnSeqSyntax(args.silent, seq[0], seq[1])
                 continue # Invalid syntax for range
             negStart = -1.0
-            startStr = range[1]
-            endStr = range[2]
+            startStr = frRange[1]
+            endStr = frRange[2]
 
-        elif len(range) == 4 : # neg-N to neg-M
-            if range[0] != '' or range[2] != '' : # Not leading minus signs!
+        elif len(frRange) == 4 : # neg-N to neg-M
+            if frRange[0] != '' or frRange[2] != '' : # Not leading minus signs!
                 warnSeqSyntax(args.silent, seq[0], seq[1])
                 continue # Invalid syntax for range
             negStart = -1.0
             negEnd = -1.0
-            startStr = range[1]
-            endStr = range[3]
+            startStr = frRange[1]
+            endStr = frRange[3]
 
         try :
             start = int(startStr)
@@ -277,13 +286,16 @@ def main():
 
         if origNames == [] :
             if not args.silent :
-                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                    ": warning: " + arg + " is nonexistent."
+                # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                #     ": warning: " + arg + " is nonexistent."
+                print(os.path.basename(sys.argv[0]), ": warning: ", arg, \
+                    " is nonexistent.", file=sys.stderr, sep='')
             continue
 
         if not args.clobber :
             checkNames = [ x for x in newNames if x not in origNames ]
 
+            f = ""
             for f in checkNames :
                 if os.path.exists(f) :
                     abortSeq = True
@@ -291,25 +303,34 @@ def main():
 
             if abortSeq :
                 if not args.silent :
-                    print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                        ": warning: skipping " + arg + ": renum would have overwritten a file outside the sequence being renumbered. eg.: " + f
+                    # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                    #     ": warning: skipping " + arg + \
+                    #     ": renum would have overwritten a file outside the sequence being renumbered. eg.: " \
+                    #     + f
+                    print(os.path.basename(sys.argv[0]), ": warning: skipping ", arg, \
+                        ": renum would have overwritten a file outside the sequence being renumbered. eg.: ", \
+                        f, file=sys.stderr, sep='')
                 continue
 
         # Note: there will be at least one entry in list so the following test catches
         # the case missed by the test above (**a**). This case will be missed above if
         # the pad size was explicitly specificed but is already the same as the existing sequence.
         #
-        if (origNames[0] == newNames[0]) :
+        if origNames[0] == newNames[0] :
             if not args.silent :
-                print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                    ": warning: no changes being made to " + arg + ": skipping"
+                # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
+                #     ": warning: no changes being made to " + arg + ": skipping"
+                print(os.path.basename(sys.argv[0]), \
+                    ": warning: no changes being made to ", arg, ": skipping", \
+                    file=sys.stderr, sep='')
             continue
 
         i = 0
         numFiles = len(origNames)
         while i < numFiles :
             if args.verbose and not args.silent :
-                print origNames[i] + " -> " + newNames[i]
+                # print origNames[i] + " -> " + newNames[i]
+                print(origNames[i], " -> ", newNames[i], sep='')
             os.rename(origNames[i], newNames[i])
             i += 1
 
