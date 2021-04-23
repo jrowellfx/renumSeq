@@ -55,6 +55,8 @@ def warnSeqSyntax(silent, basename, seq) :
 
 def main():
 
+    NEVER_START_FRAME = -999999999999
+
     # Redefine the exception handling routine so that it does NOT
     # do a trace dump if the user types ^C while renum is running.
     #
@@ -81,13 +83,23 @@ def main():
             '''),
         usage="%(prog)s [OPTION]... [SEQ]...")
 
-    p.add_argument("--version", action="version", version="1.012")
+    p.add_argument("--version", action="version", version="1.1.0")
 
+    p.add_argument("--start", action="store", type=int,
+        dest="startFrame", default=NEVER_START_FRAME,
+        metavar="START_FRAME",
+        help="Use START_FRAME as the first frame number of (all) the sequence(s). \
+        This takes precedence over --offset.")
     p.add_argument("--offset", "-o", action="store", type=int,
-       dest="offsetFrames", default=0,
-       metavar="FRAME_OFFSET",
-       help="offset the sequence by this number of frames (can be negative). Frame i becomes i + FRAME_OFFSET")
+        dest="offsetFrames", default=0,
+        metavar="FRAME_OFFSET",
+        help="offset the sequence(s) by this number of frames (can be negative). \
+        Frame i becomes i + FRAME_OFFSET")
 
+    p.add_argument("--dryRun", action="store_true",
+        dest="dryRun", default=False,
+        help="Don't renumber the sequence, just display how the \
+        files would have been renumbered. Forces --verbose and disables --silent." )
     p.add_argument("--force", action="store_true",
         dest="clobber", default=False,
         help="the opposite of --skip. i.e.; if \
@@ -104,9 +116,12 @@ def main():
     # the padding on any given frame sequence unchanged.
     #
     p.add_argument("--pad", action="store", type=int,
-       dest="pad", default=-1,
-       metavar="PAD",
-       help="set the padding of the frame numbers to be <PAD> digits. The default action is to leave the padding unchanged. Note, lsseq's native format output properly lists the sequence range with appropriate padding.")
+        dest="pad", default=-1,
+        metavar="PAD",
+        help="set the padding of the frame numbers to be <PAD> digits. \
+        The default action is to leave the padding unchanged. Note, \
+        lsseq's native format output properly lists the sequence \
+        range with appropriate padding.")
     p.add_argument("--replaceUnderscore", action="store_true",
         dest="fixUnderscore", default=False,
         help="in the case that the sequence uses an underscore ('_') as opposed to \
@@ -114,6 +129,13 @@ def main():
         the sequence replace the underscore with the preferable dot-separator. Note that \
         as a nice side effect of using renum in this way is that you can use an offset \
         of zero (default) to simple replace the underscrore with a dot leaving all else the same.")
+    p.add_argument("--fixBadPadding", action="store_true",
+        dest="fixBadPad", default=False,
+        help="In the rare case that the sequence has inconsistent padding, eg. \
+        [01, 02, 03, ..., 0998, 0999, 1000], then repad the frame numbers with \
+        the padding of the smallest index, \
+        unless --pad has been specified, then use <PAD>.")
+
     p.add_argument("--silent", "--quiet", "-s", action="store_true",
         dest="silent", default=False,
         help="supress all output, warning etc.")
@@ -131,7 +153,10 @@ def main():
 
     # The following logic means "do nothing" - so just exit cleanly (**a**)
     #
-    if args.offsetFrames == 0 and args.pad < 0 and not args.fixUnderscore :
+    if args.offsetFrames == 0 \
+            and args.pad < 0 \
+            and not args.fixUnderscore \
+            and args.startFrame == NEVER_START_FRAME:
         if not args.silent :
             # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
             #     ": warning: no offset, no padding change etc., nothing to do"
@@ -140,15 +165,19 @@ def main():
                 file=sys.stderr, sep='')
         sys.exit(0)
 
+    if args.dryRun : # verbose to show how renumbering would occur.
+        args.verbose = True
+        args.silent = False
+
     # The following regular expression is created to match lsseq native sequence syntax
     # which means (number labels refer to parenthesis groupings):
     #
-    # 1 - one or more of anything, followed by
-    # 2 - a dot or underscore, followed by
-    # an open square bracket, followed by
-    # 3 - one or more digits or minus signs, followed by
-    # a close square bracket then a dot, followed by
-    # 4 - one or more letters or digits (starting with a letter)
+    # 0 - one or more of anything,           followed by
+    # 1 - a dot or underscore,               followed by
+    #     an open square bracket,            followed by
+    # 2 - one or more digits or minus signs, followed by
+    #     a close square bracket then a dot, followed by
+    # 3 - one or more letters or digits (starting with a letter)
     #
     pattern = re.compile(r"(.+)([._])\[([0-9-]+)\]\.([a-zA-Z]+[a-zA-Z0-9]*)")
 
@@ -237,13 +266,20 @@ def main():
             warnSeqSyntax(args.silent, seq[0], seq[1])
             continue
 
+        # If args.startFrame is used, it will override 
+        # args.offsetFrames.
+        #
+        if args.startFrame != NEVER_START_FRAME :
+            args.offsetFrames = args.startFrame - start
+
         startPad = len(startStr)
-        currentPad = 0
         if negStart < 0.0 :
             startPad += 1
         endPad = len(endStr)
         if negEnd < 0.0 :
             endPad += 1
+
+        currentPad = 0
         if startPad < endPad :
             currentPad = startPad
         else :
@@ -331,7 +367,8 @@ def main():
             if args.verbose and not args.silent :
                 # print origNames[i] + " -> " + newNames[i]
                 print(origNames[i], " -> ", newNames[i], sep='')
-            os.rename(origNames[i], newNames[i])
+            if not args.dryRun :
+                os.rename(origNames[i], newNames[i])
             i += 1
 
 if __name__ == '__main__':

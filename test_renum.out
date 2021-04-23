@@ -2,17 +2,18 @@
 testdir/a01/a.[0100-0140].jpg m:[101,134-139]
 testdir/a02/a.[0100-0125].jpg m:[105,121-124]
 testdir/a03/a.[0100-0133].jpg m:[101]
-testdir/b01/b.[555].jpg 
+testdir/b01/b.[555].jpg
 testdir/d01/d_[0100-0125].jpg m:[105,121-124]
 testdir/d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
 testdir/e01/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
 testdir/e02/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
 testdir/e03/e_[5-10005].jpg m:[16-94,106-994,1006-9994]
-testdir/x01/x.[-11--03].jpg 
-testdir/y01/y.[-011-0002].jpg 
+testdir/f01/f.[05-1005].jpg m:[16-529,548-1000]
+testdir/x01/x.[-11--03].jpg
+testdir/y01/y.[-011-0002].jpg
 ++ renum
 ++ renum --version
-1.012
+1.1.0
 ++ renum --help
 usage: renum [OPTION]... [SEQ]...
 
@@ -32,9 +33,14 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
+  --start START_FRAME   Use START_FRAME as the first frame number of (all) the
+                        sequence(s). This takes precedence over --offset.
   --offset FRAME_OFFSET, -o FRAME_OFFSET
-                        offset the sequence by this number of frames (can be
-                        negative). Frame i becomes i + FRAME_OFFSET
+                        offset the sequence(s) by this number of frames (can
+                        be negative). Frame i becomes i + FRAME_OFFSET
+  --dryRun              Don't renumber the sequence, just display how the
+                        files would have been renumbered. Forces --verbose and
+                        disables --silent.
   --force               the opposite of --skip. i.e.; if renumbering a frame
                         in the sequence will result in overwriting an existing
                         file (which isn't itself going to be renumbered) then
@@ -55,6 +61,11 @@ optional arguments:
                         renum in this way is that you can use an offset of
                         zero (default) to simple replace the underscrore with
                         a dot leaving all else the same.
+  --fixBadPadding       In the rare case that the sequence has inconsistent
+                        padding, eg. [01, 02, 03, ..., 0998, 0999, 1000], then
+                        repad the frame numbers with the padding of the
+                        smallest index, unless --pad has been specified, then
+                        use <PAD>.
   --silent, --quiet, -s
                         supress all output, warning etc.
   --verbose, -v         list the mapping from old frames to new frames
@@ -145,16 +156,17 @@ testdir/y01/y.-010.jpg -> testdir/y01/y.0090.jpg
 testdir/y01/y.-011.jpg -> testdir/y01/y.0089.jpg
 ++ lsseq -ZRPl testdir
 testdir/a01/a.[0140-0233].jpg m:[141-199,201]
-testdir/a02/a.[0120-0140].jpg 
-testdir/a03/a.[0111-0140].jpg 
-testdir/b01/b.[655].jpg 
+testdir/a02/a.[0120-0140].jpg
+testdir/a03/a.[0111-0140].jpg
+testdir/b01/b.[655].jpg
 testdir/d01/d_[0100-0125].jpg m:[105,121-124]
 testdir/d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
 testdir/e01/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
 testdir/e02/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
 testdir/e03/e_[5-10005].jpg m:[16-94,106-994,1006-9994]
-testdir/x01/x.[089-097].jpg 
-testdir/y01/y.[0089-0102].jpg 
+testdir/f01/f.[05-1005].jpg m:[16-529,548-1000]
+testdir/x01/x.[089-097].jpg
+testdir/y01/y.[0089-0102].jpg
 ++ renum -v -o 10 'testdir/a02/a.[0120-0140].jpg'
 testdir/a02/a.0140.jpg -> testdir/a02/a.0150.jpg
 testdir/a02/a.0139.jpg -> testdir/a02/a.0149.jpg
@@ -178,7 +190,7 @@ testdir/a02/a.0122.jpg -> testdir/a02/a.0132.jpg
 testdir/a02/a.0121.jpg -> testdir/a02/a.0131.jpg
 testdir/a02/a.0120.jpg -> testdir/a02/a.0130.jpg
 ++ lsseq -ZRP testdir/a02
-testdir/a02/a.[0130-0150].jpg 
+testdir/a02/a.[0130-0150].jpg
 ++ renum -v -o -10 'testdir/a02/a.[0130-0150].jpg'
 testdir/a02/a.0130.jpg -> testdir/a02/a.0120.jpg
 testdir/a02/a.0131.jpg -> testdir/a02/a.0121.jpg
@@ -202,7 +214,7 @@ testdir/a02/a.0148.jpg -> testdir/a02/a.0138.jpg
 testdir/a02/a.0149.jpg -> testdir/a02/a.0139.jpg
 testdir/a02/a.0150.jpg -> testdir/a02/a.0140.jpg
 ++ lsseq -ZRP testdir/a02
-testdir/a02/a.[0120-0140].jpg 
+testdir/a02/a.[0120-0140].jpg
 ++ renum --verbose -o -1 --pad 3 'testdir/a02/a.[0120-0140].jpg'
 testdir/a02/a.0120.jpg -> testdir/a02/a.119.jpg
 testdir/a02/a.0121.jpg -> testdir/a02/a.120.jpg
@@ -226,7 +238,7 @@ testdir/a02/a.0138.jpg -> testdir/a02/a.137.jpg
 testdir/a02/a.0139.jpg -> testdir/a02/a.138.jpg
 testdir/a02/a.0140.jpg -> testdir/a02/a.139.jpg
 ++ lsseq -ZRP testdir/a02
-testdir/a02/a.[119-139].jpg 
+testdir/a02/a.[119-139].jpg
 ++ lsseq -ZRPl testdir/d01
 testdir/d01/d_[0100-0125].jpg m:[105,121-124]
 ++ renum -v -o 20 'testdir/d01/d_[0100-0120].jpg'
@@ -251,7 +263,7 @@ testdir/d01/d_0102.jpg -> testdir/d01/d_0122.jpg
 testdir/d01/d_0101.jpg -> testdir/d01/d_0121.jpg
 testdir/d01/d_0100.jpg -> testdir/d01/d_0120.jpg
 ++ lsseq -ZRPl testdir/d01
-testdir/d01/d_[0120-0140].jpg 
+testdir/d01/d_[0120-0140].jpg
 ++ renum -v 'testdir/d01/d_[0120-0140].jpg'
 renum: warning: no offset, no padding change etc., nothing to do
 ++ renum -v --replaceUnderscore 'testdir/d01/d_[0120-0140].jpg'
@@ -400,13 +412,17 @@ testdir/e03/e_10003.jpg -> testdir/e03/e.10003.jpg
 testdir/e03/e_10004.jpg -> testdir/e03/e.10004.jpg
 testdir/e03/e_10005.jpg -> testdir/e03/e.10005.jpg
 ++ lsseq -ZRPl testdir/d01
-testdir/d01/d.[0120-0140].jpg 
+testdir/d01/d.[0120-0140].jpg
 ++ lsseq -ZRPl testdir/d02
 testdir/d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
 ++ renum -o 20 'testdir/d02/d.[hi]_[0100-0120].jpg'
 ++ lsseq -ZRPl testdir/d02
-testdir/d02/d.[hi]_[0120-0140].jpg 
+testdir/d02/d.[hi]_[0120-0140].jpg
 ++ renum --replaceUnderscore 'testdir/d02/d.[hi]_[0120-0140].jpg'
 ++ lsseq -ZRPl testdir/d02
-testdir/d02/d.[hi].[0120-0140].jpg 
+testdir/d02/d.[hi].[0120-0140].jpg
+++ lsseq -ZRPl testdir/f01
+testdir/f01/f.[05-1005].jpg m:[16-529,548-1000]
+++ renum -v --pad 4 'testdir/f01/f_[05-1005].jpg'
+renum: warning: testdir/f01/f_[05-1005].jpg is nonexistent.
 ++ set +x
