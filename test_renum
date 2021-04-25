@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 export LC_ALL=POSIX
 
 # !!! This script MUST be run from the root of the renum git repo for this to work.
@@ -11,9 +10,12 @@ export PATH=$REPO_DIR:$PATH
 unalias lsseq > /dev/null 2>&1
 unalias renum > /dev/null 2>&1
 unalias rm > /dev/null 2>&1
+
+tmpArgs=/tmp/tmpARGS_RENUM.$$
 tmpfile=/tmp/tmpTEST_RENUM.$$
 
 cleanup() {
+    /bin/rm $tmpArgs > /dev/null 2>&1
     /bin/rm $tmpfile > /dev/null 2>&1
     exit 0
 }
@@ -22,17 +24,17 @@ trap cleanup INT
 
 # Double check sensible REPO_DIR value before removing old testdir
 #
-if [ -z "$REPO_DIR" ] then
+if [ -z "$REPO_DIR" ]; then
     echo $0: error: REPO_DIR was empty, dangerous recursive rm avoided.
     exit 1
-elif [[ "$REPO_DIR" == "/" ]] then
+elif [[ "$REPO_DIR" == "/" ]]; then
     echo $0: error: REPO_DIR set to root, dangerous recursive rm avoided.
     exit 1
-elif [[ "$REPO_DIR" != *renum* ]] then
+elif [[ "$REPO_DIR" != *renum* ]]; then
     echo $0: error: REPO_DIR might not be set to renum repo, dangerous recursive rm avoided.
     exit 1
 fi
-rm -rf $REPO_DIR/testdir
+rm -rf $REPO_DIR/testdir/*
 
 # Create list of test directories needed.
 # Then touch the file names to make testfiles.
@@ -42,141 +44,91 @@ cat createTestData/create.?Test.files | sed -e '1,$ s/\/[^\/]*$//' | sort -u > $
 mkdir -p `cat $tmpfile`
 touch `cat createTestData/create.?Test.files`
 
-cat << EOF > $tmpfile
-set -f # Turn off globbing
-set -x
+# exit 0
 
-lsseq -ZRPl testdir
-
-renum
-
-renum --version
-
-renum --help
-
-renum \
-    testdir/null/foo.jpg
-
-renum -o 1 \
-    testdir/null/foo.jpg
-
-renum -o 1 \
-    testdir/null/foo.[bar].jpg
-
-renum -o 1 \
-    testdir/null/foo.[a-b].jpg
-
-renum -o 1 \
-    testdir/null/foo.[-a-b].jpg
-
-renum -o 1 \
-    testdir/null/foo.[-a--b].jpg
-
-renum -o 1 \
-    testdir/null/foo.[xx-a-b].jpg
-
-renum -o 1 \
-    testdir/c01/c.[011--003].jpg \
-    testdir/c02/c.[11-03].jpg
-
-renum -o 30 \
-    testdir/a03/a.[0100-0110].jpg
-
-renum -s -o 1 \
-    testdir/null/foo.jpg
-
-renum -s -o 1 \
-    testdir/null/foo.[bar].jpg
-
-renum -s -o 1 \
-    testdir/null/foo.[a-b].jpg
-
-renum -s -o 1 \
-    testdir/null/foo.[-a-b].jpg
-
-renum -s -o 1 \
-    testdir/null/foo.[-a--b].jpg
-
-renum -s -o 1 \
-    testdir/null/foo.[xx-a-b].jpg
-
-renum -s -o 1 \
-    testdir/c01/c.[011--003].jpg \
-    testdir/c02/c.[11-03].jpg
-
-renum -s -o 30 \
-    testdir/a03/a.[0100-0110].jpg
-
-renum -v -o 30 --force \
-    testdir/a03/a.[0100-0110].jpg
-
-renum -v -o 20 \
-    testdir/a02/a.[0100-0120].jpg
-
-renum -o 100 \
-    testdir/a01/a.[0100-0133].jpg
-
-renum -v -o 100 \
-    testdir/b01/b.[555].jpg \
-    testdir/x01/x.[-11--03].jpg \
-    testdir/y01/y.[-011-0002].jpg
-
-lsseq -ZRPl testdir
-
-renum -v -o 10 \
-    testdir/a02/a.[0120-0140].jpg 
-
-lsseq -ZRP testdir/a02
-
-renum -v -o -10 \
-    testdir/a02/a.[0130-0150].jpg 
-
-lsseq -ZRP testdir/a02
-
-renum --verbose -o -1 --pad 3 \
-    testdir/a02/a.[0120-0140].jpg 
-
-lsseq -ZRP testdir/a02
-
-lsseq -ZRPl testdir/d01
-
-renum -v -o 20 \
-    testdir/d01/d_[0100-0120].jpg
-
-lsseq -ZRPl testdir/d01
-
-renum -v \
-    testdir/d01/d_[0120-0140].jpg
-
-renum -v --replaceUnderscore \
-    testdir/d01/d_[0120-0140].jpg
-
-renum -v --replaceUnderscore \
-    testdir/e01/e_[5-9999].jpg
-
-renum -v --replaceUnderscore --pad 4 \
-    testdir/e02/e_[5-9999].jpg
-
-renum -v --replaceUnderscore --pad 4 \
-    testdir/e03/e_[5-10005].jpg
-
-lsseq -ZRPl testdir/d01
-
-lsseq -ZRPl testdir/d02
-renum -o 20 \
-    testdir/d02/d.[hi]_[0100-0120].jpg
-lsseq -ZRPl testdir/d02
-renum --replaceUnderscore \
-    testdir/d02/d.[hi]_[0120-0140].jpg
-lsseq -ZRPl testdir/d02
-
-lsseq -ZRPl testdir/f01
-renum -v --pad 4 \
-    testdir/f01/f_[05-1005].jpg
-
-set +x
-set +f
+# The following are tests. One test per line.
+# The first item on a line is the directory relative to
+#     $REPO_DIR/testdir to run the test in.
+# The second is the command to run.
+# The rest are args to the command.
+#
+cat << EOF > $tmpArgs
+. lsseq -RPl --noErrorLists -g -m
+. renum
+. renum --version
+. renum --help
+. renum null/foo.jpg
+. renum -o 1 null/foo.jpg
+. renum -o 1 'null/foo.[bar].jpg'
+. renum -o 1 'null/foo.[a-b].jpg'
+. renum -o 1 'null/foo.[-a-b].jpg'
+. renum -o 1 'null/foo.[-a--b].jpg'
+. renum -o 1 'null/foo.[xx-a-b].jpg'
+. renum -o 1 'c01/c.[011--003].jpg' 'testdir/c02/c.[11-03].jpg'
+. renum -o 30 'a03/a.[0100-0110].jpg'
+. renum -s -o 1 null/foo.jpg
+. renum -s -o 1 'null/foo.[bar].jpg'
+. renum -s -o 1 'null/foo.[a-b].jpg'
+. renum -s -o 1 'null/foo.[-a-b].jpg'
+. renum -s -o 1 'null/foo.[-a--b].jpg'
+. renum -s -o 1 'null/foo.[xx-a-b].jpg'
+. renum -s -o 1 'c01/c.[011--003].jpg' 'testdir/c02/c.[11-03].jpg'
+. renum -s -o 30 'a03/a.[0100-0110].jpg'
+. renum -v -o 30 --force 'a03/a.[0100-0110].jpg'
+. renum -v -o 20 'a02/a.[0100-0120].jpg'
+. renum -o 100 'a01/a.[0100-0133].jpg'
+. renum -v -o 100 'b01/b.[555].jpg' 'testdir/x01/x.[-11--03].jpg' 'testdir/y01/y.[-011-0002].jpg'
+. lsseq -ZRPl testdir
+. renum -v -o 10 'a02/a.[0120-0140].jpg' 
+. lsseq -ZRP a02
+. renum -v -o -10 'a02/a.[0130-0150].jpg' 
+. lsseq -ZRP a02
+. renum --verbose -o -1 --pad 3 '/a02/a.[0120-0140].jpg' 
+. lsseq -ZRP a02
+. lsseq -ZRPl d01
+. renum -v -o 20 '/d01/d_[0100-0120].jpg'
+. lsseq -ZRPl d01
+. renum -v 'd01/d_[0120-0140].jpg'
+. renum -v --replaceUnderscore 'd01/d_[0120-0140].jpg'
+. renum -v --replaceUnderscore 'e01/e_[5-9999].jpg'
+. renum -v --replaceUnderscore --pad 4 'e02/e_[5-9999].jpg'
+. renum -v --replaceUnderscore --pad 4 'e03/e_[5-10005].jpg'
+. lsseq -ZRPl d01
+. lsseq -ZRPl d02
+. renum -o 20 'd02/d.[hi]_[0100-0120].jpg'
+. lsseq -ZRPl d02
+. renum --replaceUnderscore 'd02/d.[hi]_[0120-0140].jpg'
+. lsseq -ZRPl d02
+. lsseq -ZRPl f01
+. renum -v --pad 4 'f01/f_[05-1005].jpg'
 EOF
 
-source $tmpfile > test_renum.out.new 2>&1
+NUM_TESTS=`wc -l $tmpArgs`
+
+echo ------ Begin Tests ------ > $REPO_DIR/test_renum.out.new
+
+i=1
+while true; do
+    set -f # Turn off globbing
+    declare -a args=(`sed -n -e "$i p" $tmpArgs`)
+    if [ ${#args[@]} -eq 0 ]; then
+        break;
+    fi
+    workingDir=${args[0]}
+    cmd=${args[1]}
+    args=(${args[@]:2})
+    echo "" >> $REPO_DIR/test_renum.out.new
+    echo --- Test $i of $NUM_TESTS ---
+    echo --- Test $i --- dir:$workingDir --- $cmd ${args[@]} --- >> $REPO_DIR/test_renum.out.new
+    cd $REPO_DIR/testdir/$workingDir
+    set +f # Turn globbing back on
+    set -x
+    $cmd ${args[@]} >> $REPO_DIR/test_renum.out.new 2>&1
+    set +x
+    i=$(expr $i + 1)
+done
+
+sed -e "1,$ s-$REPO_DIR-/...absPathToRepo.../renum-g" < $REPO_DIR/test_renum.out.new > $tmpfile
+expand < $tmpfile | sed -e '1,$ s/ *$//' > $REPO_DIR/test_renum.out.new
+
 cleanup

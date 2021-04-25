@@ -71,13 +71,15 @@ def main():
     p = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent('''\
-            Renumber the frame range(s) of the sequence(s) listed on the command line.
-            The sequence(s) should be specified using lsseq's native format.
+            Renumber the frame range of each SEQ listed on the command line.
+            SEQ should be specified using lsseq's native format. (Turning off globbing,
+            or enclosing SEQ in quotes, or placing backslashes ahead of '[' and ']' will
+            likely be necessary on the command line.)
 
             For example:
                 $ lsseq
                 aaa.[001-005].tif
-                $ renum -o 10 aaa.[001-005].tif
+                $ renum -o 10 'aaa.[001-005].tif'
                 $ lsseq
                 aaa.[011-015].tif
             '''),
@@ -88,29 +90,29 @@ def main():
     p.add_argument("--start", action="store", type=int,
         dest="startFrame", default=NEVER_START_FRAME,
         metavar="START_FRAME",
-        help="Use START_FRAME as the first frame number of (all) the sequence(s). \
-        This takes precedence over --offset.")
+        help="Use START_FRAME as the first frame number of each SEQ. \
+        This takes precedence over --offset")
     p.add_argument("--offset", "-o", action="store", type=int,
         dest="offsetFrames", default=0,
         metavar="FRAME_OFFSET",
-        help="offset the sequence(s) by this number of frames (can be negative). \
+        help="offset SEQ by this number of frames (can be negative). \
         Frame i becomes i + FRAME_OFFSET")
 
     p.add_argument("--dryRun", action="store_true",
         dest="dryRun", default=False,
-        help="Don't renumber the sequence, just display how the \
-        files would have been renumbered. Forces --verbose and disables --silent." )
+        help="Don't renumber SEQ, just display how the \
+        files would have been renumbered. Forces --verbose and disables --silent" )
     p.add_argument("--force", action="store_true",
         dest="clobber", default=False,
         help="the opposite of --skip. i.e.; if \
-        renumbering a frame in the sequence will result in overwriting \
+        renumbering a frame in SEQ would result in overwriting \
         an existing file (which isn't itself going to be renumbered) \
         then go ahead and overwrite the file" )
     p.add_argument("--skip", action="store_false",
         dest="clobber",
         help="the opposite of --force. i.e.; if renumbering a frame in \
-        the sequence will result in overwriting \
-        an existing file then skip renumbering the entire sequence (default)" )
+        SEQ would result in overwriting \
+        an existing file then skip renumbering SEQ altogether [default]" )
 
     # Note: the following default for "pad" of "-1" means to leave
     # the padding on any given frame sequence unchanged.
@@ -121,20 +123,21 @@ def main():
         help="set the padding of the frame numbers to be <PAD> digits. \
         The default action is to leave the padding unchanged. Note, \
         lsseq's native format output properly lists the sequence \
-        range with appropriate padding.")
+        range with appropriate padding and can also report when there are \
+        incorrectly padded frame-numbers with --showBadPadding")
     p.add_argument("--replaceUnderscore", action="store_true",
         dest="fixUnderscore", default=False,
         help="in the case that the sequence uses an underscore ('_') as opposed to \
         a dot ('.') separating the filename from the frame number then when renumbering \
         the sequence replace the underscore with the preferable dot-separator. Note that \
         as a nice side effect of using renum in this way is that you can use an offset \
-        of zero (default) to simple replace the underscrore with a dot leaving all else the same.")
+        of zero (default) to simple replace the underscrore with a dot leaving all else the same")
     p.add_argument("--fixBadPadding", action="store_true",
         dest="fixBadPad", default=False,
-        help="In the rare case that the sequence has inconsistent padding, eg. \
+        help="In the rare case that the sequence has inconsistent padding, e.g. \
         [01, 02, 03, ..., 0998, 0999, 1000], then repad the frame numbers with \
         the padding of the smallest index, \
-        unless --pad has been specified, then use <PAD>.")
+        unless --pad has been specified, then use <PAD>")
 
     p.add_argument("--silent", "--quiet", "-s", action="store_true",
         dest="silent", default=False,
@@ -341,9 +344,9 @@ def main():
         if origNames == [] :
             if not args.silent :
                 # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                #     ": warning: " + arg + " is nonexistent."
+                #     ": warning: " + arg + " is nonexistent"
                 print(os.path.basename(sys.argv[0]), ": warning: ", arg, \
-                    " is nonexistent.", file=sys.stderr, sep='')
+                    " is nonexistent", file=sys.stderr, sep='')
             continue
 
         if not args.clobber :
@@ -359,10 +362,10 @@ def main():
                 if not args.silent :
                     # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
                     #     ": warning: skipping " + arg + \
-                    #     ": renum would have overwritten a file outside the sequence being renumbered. eg.: " \
+                    #     ": renum would have overwritten a file outside the sequence being renumbered. e.g.: " \
                     #     + f
                     print(os.path.basename(sys.argv[0]), ": warning: skipping ", arg, \
-                        ": renum would have overwritten a file outside the sequence being renumbered. eg.: ", \
+                        ": renum would have overwritten a file outside the sequence being renumbered. e.g.: ", \
                         f, file=sys.stderr, sep='')
                 continue
 
