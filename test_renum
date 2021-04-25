@@ -1,13 +1,17 @@
 #!/bin/bash
 
+
 export LC_ALL=POSIX
+
+# !!! This script MUST be run from the root of the renum git repo for this to work.
+#
+REPO_DIR=`pwd`
+export PATH=$REPO_DIR:$PATH
 
 unalias lsseq > /dev/null 2>&1
 unalias renum > /dev/null 2>&1
-
+unalias rm > /dev/null 2>&1
 tmpfile=/tmp/tmpTEST_RENUM.$$
-OIC_REPO_DIR=`pwd`
-export PATH=$OIC_REPO_DIR:$PATH
 
 cleanup() {
     /bin/rm $tmpfile > /dev/null 2>&1
@@ -16,24 +20,26 @@ cleanup() {
 
 trap cleanup INT
 
-mkdir -p testdir
-/bin/rm `find ./testdir -name '*.jpg'` > /dev/null 2>&1
-mkdir -p \
-    testdir/a01 \
-    testdir/a02 \
-    testdir/a03 \
-    testdir/b01 \
-    testdir/c01 \
-    testdir/c02 \
-    testdir/d01 \
-    testdir/d02 \
-    testdir/e01 \
-    testdir/e02 \
-    testdir/e03 \
-    testdir/f01 \
-    testdir/x01 \
-    testdir/y01
+# Double check sensible REPO_DIR value before removing old testdir
+#
+if [ -z "$REPO_DIR" ] then
+    echo $0: error: REPO_DIR was empty, dangerous recursive rm avoided.
+    exit 1
+elif [[ "$REPO_DIR" == "/" ]] then
+    echo $0: error: REPO_DIR set to root, dangerous recursive rm avoided.
+    exit 1
+elif [[ "$REPO_DIR" != *renum* ]] then
+    echo $0: error: REPO_DIR might not be set to renum repo, dangerous recursive rm avoided.
+    exit 1
+fi
+rm -rf $REPO_DIR/testdir
 
+# Create list of test directories needed.
+# Then touch the file names to make testfiles.
+# Note: pwd should still be $REPO_DIR
+#
+cat createTestData/create.?Test.files | sed -e '1,$ s/\/[^\/]*$//' | sort -u > $tmpfile
+mkdir -p `cat $tmpfile`
 touch `cat createTestData/create.?Test.files`
 
 cat << EOF > $tmpfile

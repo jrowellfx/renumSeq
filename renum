@@ -5,7 +5,7 @@
 #
 # BSD 3-Clause License
 #
-# Copyright (c) 2008-2020, James Philip Rowell,
+# Copyright (c) 2008-2021, James Philip Rowell,
 # Alpha Eleven Incorporated
 # www.alpha-eleven.com
 # All rights reserved.
@@ -272,6 +272,19 @@ def main():
         if args.startFrame != NEVER_START_FRAME :
             args.offsetFrames = args.startFrame - start
 
+            # This duplicates the test above (**a**) because now
+            # we might have a zero offset for this sequence.
+            # Instead of exiting we just skip to the next seq.
+            #
+            if args.offsetFrames == 0 \
+                    and args.pad < 0 \
+                    and not args.fixUnderscore :
+                if not args.silent :
+                    print(os.path.basename(sys.argv[0]), \
+                        ": warning: no offset, no padding/underscore change, skipping sequence: ", \
+                        arg, file=sys.stderr, sep='')
+                continue
+
         startPad = len(startStr)
         if negStart < 0.0 :
             startPad += 1
@@ -314,6 +327,11 @@ def main():
             currentSeparator = '.'
             newSeparator = '.'
 
+        # The following logic won't create properly named files if they have "bad padding",
+        # e.g. 02, 03, 04, ..., 0998, 0999, 1000, 1001, or any other such badly
+        # padded sequence. Note that the example above, should strictly be two padded,
+        # not four padded.
+        #
         for i in frameList :
             origFile = seq[0] + currentSeparator + currentFormatStr.format(i) + '.' + seq[2]
             if os.path.exists(origFile) :
@@ -351,6 +369,10 @@ def main():
         # Note: there will be at least one entry in list so the following test catches
         # the case missed by the test above (**a**). This case will be missed above if
         # the pad size was explicitly specificed but is already the same as the existing sequence.
+        #
+        # JPR? But some of the files might be the same? if we're ONLY adding padding, but some
+        # don't need to be padded? Like turning two padded into four padded if the range is 1,2000? That is,
+        # 1000,2000 would not have any change.
         #
         if origNames[0] == newNames[0] :
             if not args.silent :
