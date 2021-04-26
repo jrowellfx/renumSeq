@@ -103,13 +103,13 @@ def main():
         help="Don't renumber SEQ, just display how the \
         files would have been renumbered. Forces --verbose and disables --silent" )
     p.add_argument("--skip", action="store_false",
-        dest="clobber",
+        dest="clobber", default=False,
         help="if renumbering a file in SEQ would result in overwriting \
         an existing file (which isn't also being renumbered) \
         then skip renumbering SEQ altogether [default]. \
         the opposite of --force.")
     p.add_argument("--force", action="store_true",
-        dest="clobber", default=False,
+        dest="clobber",
         help="if renumbering a file in SEQ would result in overwriting \
         an existing file (which isn't also being renumbered) \
         then overwrite the file. the opposite of --skip")

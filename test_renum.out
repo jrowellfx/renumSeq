@@ -48,35 +48,33 @@ optional arguments:
   --dryRun              Don't renumber SEQ, just display how the files would
                         have been renumbered. Forces --verbose and disables
                         --silent
-  --force               the opposite of --skip. i.e.; if renumbering a frame
-                        in SEQ would result in overwriting an existing file
-                        (which isn't itself going to be renumbered) then go
-                        ahead and overwrite the file
-  --skip                the opposite of --force. i.e.; if renumbering a frame
-                        in SEQ would result in overwriting an existing file
-                        then skip renumbering SEQ altogether [default]
+  --skip                if renumbering a file in SEQ would result in
+                        overwriting an existing file (which isn't also being
+                        renumbered) then skip renumbering SEQ altogether
+                        [default]. the opposite of --force.
+  --force               if renumbering a file in SEQ would result in
+                        overwriting an existing file (which isn't also being
+                        renumbered) then overwrite the file. the opposite of
+                        --skip
   --pad PAD             set the padding of the frame numbers to be <PAD>
                         digits. The default action is to leave the padding
                         unchanged. Note, lsseq's native format output properly
                         lists the sequence range with appropriate padding and
                         can also report when there are incorrectly padded
                         frame-numbers with --showBadPadding
-  --replaceUnderscore   in the case that the sequence uses an underscore ('_')
-                        as opposed to a dot ('.') separating the filename from
-                        the frame number then when renumbering the sequence
-                        replace the underscore with the preferable dot-
-                        separator. Note that as a nice side effect of using
-                        renum in this way is that you can use an offset of
-                        zero (default) to simple replace the underscrore with
-                        a dot leaving all else the same
-  --fixBadPadding       In the rare case that the sequence has inconsistent
-                        padding, e.g. [01, 02, 03, ..., 0998, 0999, 1000],
-                        then repad the frame numbers with the padding of the
-                        smallest index, unless --pad has been specified, then
-                        use <PAD>
+  --replaceUnderscore   in the case that SEQ uses an underscore ('_')
+                        separating the filename from the frame number; then
+                        when renumbering SEQ, replace the underscore with a
+                        dot-separator ('.'). Note that you can use an offset
+                        of zero (default) to replace the underscrore with a
+                        dot leaving all else the same
+  --fixBadPadding       When SEQ has inconsistent padding, e.g. then repad the
+                        frame numbers with the padding of the smallest index,
+                        unless --pad has been specified, then use <PAD>. JPR
+                        Change this to use list of bad-pad numbers
   --silent, --quiet, -s
                         supress all output, warning etc.
-  --verbose, -v         list the mapping from old frames to new frames
+  --verbose, -v         list the mapping from old file-name to new file-name
 
 --- Test 5 --- dir:. --- renum null/foo.jpg ---
 renum: warning: no offset, no padding change etc., nothing to do
@@ -99,30 +97,39 @@ renum: warning: null/foo.[-a--b].jpg not a sequence or not in lsseq native forma
 --- Test 11 --- dir:. --- renum -o 1 null/foo.[xx-a-b].jpg ---
 renum: warning: null/foo.[xx-a-b].jpg not a sequence or not in lsseq native format
 
---- Test 12 --- dir:. --- renum -o 1 c01/c.[011--003].jpg testdir/c02/c.[11-03].jpg ---
+--- Test 12 --- dir:. --- renum -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg ---
 renum: warning: invalid range [011--003] for seq c01/c
-renum: warning: invalid range [11-03] for seq testdir/c02/c
+renum: warning: invalid range [11-03] for seq c02/c
 
---- Test 13 --- dir:. --- renum -o 30 a03/a.[0100-0110].jpg ---
+--- Test 13 --- dir:. --- lsseq -RPl --noErrorLists -g -m a03 ---
+a03/a.[0100-0133].jpg m:[101]
+
+--- Test 14 --- dir:. --- renum -o 30 a03/a.[0100-0110].jpg ---
 renum: warning: skipping a03/a.[0100-0110].jpg: renum would have overwritten a file outside the sequence being renumbered. e.g.: a03/a.0133.jpg
 
---- Test 14 --- dir:. --- renum -s -o 1 null/foo.jpg ---
+--- Test 15 --- dir:. --- lsseq -RPl --noErrorLists -g -m a03 ---
+a03/a.[0100-0133].jpg m:[101]
 
---- Test 15 --- dir:. --- renum -s -o 1 null/foo.[bar].jpg ---
+--- Test 16 --- dir:. --- renum -s -o 1 null/foo.jpg ---
 
---- Test 16 --- dir:. --- renum -s -o 1 null/foo.[a-b].jpg ---
+--- Test 17 --- dir:. --- renum -s -o 1 null/foo.[bar].jpg ---
 
---- Test 17 --- dir:. --- renum -s -o 1 null/foo.[-a-b].jpg ---
+--- Test 18 --- dir:. --- renum -s -o 1 null/foo.[a-b].jpg ---
 
---- Test 18 --- dir:. --- renum -s -o 1 null/foo.[-a--b].jpg ---
+--- Test 19 --- dir:. --- renum -s -o 1 null/foo.[-a-b].jpg ---
 
---- Test 19 --- dir:. --- renum -s -o 1 null/foo.[xx-a-b].jpg ---
+--- Test 20 --- dir:. --- renum -s -o 1 null/foo.[-a--b].jpg ---
 
---- Test 20 --- dir:. --- renum -s -o 1 c01/c.[011--003].jpg testdir/c02/c.[11-03].jpg ---
+--- Test 21 --- dir:. --- renum -s -o 1 null/foo.[xx-a-b].jpg ---
 
---- Test 21 --- dir:. --- renum -s -o 30 a03/a.[0100-0110].jpg ---
+--- Test 22 --- dir:. --- renum -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg ---
 
---- Test 22 --- dir:. --- renum -v -o 30 --force a03/a.[0100-0110].jpg ---
+--- Test 23 --- dir:. --- renum -s -o 30 a03/a.[0100-0110].jpg ---
+
+--- Test 24 --- dir:. --- lsseq -RPl --noErrorLists -g -m a03 ---
+a03/a.[0100-0133].jpg m:[101]
+
+--- Test 25 --- dir:. --- renum -v -o 30 --force a03/a.[0100-0110].jpg ---
 a03/a.0110.jpg -> a03/a.0140.jpg
 a03/a.0109.jpg -> a03/a.0139.jpg
 a03/a.0108.jpg -> a03/a.0138.jpg
@@ -134,7 +141,13 @@ a03/a.0103.jpg -> a03/a.0133.jpg
 a03/a.0102.jpg -> a03/a.0132.jpg
 a03/a.0100.jpg -> a03/a.0130.jpg
 
---- Test 23 --- dir:. --- renum -v -o 20 a02/a.[0100-0120].jpg ---
+--- Test 26 --- dir:. --- lsseq -RPl --noErrorLists -g -m a03 ---
+a03/a.[0111-0140].jpg
+
+--- Test 27 --- dir:. --- lsseq -RPl --noErrorLists -g -m a02 ---
+a02/a.[0100-0125].jpg m:[105,121-124]
+
+--- Test 28 --- dir:. --- renum -v -o 20 a02/a.[0100-0120].jpg ---
 a02/a.0120.jpg -> a02/a.0140.jpg
 a02/a.0119.jpg -> a02/a.0139.jpg
 a02/a.0118.jpg -> a02/a.0138.jpg
@@ -156,16 +169,58 @@ a02/a.0102.jpg -> a02/a.0122.jpg
 a02/a.0101.jpg -> a02/a.0121.jpg
 a02/a.0100.jpg -> a02/a.0120.jpg
 
---- Test 24 --- dir:. --- renum -o 100 a01/a.[0100-0133].jpg ---
+--- Test 29 --- dir:. --- lsseq -RPl --noErrorLists -g -m a02 ---
+a02/a.[0120-0140].jpg
 
---- Test 25 --- dir:. --- renum -v -o 100 b01/b.[555].jpg testdir/x01/x.[-11--03].jpg testdir/y01/y.[-011-0002].jpg ---
-renum: warning: testdir/x01/x.[-11--03].jpg is nonexistent
-renum: warning: testdir/y01/y.[-011-0002].jpg is nonexistent
+--- Test 30 --- dir:. --- lsseq -RPl --noErrorLists -g -m a01 ---
+a01/a.[0100-0140].jpg m:[101,134-139]
+
+--- Test 31 --- dir:. --- renum -o 100 a01/a.[0100-0133].jpg ---
+
+--- Test 32 --- dir:. --- lsseq -RPl --noErrorLists -g -m a01 ---
+a01/a.[0140-0233].jpg m:[141-199,201]
+
+--- Test 33 --- dir:. --- renum -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg ---
 b01/b.555.jpg -> b01/b.655.jpg
+x01/x.-03.jpg -> x01/x.097.jpg
+x01/x.-04.jpg -> x01/x.096.jpg
+x01/x.-05.jpg -> x01/x.095.jpg
+x01/x.-06.jpg -> x01/x.094.jpg
+x01/x.-07.jpg -> x01/x.093.jpg
+x01/x.-08.jpg -> x01/x.092.jpg
+x01/x.-09.jpg -> x01/x.091.jpg
+x01/x.-10.jpg -> x01/x.090.jpg
+x01/x.-11.jpg -> x01/x.089.jpg
+y01/y.0002.jpg -> y01/y.0102.jpg
+y01/y.0001.jpg -> y01/y.0101.jpg
+y01/y.0000.jpg -> y01/y.0100.jpg
+y01/y.-001.jpg -> y01/y.0099.jpg
+y01/y.-002.jpg -> y01/y.0098.jpg
+y01/y.-003.jpg -> y01/y.0097.jpg
+y01/y.-004.jpg -> y01/y.0096.jpg
+y01/y.-005.jpg -> y01/y.0095.jpg
+y01/y.-006.jpg -> y01/y.0094.jpg
+y01/y.-007.jpg -> y01/y.0093.jpg
+y01/y.-008.jpg -> y01/y.0092.jpg
+y01/y.-009.jpg -> y01/y.0091.jpg
+y01/y.-010.jpg -> y01/y.0090.jpg
+y01/y.-011.jpg -> y01/y.0089.jpg
 
---- Test 26 --- dir:. --- lsseq -ZRPl testdir ---
+--- Test 34 --- dir:. --- lsseq -ZRPl ---
+./a01/a.[0140-0233].jpg m:[141-199,201]
+./a02/a.[0120-0140].jpg
+./a03/a.[0111-0140].jpg
+./b01/b.[655].jpg
+./d01/d_[0100-0125].jpg m:[105,121-124]
+./d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
+./e01/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+./e02/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+./e03/e_[5-10005].jpg m:[16-94,106-994,1006-9994]
+./f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
+./x01/x.[089-097].jpg
+./y01/y.[0089-0102].jpg
 
---- Test 27 --- dir:. --- renum -v -o 10 a02/a.[0120-0140].jpg ---
+--- Test 35 --- dir:. --- renum -v -o 10 a02/a.[0120-0140].jpg ---
 a02/a.0140.jpg -> a02/a.0150.jpg
 a02/a.0139.jpg -> a02/a.0149.jpg
 a02/a.0138.jpg -> a02/a.0148.jpg
@@ -188,10 +243,10 @@ a02/a.0122.jpg -> a02/a.0132.jpg
 a02/a.0121.jpg -> a02/a.0131.jpg
 a02/a.0120.jpg -> a02/a.0130.jpg
 
---- Test 28 --- dir:. --- lsseq -ZRP a02 ---
+--- Test 36 --- dir:. --- lsseq -ZRP a02 ---
 a02/a.[0130-0150].jpg
 
---- Test 29 --- dir:. --- renum -v -o -10 a02/a.[0130-0150].jpg ---
+--- Test 37 --- dir:. --- renum -v -o -10 a02/a.[0130-0150].jpg ---
 a02/a.0130.jpg -> a02/a.0120.jpg
 a02/a.0131.jpg -> a02/a.0121.jpg
 a02/a.0132.jpg -> a02/a.0122.jpg
@@ -214,67 +269,176 @@ a02/a.0148.jpg -> a02/a.0138.jpg
 a02/a.0149.jpg -> a02/a.0139.jpg
 a02/a.0150.jpg -> a02/a.0140.jpg
 
---- Test 30 --- dir:. --- lsseq -ZRP a02 ---
+--- Test 38 --- dir:. --- lsseq -ZRP a02 ---
 a02/a.[0120-0140].jpg
 
---- Test 31 --- dir:. --- renum --verbose -o -1 --pad 3 /a02/a.[0120-0140].jpg ---
+--- Test 39 --- dir:. --- renum --verbose -o -1 --pad 3 /a02/a.[0120-0140].jpg ---
 renum: warning: /a02/a.[0120-0140].jpg is nonexistent
 
---- Test 32 --- dir:. --- lsseq -ZRP a02 ---
+--- Test 40 --- dir:. --- lsseq -ZRP a02 ---
 a02/a.[0120-0140].jpg
 
---- Test 33 --- dir:. --- lsseq -ZRPl d01 ---
+--- Test 41 --- dir:. --- lsseq -ZRPl d01 ---
 d01/d_[0100-0125].jpg m:[105,121-124]
 
---- Test 34 --- dir:. --- renum -v -o 20 /d01/d_[0100-0120].jpg ---
+--- Test 42 --- dir:. --- renum -v -o 20 /d01/d_[0100-0120].jpg ---
 renum: warning: /d01/d_[0100-0120].jpg is nonexistent
 
---- Test 35 --- dir:. --- lsseq -ZRPl d01 ---
+--- Test 43 --- dir:. --- lsseq -ZRPl d01 ---
 d01/d_[0100-0125].jpg m:[105,121-124]
 
---- Test 36 --- dir:. --- renum -v d01/d_[0120-0140].jpg ---
+--- Test 44 --- dir:. --- renum -v d01/d_[0120-0140].jpg ---
 renum: warning: no offset, no padding change etc., nothing to do
 
---- Test 37 --- dir:. --- renum -v --replaceUnderscore d01/d_[0120-0140].jpg ---
+--- Test 45 --- dir:. --- renum -v --replaceUnderscore d01/d_[0120-0140].jpg ---
 d01/d_0120.jpg -> d01/d.0120.jpg
 d01/d_0125.jpg -> d01/d.0125.jpg
 
---- Test 38 --- dir:. --- renum -v --replaceUnderscore e01/e_[5-9999].jpg ---
-renum: warning: e01/e_5.jpg not a sequence or not in lsseq native format
-renum: warning: e01/e_6.jpg not a sequence or not in lsseq native format
-renum: warning: e01/e_7.jpg not a sequence or not in lsseq native format
-renum: warning: e01/e_8.jpg not a sequence or not in lsseq native format
-renum: warning: e01/e_9.jpg not a sequence or not in lsseq native format
+--- Test 46 --- dir:. --- renum -v --replaceUnderscore e01/e_[5-9999].jpg ---
+e01/e_5.jpg -> e01/e.5.jpg
+e01/e_6.jpg -> e01/e.6.jpg
+e01/e_7.jpg -> e01/e.7.jpg
+e01/e_8.jpg -> e01/e.8.jpg
+e01/e_9.jpg -> e01/e.9.jpg
+e01/e_10.jpg -> e01/e.10.jpg
+e01/e_11.jpg -> e01/e.11.jpg
+e01/e_12.jpg -> e01/e.12.jpg
+e01/e_13.jpg -> e01/e.13.jpg
+e01/e_14.jpg -> e01/e.14.jpg
+e01/e_15.jpg -> e01/e.15.jpg
+e01/e_95.jpg -> e01/e.95.jpg
+e01/e_96.jpg -> e01/e.96.jpg
+e01/e_97.jpg -> e01/e.97.jpg
+e01/e_98.jpg -> e01/e.98.jpg
+e01/e_99.jpg -> e01/e.99.jpg
+e01/e_100.jpg -> e01/e.100.jpg
+e01/e_101.jpg -> e01/e.101.jpg
+e01/e_102.jpg -> e01/e.102.jpg
+e01/e_103.jpg -> e01/e.103.jpg
+e01/e_104.jpg -> e01/e.104.jpg
+e01/e_105.jpg -> e01/e.105.jpg
+e01/e_995.jpg -> e01/e.995.jpg
+e01/e_996.jpg -> e01/e.996.jpg
+e01/e_997.jpg -> e01/e.997.jpg
+e01/e_998.jpg -> e01/e.998.jpg
+e01/e_999.jpg -> e01/e.999.jpg
+e01/e_1000.jpg -> e01/e.1000.jpg
+e01/e_1001.jpg -> e01/e.1001.jpg
+e01/e_1002.jpg -> e01/e.1002.jpg
+e01/e_1003.jpg -> e01/e.1003.jpg
+e01/e_1004.jpg -> e01/e.1004.jpg
+e01/e_1005.jpg -> e01/e.1005.jpg
+e01/e_9995.jpg -> e01/e.9995.jpg
+e01/e_9996.jpg -> e01/e.9996.jpg
+e01/e_9997.jpg -> e01/e.9997.jpg
+e01/e_9998.jpg -> e01/e.9998.jpg
+e01/e_9999.jpg -> e01/e.9999.jpg
 
---- Test 39 --- dir:. --- renum -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg ---
-renum: warning: e02/e_5.jpg not a sequence or not in lsseq native format
-renum: warning: e02/e_6.jpg not a sequence or not in lsseq native format
-renum: warning: e02/e_7.jpg not a sequence or not in lsseq native format
-renum: warning: e02/e_8.jpg not a sequence or not in lsseq native format
-renum: warning: e02/e_9.jpg not a sequence or not in lsseq native format
+--- Test 47 --- dir:. --- renum -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg ---
+e02/e_5.jpg -> e02/e.0005.jpg
+e02/e_6.jpg -> e02/e.0006.jpg
+e02/e_7.jpg -> e02/e.0007.jpg
+e02/e_8.jpg -> e02/e.0008.jpg
+e02/e_9.jpg -> e02/e.0009.jpg
+e02/e_10.jpg -> e02/e.0010.jpg
+e02/e_11.jpg -> e02/e.0011.jpg
+e02/e_12.jpg -> e02/e.0012.jpg
+e02/e_13.jpg -> e02/e.0013.jpg
+e02/e_14.jpg -> e02/e.0014.jpg
+e02/e_15.jpg -> e02/e.0015.jpg
+e02/e_95.jpg -> e02/e.0095.jpg
+e02/e_96.jpg -> e02/e.0096.jpg
+e02/e_97.jpg -> e02/e.0097.jpg
+e02/e_98.jpg -> e02/e.0098.jpg
+e02/e_99.jpg -> e02/e.0099.jpg
+e02/e_100.jpg -> e02/e.0100.jpg
+e02/e_101.jpg -> e02/e.0101.jpg
+e02/e_102.jpg -> e02/e.0102.jpg
+e02/e_103.jpg -> e02/e.0103.jpg
+e02/e_104.jpg -> e02/e.0104.jpg
+e02/e_105.jpg -> e02/e.0105.jpg
+e02/e_995.jpg -> e02/e.0995.jpg
+e02/e_996.jpg -> e02/e.0996.jpg
+e02/e_997.jpg -> e02/e.0997.jpg
+e02/e_998.jpg -> e02/e.0998.jpg
+e02/e_999.jpg -> e02/e.0999.jpg
+e02/e_1000.jpg -> e02/e.1000.jpg
+e02/e_1001.jpg -> e02/e.1001.jpg
+e02/e_1002.jpg -> e02/e.1002.jpg
+e02/e_1003.jpg -> e02/e.1003.jpg
+e02/e_1004.jpg -> e02/e.1004.jpg
+e02/e_1005.jpg -> e02/e.1005.jpg
+e02/e_9995.jpg -> e02/e.9995.jpg
+e02/e_9996.jpg -> e02/e.9996.jpg
+e02/e_9997.jpg -> e02/e.9997.jpg
+e02/e_9998.jpg -> e02/e.9998.jpg
+e02/e_9999.jpg -> e02/e.9999.jpg
 
---- Test 40 --- dir:. --- renum -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg ---
-renum: warning: e03/e_5.jpg not a sequence or not in lsseq native format
+--- Test 48 --- dir:. --- renum -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg ---
+e03/e_5.jpg -> e03/e.0005.jpg
+e03/e_6.jpg -> e03/e.0006.jpg
+e03/e_7.jpg -> e03/e.0007.jpg
+e03/e_8.jpg -> e03/e.0008.jpg
+e03/e_9.jpg -> e03/e.0009.jpg
+e03/e_10.jpg -> e03/e.0010.jpg
+e03/e_11.jpg -> e03/e.0011.jpg
+e03/e_12.jpg -> e03/e.0012.jpg
+e03/e_13.jpg -> e03/e.0013.jpg
+e03/e_14.jpg -> e03/e.0014.jpg
+e03/e_15.jpg -> e03/e.0015.jpg
+e03/e_95.jpg -> e03/e.0095.jpg
+e03/e_96.jpg -> e03/e.0096.jpg
+e03/e_97.jpg -> e03/e.0097.jpg
+e03/e_98.jpg -> e03/e.0098.jpg
+e03/e_99.jpg -> e03/e.0099.jpg
+e03/e_100.jpg -> e03/e.0100.jpg
+e03/e_101.jpg -> e03/e.0101.jpg
+e03/e_102.jpg -> e03/e.0102.jpg
+e03/e_103.jpg -> e03/e.0103.jpg
+e03/e_104.jpg -> e03/e.0104.jpg
+e03/e_105.jpg -> e03/e.0105.jpg
+e03/e_995.jpg -> e03/e.0995.jpg
+e03/e_996.jpg -> e03/e.0996.jpg
+e03/e_997.jpg -> e03/e.0997.jpg
+e03/e_998.jpg -> e03/e.0998.jpg
+e03/e_999.jpg -> e03/e.0999.jpg
+e03/e_1000.jpg -> e03/e.1000.jpg
+e03/e_1001.jpg -> e03/e.1001.jpg
+e03/e_1002.jpg -> e03/e.1002.jpg
+e03/e_1003.jpg -> e03/e.1003.jpg
+e03/e_1004.jpg -> e03/e.1004.jpg
+e03/e_1005.jpg -> e03/e.1005.jpg
+e03/e_9995.jpg -> e03/e.9995.jpg
+e03/e_9996.jpg -> e03/e.9996.jpg
+e03/e_9997.jpg -> e03/e.9997.jpg
+e03/e_9998.jpg -> e03/e.9998.jpg
+e03/e_9999.jpg -> e03/e.9999.jpg
+e03/e_10000.jpg -> e03/e.10000.jpg
+e03/e_10001.jpg -> e03/e.10001.jpg
+e03/e_10002.jpg -> e03/e.10002.jpg
+e03/e_10003.jpg -> e03/e.10003.jpg
+e03/e_10004.jpg -> e03/e.10004.jpg
+e03/e_10005.jpg -> e03/e.10005.jpg
 
---- Test 41 --- dir:. --- lsseq -ZRPl d01 ---
+--- Test 49 --- dir:. --- lsseq -ZRPl d01 ---
 d01/d.[0120-0125].jpg m:[121-124]
 d01/d_[0100-0119].jpg m:[105]
 
---- Test 42 --- dir:. --- lsseq -ZRPl d02 ---
+--- Test 50 --- dir:. --- lsseq -ZRPl d02 ---
 d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
 
---- Test 43 --- dir:. --- renum -o 20 d02/d.[hi]_[0100-0120].jpg ---
+--- Test 51 --- dir:. --- renum -o 20 d02/d.[hi]_[0100-0120].jpg ---
 
---- Test 44 --- dir:. --- lsseq -ZRPl d02 ---
+--- Test 52 --- dir:. --- lsseq -ZRPl d02 ---
 d02/d.[hi]_[0120-0140].jpg
 
---- Test 45 --- dir:. --- renum --replaceUnderscore d02/d.[hi]_[0120-0140].jpg ---
+--- Test 53 --- dir:. --- renum --replaceUnderscore d02/d.[hi]_[0120-0140].jpg ---
 
---- Test 46 --- dir:. --- lsseq -ZRPl d02 ---
+--- Test 54 --- dir:. --- lsseq -ZRPl d02 ---
 d02/d.[hi].[0120-0140].jpg
 
---- Test 47 --- dir:. --- lsseq -ZRPl f01 ---
+--- Test 55 --- dir:. --- lsseq -ZRPl f01 ---
 f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
 
---- Test 48 --- dir:. --- renum -v --pad 4 f01/f_[05-1005].jpg ---
+--- Test 56 --- dir:. --- renum -v --pad 4 f01/f_[05-1005].jpg ---
 renum: warning: f01/f_[05-1005].jpg is nonexistent
