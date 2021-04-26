@@ -102,17 +102,17 @@ def main():
         dest="dryRun", default=False,
         help="Don't renumber SEQ, just display how the \
         files would have been renumbered. Forces --verbose and disables --silent" )
-    p.add_argument("--force", action="store_true",
-        dest="clobber", default=False,
-        help="the opposite of --skip. i.e.; if \
-        renumbering a frame in SEQ would result in overwriting \
-        an existing file (which isn't itself going to be renumbered) \
-        then go ahead and overwrite the file" )
     p.add_argument("--skip", action="store_false",
         dest="clobber",
-        help="the opposite of --force. i.e.; if renumbering a frame in \
-        SEQ would result in overwriting \
-        an existing file then skip renumbering SEQ altogether [default]" )
+        help="if renumbering a file in SEQ would result in overwriting \
+        an existing file (which isn't also being renumbered) \
+        then skip renumbering SEQ altogether [default]. \
+        the opposite of --force.")
+    p.add_argument("--force", action="store_true",
+        dest="clobber", default=False,
+        help="if renumbering a file in SEQ would result in overwriting \
+        an existing file (which isn't also being renumbered) \
+        then overwrite the file. the opposite of --skip")
 
     # Note: the following default for "pad" of "-1" means to leave
     # the padding on any given frame sequence unchanged.
@@ -127,24 +127,24 @@ def main():
         incorrectly padded frame-numbers with --showBadPadding")
     p.add_argument("--replaceUnderscore", action="store_true",
         dest="fixUnderscore", default=False,
-        help="in the case that the sequence uses an underscore ('_') as opposed to \
-        a dot ('.') separating the filename from the frame number then when renumbering \
-        the sequence replace the underscore with the preferable dot-separator. Note that \
-        as a nice side effect of using renum in this way is that you can use an offset \
-        of zero (default) to simple replace the underscrore with a dot leaving all else the same")
+        help="in the case that SEQ uses an underscore ('_') \
+        separating the filename from the frame number; then when renumbering \
+        SEQ, replace the underscore with a dot-separator ('.'). Note that \
+        you can use an offset \
+        of zero (default) to replace the underscrore with a dot leaving all else the same")
     p.add_argument("--fixBadPadding", action="store_true",
         dest="fixBadPad", default=False,
-        help="In the rare case that the sequence has inconsistent padding, e.g. \
-        [01, 02, 03, ..., 0998, 0999, 1000], then repad the frame numbers with \
+        help="When SEQ has inconsistent padding, e.g. \
+        then repad the frame numbers with \
         the padding of the smallest index, \
-        unless --pad has been specified, then use <PAD>")
+        unless --pad has been specified, then use <PAD>. JPR Change this to use list of bad-pad numbers")
 
     p.add_argument("--silent", "--quiet", "-s", action="store_true",
         dest="silent", default=False,
         help="supress all output, warning etc.")
     p.add_argument("--verbose", "-v", action="store_true",
         dest="verbose", default=False,
-        help="list the mapping from old frames to new frames")
+        help="list the mapping from old file-name to new file-name")
 
     p.add_argument("files", metavar="SEQ", nargs="*",
         help="image sequence in lsseq native format")

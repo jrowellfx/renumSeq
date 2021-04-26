@@ -44,7 +44,7 @@ cat createTestData/create.?Test.files | sed -e '1,$ s/\/[^\/]*$//' | sort -u > $
 mkdir -p `cat $tmpfile`
 touch `cat createTestData/create.?Test.files`
 
-# exit 0
+exit 0
 
 # The following are tests. One test per line.
 # The first item on a line is the directory relative to
@@ -59,51 +59,53 @@ cat << EOF > $tmpArgs
 . renum --help
 . renum null/foo.jpg
 . renum -o 1 null/foo.jpg
-. renum -o 1 'null/foo.[bar].jpg'
-. renum -o 1 'null/foo.[a-b].jpg'
-. renum -o 1 'null/foo.[-a-b].jpg'
-. renum -o 1 'null/foo.[-a--b].jpg'
-. renum -o 1 'null/foo.[xx-a-b].jpg'
-. renum -o 1 'c01/c.[011--003].jpg' 'testdir/c02/c.[11-03].jpg'
-. renum -o 30 'a03/a.[0100-0110].jpg'
+. renum -o 1 null/foo.[bar].jpg
+. renum -o 1 null/foo.[a-b].jpg
+. renum -o 1 null/foo.[-a-b].jpg
+. renum -o 1 null/foo.[-a--b].jpg
+. renum -o 1 null/foo.[xx-a-b].jpg
+. renum -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg
+. lsseq -RPl --noErrorLists -g -m a03
+. renum -o 30 a03/a.[0100-0110].jpg
+. lsseq -RPl --noErrorLists -g -m a03
 . renum -s -o 1 null/foo.jpg
-. renum -s -o 1 'null/foo.[bar].jpg'
-. renum -s -o 1 'null/foo.[a-b].jpg'
-. renum -s -o 1 'null/foo.[-a-b].jpg'
-. renum -s -o 1 'null/foo.[-a--b].jpg'
-. renum -s -o 1 'null/foo.[xx-a-b].jpg'
-. renum -s -o 1 'c01/c.[011--003].jpg' 'testdir/c02/c.[11-03].jpg'
-. renum -s -o 30 'a03/a.[0100-0110].jpg'
-. renum -v -o 30 --force 'a03/a.[0100-0110].jpg'
-. renum -v -o 20 'a02/a.[0100-0120].jpg'
-. renum -o 100 'a01/a.[0100-0133].jpg'
-. renum -v -o 100 'b01/b.[555].jpg' 'testdir/x01/x.[-11--03].jpg' 'testdir/y01/y.[-011-0002].jpg'
-. lsseq -ZRPl testdir
-. renum -v -o 10 'a02/a.[0120-0140].jpg' 
+. renum -s -o 1 null/foo.[bar].jpg
+. renum -s -o 1 null/foo.[a-b].jpg
+. renum -s -o 1 null/foo.[-a-b].jpg
+. renum -s -o 1 null/foo.[-a--b].jpg
+. renum -s -o 1 null/foo.[xx-a-b].jpg
+. renum -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg
+. renum -s -o 30 a03/a.[0100-0110].jpg
+. renum -v -o 30 --force a03/a.[0100-0110].jpg
+. renum -v -o 20 a02/a.[0100-0120].jpg
+. renum -o 100 a01/a.[0100-0133].jpg
+. renum -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg
+. lsseq -ZRPl 
+. renum -v -o 10 a02/a.[0120-0140].jpg 
 . lsseq -ZRP a02
-. renum -v -o -10 'a02/a.[0130-0150].jpg' 
+. renum -v -o -10 a02/a.[0130-0150].jpg 
 . lsseq -ZRP a02
-. renum --verbose -o -1 --pad 3 '/a02/a.[0120-0140].jpg' 
+. renum --verbose -o -1 --pad 3 /a02/a.[0120-0140].jpg 
 . lsseq -ZRP a02
 . lsseq -ZRPl d01
-. renum -v -o 20 '/d01/d_[0100-0120].jpg'
+. renum -v -o 20 /d01/d_[0100-0120].jpg
 . lsseq -ZRPl d01
-. renum -v 'd01/d_[0120-0140].jpg'
-. renum -v --replaceUnderscore 'd01/d_[0120-0140].jpg'
-. renum -v --replaceUnderscore 'e01/e_[5-9999].jpg'
-. renum -v --replaceUnderscore --pad 4 'e02/e_[5-9999].jpg'
-. renum -v --replaceUnderscore --pad 4 'e03/e_[5-10005].jpg'
+. renum -v d01/d_[0120-0140].jpg
+. renum -v --replaceUnderscore d01/d_[0120-0140].jpg
+. renum -v --replaceUnderscore e01/e_[5-9999].jpg
+. renum -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg
+. renum -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg
 . lsseq -ZRPl d01
 . lsseq -ZRPl d02
-. renum -o 20 'd02/d.[hi]_[0100-0120].jpg'
+. renum -o 20 d02/d.[hi]_[0100-0120].jpg
 . lsseq -ZRPl d02
-. renum --replaceUnderscore 'd02/d.[hi]_[0120-0140].jpg'
+. renum --replaceUnderscore d02/d.[hi]_[0120-0140].jpg
 . lsseq -ZRPl d02
 . lsseq -ZRPl f01
-. renum -v --pad 4 'f01/f_[05-1005].jpg'
+. renum -v --pad 4 f01/f_[05-1005].jpg
 EOF
 
-NUM_TESTS=`wc -l $tmpArgs`
+export NUM_TESTS=`wc -l < $tmpArgs`
 
 echo ------ Begin Tests ------ > $REPO_DIR/test_renum.out.new
 
@@ -122,9 +124,7 @@ while true; do
     echo --- Test $i --- dir:$workingDir --- $cmd ${args[@]} --- >> $REPO_DIR/test_renum.out.new
     cd $REPO_DIR/testdir/$workingDir
     set +f # Turn globbing back on
-    set -x
     $cmd ${args[@]} >> $REPO_DIR/test_renum.out.new 2>&1
-    set +x
     i=$(expr $i + 1)
 done
 
