@@ -49,11 +49,7 @@ touch `cat createTestData/create.?Test.files`
 # if things are OK. Note: I chose HAL's birthday from
 # the film 2001: A Space Odyssey.
 #
-# find testdir -type f -exec touch -t 199201121330 \{\} \;
-#
-# Apparently change the name of the file does not change
-# it's modification or access times on the file server,
-# so this step isn't helpful..
+find testdir -type f -exec touch -t 199201121330 \{\} \;
 
 # exit 0
 
@@ -94,7 +90,7 @@ cat << EOF > $tmpArgs
 . renum -v -o 20 a02/a.[0100-0120].jpg
 . lsseq -RPl --noErrorLists -g -m a02
 . lsseq -RPl --noErrorLists -g -m a01
-. renum -o 100 a01/a.[0100-0133].jpg
+. renum -o 100 --touch a01/a.[0100-0133].jpg
 . lsseq -RPl --noErrorLists -g -m a01
 . renum -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg
 . lsseq -ZRPl 

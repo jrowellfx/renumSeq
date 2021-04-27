@@ -42,15 +42,14 @@ import re
 import argparse
 import os
 import sys
+from pathlib import Path
 import textwrap
 import seqLister
 
 def warnSeqSyntax(silent, basename, seq) :
     if not silent :
-        # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-        #     ": warning: invalid range [" + seq + "] for seq " + basename
-        print( os.path.basename(sys.argv[0]), \
-            ": warning: invalid range [", seq, "] for seq ", basename, \
+        print( os.path.basename(sys.argv[0]),
+            ": warning: invalid range [", seq, "] for seq ", basename,
             file=sys.stderr, sep='')
 
 def main():
@@ -70,7 +69,7 @@ def main():
 
     p = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        description=textwrap.dedent('''\
+        description=textwrap.dedent('''
             Renumber the frame range of each SEQ listed on the command line.
             SEQ should be specified using lsseq's native format. (Turning off globbing,
             or enclosing SEQ in quotes, or placing backslashes ahead of '[' and ']' will
@@ -139,6 +138,19 @@ def main():
         the padding of the smallest index, \
         unless --pad has been specified, then use <PAD>. JPR Change this to use list of bad-pad numbers")
 
+    # JPR WIP
+    # p.add_argument("--touch", action="store_true",
+        # dest="touch", default=False,
+        # help="update the access time of the file being renamed")
+    #
+    p.add_argument("--touch", nargs='?', type=int,
+        dest="touch", const=0, default=-1,
+        help="update the access time of the file being renamed")
+    #
+    # p.add_argument("--touch", nargs='1',
+        # dest="touch", default="-1",
+        # help="update the access time of the file being renamed")
+
     p.add_argument("--silent", "--quiet", "-s", action="store_true",
         dest="silent", default=False,
         help="supress all output, warning etc.")
@@ -151,6 +163,13 @@ def main():
 
     args = p.parse_args()
 
+    if args.touch >= 0 :
+        print("Touch was called", args.touch)
+    else :
+        print("Touch not called", args.touch)
+    print("The rest:", args.files)
+    sys.exit(0)
+
     if args.files == [] :
         sys.exit(0)
 
@@ -159,12 +178,10 @@ def main():
     if args.offsetFrames == 0 \
             and args.pad < 0 \
             and not args.fixUnderscore \
-            and args.startFrame == NEVER_START_FRAME:
+            and args.startFrame == NEVER_START_FRAME :
         if not args.silent :
-            # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-            #     ": warning: no offset, no padding change etc., nothing to do"
-            print(os.path.basename(sys.argv[0]), \
-                ": warning: no offset, no padding change etc., nothing to do", \
+            print(os.path.basename(sys.argv[0]),
+                ": warning: no offset, no padding change etc., nothing to do",
                 file=sys.stderr, sep='')
         sys.exit(0)
 
@@ -192,10 +209,8 @@ def main():
         match = pattern.search(arg)
         if not match :
             if not args.silent :
-                # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                #     ": warning: " + arg + " not a sequence or not in lsseq native format"
-                print(os.path.basename(sys.argv[0]), ": warning: ", arg, \
-                    " not a sequence or not in lsseq native format", \
+                print(os.path.basename(sys.argv[0]), ": warning: ", arg,
+                    " not a sequence or not in lsseq native format",
                     file=sys.stderr, sep='')
             continue
 
@@ -283,8 +298,8 @@ def main():
                     and args.pad < 0 \
                     and not args.fixUnderscore :
                 if not args.silent :
-                    print(os.path.basename(sys.argv[0]), \
-                        ": warning: no offset, no padding/underscore change, skipping sequence: ", \
+                    print(os.path.basename(sys.argv[0]),
+                        ": warning: no offset, no padding/underscore change, skipping sequence: ",
                         arg, file=sys.stderr, sep='')
                 continue
 
@@ -343,9 +358,7 @@ def main():
 
         if origNames == [] :
             if not args.silent :
-                # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                #     ": warning: " + arg + " is nonexistent"
-                print(os.path.basename(sys.argv[0]), ": warning: ", arg, \
+                print(os.path.basename(sys.argv[0]), ": warning: ", arg,
                     " is nonexistent", file=sys.stderr, sep='')
             continue
 
@@ -360,12 +373,8 @@ def main():
 
             if abortSeq :
                 if not args.silent :
-                    # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                    #     ": warning: skipping " + arg + \
-                    #     ": renum would have overwritten a file outside the sequence being renumbered. e.g.: " \
-                    #     + f
-                    print(os.path.basename(sys.argv[0]), ": warning: skipping ", arg, \
-                        ": renum would have overwritten a file outside the sequence being renumbered. e.g.: ", \
+                    print(os.path.basename(sys.argv[0]), ": warning: skipping ", arg,
+                        ": renum would have overwritten a file outside the sequence being renumbered. e.g.: ",
                         f, file=sys.stderr, sep='')
                 continue
 
@@ -379,10 +388,8 @@ def main():
         #
         if origNames[0] == newNames[0] :
             if not args.silent :
-                # print >> sys.stderr, os.path.basename(sys.argv[0]) + \
-                #     ": warning: no changes being made to " + arg + ": skipping"
-                print(os.path.basename(sys.argv[0]), \
-                    ": warning: no changes being made to ", arg, ": skipping", \
+                print(os.path.basename(sys.argv[0]),
+                    ": warning: no changes being made to ", arg, ": skipping",
                     file=sys.stderr, sep='')
             continue
 
@@ -390,10 +397,11 @@ def main():
         numFiles = len(origNames)
         while i < numFiles :
             if args.verbose and not args.silent :
-                # print origNames[i] + " -> " + newNames[i]
                 print(origNames[i], " -> ", newNames[i], sep='')
             if not args.dryRun :
                 os.rename(origNames[i], newNames[i])
+                if args.touch :
+                    Path(newNames[i]).touch()
             i += 1
 
 if __name__ == '__main__':
