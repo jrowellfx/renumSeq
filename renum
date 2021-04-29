@@ -55,6 +55,8 @@ def warnSeqSyntax(silent, basename, seq) :
 def main():
 
     NEVER_START_FRAME = -999999999999
+    touchFiles = False
+    touchTime = 0
 
     # Redefine the exception handling routine so that it does NOT
     # do a trace dump if the user types ^C while renum is running.
@@ -119,7 +121,7 @@ def main():
     p.add_argument("--pad", action="store", type=int,
         dest="pad", default=-1,
         metavar="PAD",
-        help="set the padding of the frame numbers to be <PAD> digits. \
+        help="set the padding of the frame numbers to be PAD digits. \
         The default action is to leave the padding unchanged. Note, \
         lsseq's native format output properly lists the sequence \
         range with appropriate padding and can also report when there are \
@@ -133,24 +135,20 @@ def main():
         of zero (default) to replace the underscrore with a dot leaving all else the same")
     p.add_argument("--fixBadPadding", action="store_true",
         dest="fixBadPad", default=False,
-        help="When SEQ has inconsistent padding, e.g. \
+        help="When SEQ has inconsistent padding, \
         then repad the frame numbers with \
         the padding of the smallest index, \
         unless --pad has been specified, then use <PAD>. JPR Change this to use list of bad-pad numbers")
-
-    # JPR WIP
-    # p.add_argument("--touch", action="store_true",
-        # dest="touch", default=False,
-        # help="update the access time of the file being renamed")
-    #
-    p.add_argument("--touch", nargs='?', type=int,
-        dest="touch", const=0, default=-1,
-        help="update the access time of the file being renamed")
-    #
-    # p.add_argument("--touch", nargs='1',
-        # dest="touch", default="-1",
-        # help="update the access time of the file being renamed")
-
+    p.add_argument("--touch", nargs='?',
+        dest="touch",
+        default=None, # Value if --touch NOT present on cmd line.
+        const="0",    # Value if --touch present but NO argument passed to it.
+        metavar="[CC]YYMMDD[hhmm]",
+        help="update the access time of the file being renamed to the \
+        current time. Optionally specify a date for the updated access time. \
+        Note: if this is the last argument on the command line and the optional \
+        date was not specified then \
+        append '--' before the list of SEQs to deliniate the end of the options")
     p.add_argument("--silent", "--quiet", "-s", action="store_true",
         dest="silent", default=False,
         help="supress all output, warning etc.")
@@ -163,13 +161,15 @@ def main():
 
     args = p.parse_args()
 
-    if args.touch >= 0 :
-        print("Touch was called", args.touch)
-    else :
+    # Tmp experiments with nargs - delete later.
+    #
+    if args.touch == None :
         print("Touch not called", args.touch)
+    else :
+        print("Touch was called", args.touch)
     print("The rest:", args.files)
     sys.exit(0)
-
+    # 
     if args.files == [] :
         sys.exit(0)
 
@@ -184,6 +184,9 @@ def main():
                 ": warning: no offset, no padding change etc., nothing to do",
                 file=sys.stderr, sep='')
         sys.exit(0)
+
+    if args.touch >= 0 : # --touch isn't called when value is -1.
+        touchFiles = True
 
     if args.dryRun : # verbose to show how renumbering would occur.
         args.verbose = True
