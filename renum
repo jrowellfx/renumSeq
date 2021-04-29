@@ -40,11 +40,13 @@
 
 import re
 import argparse
-import os
-import sys
-from pathlib import Path
+import os, sys
 import textwrap
+import time
+from datetime import datetime, timedelta, timezone
 import seqLister
+
+touchTime = -1.0
 
 def warnSeqSyntax(silent, basename, seq) :
     if not silent :
@@ -56,7 +58,8 @@ def main():
 
     NEVER_START_FRAME = -999999999999
     touchFiles = False
-    touchTime = 0
+    global touchTime
+
 
     # Redefine the exception handling routine so that it does NOT
     # do a trace dump if the user types ^C while renum is running.
@@ -161,15 +164,7 @@ def main():
 
     args = p.parse_args()
 
-    # Tmp experiments with nargs - delete later.
-    #
-    if args.touch == None :
-        print("Touch not called", args.touch)
-    else :
-        print("Touch was called", args.touch)
-    print("The rest:", args.files)
-    sys.exit(0)
-    # 
+    
     if args.files == [] :
         sys.exit(0)
 
@@ -185,8 +180,13 @@ def main():
                 file=sys.stderr, sep='')
         sys.exit(0)
 
-    if args.touch >= 0 : # --touch isn't called when value is -1.
+    if args.touch != None : # --touch called
         touchFiles = True
+        if args.touch == "0" : # Touch with current time.
+            touchTime = 0.0
+        else :
+            # Temporary - parse this with string passed in.
+            touchTime = datetime.timestamp(datetime(2001, 6, 1, 12, 30))
 
     if args.dryRun : # verbose to show how renumbering would occur.
         args.verbose = True
@@ -403,8 +403,11 @@ def main():
                 print(origNames[i], " -> ", newNames[i], sep='')
             if not args.dryRun :
                 os.rename(origNames[i], newNames[i])
-                if args.touch :
-                    Path(newNames[i]).touch()
+                if touchFiles :
+                    if touchTime == 0.0 :
+                        os.utime(newNames[i])
+                    else :
+                        os.utime(newNames[i], (touchTime, touchTime))
             i += 1
 
 if __name__ == '__main__':

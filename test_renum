@@ -44,10 +44,10 @@ cat createTestData/create.?Test.files | sed -e '1,$ s/\/[^\/]*$//' | sort -u > $
 mkdir -p `cat $tmpfile`
 touch `cat createTestData/create.?Test.files`
 
-# Timestamp the files to be older so that when we renumber them
-# we can check oot the results more easily (ls -lt) to check
-# if things are OK. Note: I chose HAL's birthday from
-# the film 2001: A Space Odyssey.
+# Timestamp the files to be older so that when we renumber
+# them we can use --touch to visually check the results more easily (ls -lt)
+#
+# Note: HAL's birthday from 2001: A Space Odyssey.
 #
 find testdir -type f -exec touch -t 199201121330 \{\} \;
 
@@ -83,15 +83,21 @@ cat << EOF > $tmpArgs
 . renum -s -o 1 null/foo.[xx-a-b].jpg
 . renum -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg
 . renum -s -o 30 a03/a.[0100-0110].jpg
+a03 ls -l
 . lsseq -RPl --noErrorLists -g -m a03
-. renum -v -o 30 --force a03/a.[0100-0110].jpg
+. renum -v -o 30 --force --touch 200106011230 a03/a.[0100-0110].jpg
 . lsseq -RPl --noErrorLists -g -m a03
+a03 ls -l
+a02 ls -l
 . lsseq -RPl --noErrorLists -g -m a02
-. renum -v -o 20 a02/a.[0100-0120].jpg
+. renum -v -o 20 --touch 200106011230 a02/a.[0100-0120].jpg
 . lsseq -RPl --noErrorLists -g -m a02
+a02 ls -l
+a01 ls -l
 . lsseq -RPl --noErrorLists -g -m a01
-. renum -o 100 --touch a01/a.[0100-0133].jpg
+. renum -o 100 --touch --touch 200106011230 a01/a.[0100-0133].jpg
 . lsseq -RPl --noErrorLists -g -m a01
+a01 ls -l
 . renum -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg
 . lsseq -ZRPl 
 . renum -v -o 10 a02/a.[0120-0140].jpg 
