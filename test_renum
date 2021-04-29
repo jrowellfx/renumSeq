@@ -60,7 +60,7 @@ find testdir -type f -exec touch -t 199201121330 \{\} \;
 # The rest are args to the command.
 #
 cat << EOF > $tmpArgs
-. lsseq -RPl --noErrorLists -g -m
+. lsseq -RPl --noErrorLists -g -m                        # Testing adding comment
 . renum
 . renum --version
 . renum --help
@@ -131,7 +131,7 @@ echo ------ Begin Tests ------ > $REPO_DIR/test_renum.out.new
 set -f # Turn off globbing
 i=1
 while true; do
-    declare -a args=(`sed -n -e "$i p" $tmpArgs`)
+    declare -a args=(`sed -n -e "$i p" $tmpArgs | sed -e 's/#.*//' `)
     if [ ${#args[@]} -eq 0 ]; then
         break;
     fi
