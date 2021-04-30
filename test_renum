@@ -60,68 +60,67 @@ find testdir -type f -exec touch -t 199201121330 \{\} \;
 # The rest are args to the command.
 #
 cat << EOF > $tmpArgs
-. lsseq -RPl --noErrorLists -g -m                        # Testing adding comment
-. renum
-. renum --version
-. renum --help
-. renum null/foo.jpg
-. renum -o 1 null/foo.jpg
-. renum -o 1 null/foo.[bar].jpg
-. renum -o 1 null/foo.[a-b].jpg
-. renum -o 1 null/foo.[-a-b].jpg
-. renum -o 1 null/foo.[-a--b].jpg
-. renum -o 1 null/foo.[xx-a-b].jpg
-. renum -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg
-. lsseq -RPl --noErrorLists -g -m a03
-. renum -o 30 a03/a.[0100-0110].jpg
-. lsseq -RPl --noErrorLists -g -m a03
-. renum -s -o 1 null/foo.jpg
-. renum -s -o 1 null/foo.[bar].jpg
-. renum -s -o 1 null/foo.[a-b].jpg
-. renum -s -o 1 null/foo.[-a-b].jpg
-. renum -s -o 1 null/foo.[-a--b].jpg
-. renum -s -o 1 null/foo.[xx-a-b].jpg
-. renum -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg
-. renum -s -o 30 a03/a.[0100-0110].jpg
-a03 ls -l
-. lsseq -RPl --noErrorLists -g -m a03
-. renum -v -o 30 --force --touch 200106011230 a03/a.[0100-0110].jpg
-. lsseq -RPl --noErrorLists -g -m a03
-a03 ls -l
-a02 ls -l
-. lsseq -RPl --noErrorLists -g -m a02
-. renum -v -o 20 --touch 200106011230 a02/a.[0100-0120].jpg
-. lsseq -RPl --noErrorLists -g -m a02
-a02 ls -l
+.   lsseq -RPl --noErrorLists -g -m      # List all sequences in the testdir
+.   renum                                # Run with no args - should do nothing
+.   renum --version                      # MUST increment with each update/bug fix, corresp w/ release.
+.   renum --help                         # To keep track of changes with help, plus check if correct
+.   renum      null/foo.jpg              # No args - warning issued -> nothing to do.
+.   renum -o 1 null/foo.jpg              # Not a sequence
+.   renum -o 1 null/foo.[bar].jpg        # Not a sequence
+.   renum -o 1 null/foo.[a-b].jpg        # Not a sequence
+.   renum -o 1 null/foo.[-a-b].jpg       # Not a sequence
+.   renum -o 1 null/foo.[-a--b].jpg      # Not a sequence
+.   renum -o 1 null/foo.[xx-a-b].jpg     # Not a sequence
+.   renum -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg  # Invalid range, [A-B] but A > B
+.   renum -s -o 1 null/foo.jpg           # Repeat all those tests but silent
+.   renum -s -o 1 null/foo.[bar].jpg     #    ditto
+.   renum -s -o 1 null/foo.[a-b].jpg     #    ditto
+.   renum -s -o 1 null/foo.[-a-b].jpg    #    ditto
+.   renum -s -o 1 null/foo.[-a--b].jpg   #    ditto
+.   renum -s -o 1 null/foo.[xx-a-b].jpg  #    ditto
+.   renum -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg  # ditto
+.   lsseq -RPl --noErrorLists -g -m a03  # Record sequence before renumbering
+.   renum -o 30 a03/a.[0100-0110].jpg    # This should error out
+.   renum -s -o 30 a03/a.[0100-0110].jpg # Same with this, but silent.
+a03 ls -l                                # regular ls to see dates of files
+.   lsseq -RPl --noErrorLists -g -m a03  # Seq should be the same as above.
+.   renum -v -o 30 --force --touch 200106011230 a03/a.[0100-0110].jpg # Now they should renumber.
+.   lsseq -RPl --noErrorLists -g -m a03  # Note new range.
+a03 ls -l                                # Note that one files was not overwritten due to missing file in renumed seq
+a02 ls -l                                # This next test was carefully laid out so that the highest x120 goes to x140
+.   lsseq -RPl --noErrorLists -g -m a02  # and the lowest x100 goes into the vacated x120 slot. Furthermore x105 is
+.   renum -v -o 20 --touch 200106011230 a02/a.[0100-0120].jpg # missing leaving x0125 untouched after the renum.
+.   lsseq -RPl --noErrorLists -g -m a02  # Show new seq range.
+a02 ls -l                                # Note all were renumbered EXCEPT x125
+a01 ls -l                                # 
+.   lsseq -RPl --noErrorLists -g -m a01
+.   renum -o 100 --touch --touch 200106011230 a01/a.[0100-0133].jpg
+.   lsseq -RPl --noErrorLists -g -m a01
 a01 ls -l
-. lsseq -RPl --noErrorLists -g -m a01
-. renum -o 100 --touch --touch 200106011230 a01/a.[0100-0133].jpg
-. lsseq -RPl --noErrorLists -g -m a01
-a01 ls -l
-. renum -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg
-. lsseq -ZRPl 
-. renum -v -o 10 a02/a.[0120-0140].jpg 
-. lsseq -ZRP a02
-. renum -v -o -10 a02/a.[0130-0150].jpg 
-. lsseq -ZRP a02
-. renum --verbose -o -1 --pad 3 /a02/a.[0120-0140].jpg 
-. lsseq -ZRP a02
-. lsseq -ZRPl d01
-. renum -v -o 20 /d01/d_[0100-0120].jpg
-. lsseq -ZRPl d01
-. renum -v d01/d_[0120-0140].jpg
-. renum -v --replaceUnderscore d01/d_[0120-0140].jpg
-. renum -v --replaceUnderscore e01/e_[5-9999].jpg
-. renum -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg
-. renum -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg
-. lsseq -ZRPl d01
-. lsseq -ZRPl d02
-. renum -o 20 d02/d.[hi]_[0100-0120].jpg
-. lsseq -ZRPl d02
-. renum --replaceUnderscore d02/d.[hi]_[0120-0140].jpg
-. lsseq -ZRPl d02
-. lsseq -ZRPl f01
-. renum -v --pad 4 f01/f_[05-1005].jpg
+.   renum -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg
+.   lsseq -ZRPl 
+.   renum -v -o 10 a02/a.[0120-0140].jpg 
+.   lsseq -ZRP a02
+.   renum -v -o -10 a02/a.[0130-0150].jpg 
+.   lsseq -ZRP a02
+.   renum --verbose -o -1 --pad 3 /a02/a.[0120-0140].jpg 
+.   lsseq -ZRP a02
+.   lsseq -ZRPl d01
+.   renum -v -o 20 /d01/d_[0100-0120].jpg
+.   lsseq -ZRPl d01
+.   renum -v d01/d_[0120-0140].jpg
+.   renum -v --replaceUnderscore d01/d_[0120-0140].jpg
+.   renum -v --replaceUnderscore e01/e_[5-9999].jpg
+.   renum -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg
+.   renum -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg
+.   lsseq -ZRPl d01
+.   lsseq -ZRPl d02
+.   renum -o 20 d02/d.[hi]_[0100-0120].jpg
+.   lsseq -ZRPl d02
+.   renum --replaceUnderscore d02/d.[hi]_[0120-0140].jpg
+.   lsseq -ZRPl d02
+.   lsseq -ZRPl f01
+.   renum -v --pad 4 f01/f_[05-1005].jpg
 EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`
