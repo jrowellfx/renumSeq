@@ -46,7 +46,7 @@ import time
 from datetime import datetime, timedelta, timezone
 import seqLister
 
-VERSION = 1.1.0
+VERSION = "1.1.0"
 
 touchTime = -1.0
 

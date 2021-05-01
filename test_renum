@@ -92,25 +92,30 @@ a02 ls -l                                # This next test was carefully laid out
 .   renum -v -o 20 --touch 200106011230 a02/a.[0100-0120].jpg # missing leaving x0125 untouched after the renum.
 .   lsseq -RPl --noErrorLists -g -m a02  # Show new seq range.
 a02 ls -l                                # Note all were renumbered EXCEPT x125
-a01 ls -l                                # 
-.   lsseq -RPl --noErrorLists -g -m a01
-.   renum -o 100 --touch --touch 200106011230 a01/a.[0100-0133].jpg
-.   lsseq -RPl --noErrorLists -g -m a01
+a01 ls -l                                # A list 100-140, 101 missing, 134-139 missing.
+.   lsseq -RPl --noErrorLists -g -m a01  # Move them all 100, so should leave 140 unmoved,
+.   renum -o 100 --touch 200106011230 a01/a.[0100-0133].jpg  # and 201 should be missing
+.   lsseq -RPl --noErrorLists -g -m a01  # and range should go up to 233. missing 141-199 also.
 a01 ls -l
+.   lsseq -RPl --noErrorLists -g -m b01 x01 y01
 .   renum -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg
-.   lsseq -ZRPl 
+.   lsseq -RPl --noErrorLists -g -m b01 x01 y01
+.   lsseq -RPl --noErrorLists -g -m a02
 .   renum -v -o 10 a02/a.[0120-0140].jpg 
-.   lsseq -ZRP a02
+.   lsseq -RPl --noErrorLists -g -m a02
 .   renum -v -o -10 a02/a.[0130-0150].jpg 
-.   lsseq -ZRP a02
-.   renum --verbose -o -1 --pad 3 /a02/a.[0120-0140].jpg 
-.   lsseq -ZRP a02
-.   lsseq -ZRPl d01
+.   lsseq -RPl --noErrorLists -g -m a02
+.   renum --verbose -o -1 --pad 3 a02/a.[0120-0140].jpg 
+.   lsseq -RPl --noErrorLists -g -m a02
+.   lsseq -RPl --noErrorLists -g -m d01
 .   renum -v -o 20 /d01/d_[0100-0120].jpg
-.   lsseq -ZRPl d01
+.   lsseq -RPl --noErrorLists -g -m d01
 .   renum -v d01/d_[0120-0140].jpg
 .   renum -v --replaceUnderscore d01/d_[0120-0140].jpg
-.   renum -v --replaceUnderscore e01/e_[5-9999].jpg
+.   lsseq -RPl --noErrorLists -g -m d01
+e01 lsseq -RPl --noErrorLists -g -m
+e01 renum -v --replaceUnderscore e_[5-9999].jpg
+e01 lsseq -RPl --noErrorLists -g -m
 .   renum -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg
 .   renum -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg
 .   lsseq -ZRPl d01

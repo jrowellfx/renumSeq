@@ -333,7 +333,7 @@ total 0
 --- Test 34 --- dir:. --- lsseq -RPl --noErrorLists -g -m a01 ---
 a01/a.[0100-0140].jpg m:[101,134-139]
 
---- Test 35 --- dir:. --- renum -o 100 --touch --touch 200106011230 a01/a.[0100-0133].jpg ---
+--- Test 35 --- dir:. --- renum -o 100 --touch 200106011230 a01/a.[0100-0133].jpg ---
 
 --- Test 36 --- dir:. --- lsseq -RPl --noErrorLists -g -m a01 ---
 a01/a.[0140-0233].jpg m:[141-199,201]
@@ -375,7 +375,12 @@ total 0
 -rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0232.jpg
 -rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0233.jpg
 
---- Test 38 --- dir:. --- renum -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg ---
+--- Test 38 --- dir:. --- lsseq -RPl --noErrorLists -g -m b01 x01 y01 ---
+b01/b.[555].jpg
+x01/x.[-11--03].jpg
+y01/y.[-011-0002].jpg
+
+--- Test 39 --- dir:. --- renum -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg ---
 b01/b.555.jpg -> b01/b.655.jpg
 x01/x.-03.jpg -> x01/x.097.jpg
 x01/x.-04.jpg -> x01/x.096.jpg
@@ -401,21 +406,15 @@ y01/y.-009.jpg -> y01/y.0091.jpg
 y01/y.-010.jpg -> y01/y.0090.jpg
 y01/y.-011.jpg -> y01/y.0089.jpg
 
---- Test 39 --- dir:. --- lsseq -ZRPl ---
-./a01/a.[0140-0233].jpg m:[141-199,201]
-./a02/a.[0120-0140].jpg
-./a03/a.[0111-0140].jpg
-./b01/b.[655].jpg
-./d01/d_[0100-0125].jpg m:[105,121-124]
-./d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
-./e01/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
-./e02/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
-./e03/e_[5-10005].jpg m:[16-94,106-994,1006-9994]
-./f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
-./x01/x.[089-097].jpg
-./y01/y.[0089-0102].jpg
+--- Test 40 --- dir:. --- lsseq -RPl --noErrorLists -g -m b01 x01 y01 ---
+b01/b.[655].jpg
+x01/x.[089-097].jpg
+y01/y.[0089-0102].jpg
 
---- Test 40 --- dir:. --- renum -v -o 10 a02/a.[0120-0140].jpg ---
+--- Test 41 --- dir:. --- lsseq -RPl --noErrorLists -g -m a02 ---
+a02/a.[0120-0140].jpg
+
+--- Test 42 --- dir:. --- renum -v -o 10 a02/a.[0120-0140].jpg ---
 a02/a.0140.jpg -> a02/a.0150.jpg
 a02/a.0139.jpg -> a02/a.0149.jpg
 a02/a.0138.jpg -> a02/a.0148.jpg
@@ -438,10 +437,10 @@ a02/a.0122.jpg -> a02/a.0132.jpg
 a02/a.0121.jpg -> a02/a.0131.jpg
 a02/a.0120.jpg -> a02/a.0130.jpg
 
---- Test 41 --- dir:. --- lsseq -ZRP a02 ---
+--- Test 43 --- dir:. --- lsseq -RPl --noErrorLists -g -m a02 ---
 a02/a.[0130-0150].jpg
 
---- Test 42 --- dir:. --- renum -v -o -10 a02/a.[0130-0150].jpg ---
+--- Test 44 --- dir:. --- renum -v -o -10 a02/a.[0130-0150].jpg ---
 a02/a.0130.jpg -> a02/a.0120.jpg
 a02/a.0131.jpg -> a02/a.0121.jpg
 a02/a.0132.jpg -> a02/a.0122.jpg
@@ -464,72 +463,102 @@ a02/a.0148.jpg -> a02/a.0138.jpg
 a02/a.0149.jpg -> a02/a.0139.jpg
 a02/a.0150.jpg -> a02/a.0140.jpg
 
---- Test 43 --- dir:. --- lsseq -ZRP a02 ---
+--- Test 45 --- dir:. --- lsseq -RPl --noErrorLists -g -m a02 ---
 a02/a.[0120-0140].jpg
 
---- Test 44 --- dir:. --- renum --verbose -o -1 --pad 3 /a02/a.[0120-0140].jpg ---
-renum: warning: /a02/a.[0120-0140].jpg is nonexistent
+--- Test 46 --- dir:. --- renum --verbose -o -1 --pad 3 a02/a.[0120-0140].jpg ---
+a02/a.0120.jpg -> a02/a.119.jpg
+a02/a.0121.jpg -> a02/a.120.jpg
+a02/a.0122.jpg -> a02/a.121.jpg
+a02/a.0123.jpg -> a02/a.122.jpg
+a02/a.0124.jpg -> a02/a.123.jpg
+a02/a.0125.jpg -> a02/a.124.jpg
+a02/a.0126.jpg -> a02/a.125.jpg
+a02/a.0127.jpg -> a02/a.126.jpg
+a02/a.0128.jpg -> a02/a.127.jpg
+a02/a.0129.jpg -> a02/a.128.jpg
+a02/a.0130.jpg -> a02/a.129.jpg
+a02/a.0131.jpg -> a02/a.130.jpg
+a02/a.0132.jpg -> a02/a.131.jpg
+a02/a.0133.jpg -> a02/a.132.jpg
+a02/a.0134.jpg -> a02/a.133.jpg
+a02/a.0135.jpg -> a02/a.134.jpg
+a02/a.0136.jpg -> a02/a.135.jpg
+a02/a.0137.jpg -> a02/a.136.jpg
+a02/a.0138.jpg -> a02/a.137.jpg
+a02/a.0139.jpg -> a02/a.138.jpg
+a02/a.0140.jpg -> a02/a.139.jpg
 
---- Test 45 --- dir:. --- lsseq -ZRP a02 ---
-a02/a.[0120-0140].jpg
+--- Test 47 --- dir:. --- lsseq -RPl --noErrorLists -g -m a02 ---
+a02/a.[119-139].jpg
 
---- Test 46 --- dir:. --- lsseq -ZRPl d01 ---
+--- Test 48 --- dir:. --- lsseq -RPl --noErrorLists -g -m d01 ---
 d01/d_[0100-0125].jpg m:[105,121-124]
 
---- Test 47 --- dir:. --- renum -v -o 20 /d01/d_[0100-0120].jpg ---
+--- Test 49 --- dir:. --- renum -v -o 20 /d01/d_[0100-0120].jpg ---
 renum: warning: /d01/d_[0100-0120].jpg is nonexistent
 
---- Test 48 --- dir:. --- lsseq -ZRPl d01 ---
+--- Test 50 --- dir:. --- lsseq -RPl --noErrorLists -g -m d01 ---
 d01/d_[0100-0125].jpg m:[105,121-124]
 
---- Test 49 --- dir:. --- renum -v d01/d_[0120-0140].jpg ---
+--- Test 51 --- dir:. --- renum -v d01/d_[0120-0140].jpg ---
 renum: warning: no offset, no padding change etc., nothing to do
 
---- Test 50 --- dir:. --- renum -v --replaceUnderscore d01/d_[0120-0140].jpg ---
+--- Test 52 --- dir:. --- renum -v --replaceUnderscore d01/d_[0120-0140].jpg ---
 d01/d_0120.jpg -> d01/d.0120.jpg
 d01/d_0125.jpg -> d01/d.0125.jpg
 
---- Test 51 --- dir:. --- renum -v --replaceUnderscore e01/e_[5-9999].jpg ---
-e01/e_5.jpg -> e01/e.5.jpg
-e01/e_6.jpg -> e01/e.6.jpg
-e01/e_7.jpg -> e01/e.7.jpg
-e01/e_8.jpg -> e01/e.8.jpg
-e01/e_9.jpg -> e01/e.9.jpg
-e01/e_10.jpg -> e01/e.10.jpg
-e01/e_11.jpg -> e01/e.11.jpg
-e01/e_12.jpg -> e01/e.12.jpg
-e01/e_13.jpg -> e01/e.13.jpg
-e01/e_14.jpg -> e01/e.14.jpg
-e01/e_15.jpg -> e01/e.15.jpg
-e01/e_95.jpg -> e01/e.95.jpg
-e01/e_96.jpg -> e01/e.96.jpg
-e01/e_97.jpg -> e01/e.97.jpg
-e01/e_98.jpg -> e01/e.98.jpg
-e01/e_99.jpg -> e01/e.99.jpg
-e01/e_100.jpg -> e01/e.100.jpg
-e01/e_101.jpg -> e01/e.101.jpg
-e01/e_102.jpg -> e01/e.102.jpg
-e01/e_103.jpg -> e01/e.103.jpg
-e01/e_104.jpg -> e01/e.104.jpg
-e01/e_105.jpg -> e01/e.105.jpg
-e01/e_995.jpg -> e01/e.995.jpg
-e01/e_996.jpg -> e01/e.996.jpg
-e01/e_997.jpg -> e01/e.997.jpg
-e01/e_998.jpg -> e01/e.998.jpg
-e01/e_999.jpg -> e01/e.999.jpg
-e01/e_1000.jpg -> e01/e.1000.jpg
-e01/e_1001.jpg -> e01/e.1001.jpg
-e01/e_1002.jpg -> e01/e.1002.jpg
-e01/e_1003.jpg -> e01/e.1003.jpg
-e01/e_1004.jpg -> e01/e.1004.jpg
-e01/e_1005.jpg -> e01/e.1005.jpg
-e01/e_9995.jpg -> e01/e.9995.jpg
-e01/e_9996.jpg -> e01/e.9996.jpg
-e01/e_9997.jpg -> e01/e.9997.jpg
-e01/e_9998.jpg -> e01/e.9998.jpg
-e01/e_9999.jpg -> e01/e.9999.jpg
+--- Test 53 --- dir:. --- lsseq -RPl --noErrorLists -g -m d01 ---
+d01/d.[0120-0125].jpg m:[121-124]
+d01/d_[0100-0119].jpg m:[105]
 
---- Test 52 --- dir:. --- renum -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg ---
+--- Test 54 --- dir:e01 --- lsseq -RPl --noErrorLists -g -m ---
+./e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+
+--- Test 55 --- dir:e01 --- renum -v --replaceUnderscore e_[5-9999].jpg ---
+e_5.jpg -> e.5.jpg
+e_6.jpg -> e.6.jpg
+e_7.jpg -> e.7.jpg
+e_8.jpg -> e.8.jpg
+e_9.jpg -> e.9.jpg
+e_10.jpg -> e.10.jpg
+e_11.jpg -> e.11.jpg
+e_12.jpg -> e.12.jpg
+e_13.jpg -> e.13.jpg
+e_14.jpg -> e.14.jpg
+e_15.jpg -> e.15.jpg
+e_95.jpg -> e.95.jpg
+e_96.jpg -> e.96.jpg
+e_97.jpg -> e.97.jpg
+e_98.jpg -> e.98.jpg
+e_99.jpg -> e.99.jpg
+e_100.jpg -> e.100.jpg
+e_101.jpg -> e.101.jpg
+e_102.jpg -> e.102.jpg
+e_103.jpg -> e.103.jpg
+e_104.jpg -> e.104.jpg
+e_105.jpg -> e.105.jpg
+e_995.jpg -> e.995.jpg
+e_996.jpg -> e.996.jpg
+e_997.jpg -> e.997.jpg
+e_998.jpg -> e.998.jpg
+e_999.jpg -> e.999.jpg
+e_1000.jpg -> e.1000.jpg
+e_1001.jpg -> e.1001.jpg
+e_1002.jpg -> e.1002.jpg
+e_1003.jpg -> e.1003.jpg
+e_1004.jpg -> e.1004.jpg
+e_1005.jpg -> e.1005.jpg
+e_9995.jpg -> e.9995.jpg
+e_9996.jpg -> e.9996.jpg
+e_9997.jpg -> e.9997.jpg
+e_9998.jpg -> e.9998.jpg
+e_9999.jpg -> e.9999.jpg
+
+--- Test 56 --- dir:e01 --- lsseq -RPl --noErrorLists -g -m ---
+./e.[5-9999].jpg m:[16-94,106-994,1006-9994]
+
+--- Test 57 --- dir:. --- renum -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg ---
 e02/e_5.jpg -> e02/e.0005.jpg
 e02/e_6.jpg -> e02/e.0006.jpg
 e02/e_7.jpg -> e02/e.0007.jpg
@@ -569,7 +598,7 @@ e02/e_9997.jpg -> e02/e.9997.jpg
 e02/e_9998.jpg -> e02/e.9998.jpg
 e02/e_9999.jpg -> e02/e.9999.jpg
 
---- Test 53 --- dir:. --- renum -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg ---
+--- Test 58 --- dir:. --- renum -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg ---
 e03/e_5.jpg -> e03/e.0005.jpg
 e03/e_6.jpg -> e03/e.0006.jpg
 e03/e_7.jpg -> e03/e.0007.jpg
@@ -615,25 +644,25 @@ e03/e_10003.jpg -> e03/e.10003.jpg
 e03/e_10004.jpg -> e03/e.10004.jpg
 e03/e_10005.jpg -> e03/e.10005.jpg
 
---- Test 54 --- dir:. --- lsseq -ZRPl d01 ---
+--- Test 59 --- dir:. --- lsseq -ZRPl d01 ---
 d01/d.[0120-0125].jpg m:[121-124]
 d01/d_[0100-0119].jpg m:[105]
 
---- Test 55 --- dir:. --- lsseq -ZRPl d02 ---
+--- Test 60 --- dir:. --- lsseq -ZRPl d02 ---
 d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
 
---- Test 56 --- dir:. --- renum -o 20 d02/d.[hi]_[0100-0120].jpg ---
+--- Test 61 --- dir:. --- renum -o 20 d02/d.[hi]_[0100-0120].jpg ---
 
---- Test 57 --- dir:. --- lsseq -ZRPl d02 ---
+--- Test 62 --- dir:. --- lsseq -ZRPl d02 ---
 d02/d.[hi]_[0120-0140].jpg
 
---- Test 58 --- dir:. --- renum --replaceUnderscore d02/d.[hi]_[0120-0140].jpg ---
+--- Test 63 --- dir:. --- renum --replaceUnderscore d02/d.[hi]_[0120-0140].jpg ---
 
---- Test 59 --- dir:. --- lsseq -ZRPl d02 ---
+--- Test 64 --- dir:. --- lsseq -ZRPl d02 ---
 d02/d.[hi].[0120-0140].jpg
 
---- Test 60 --- dir:. --- lsseq -ZRPl f01 ---
+--- Test 65 --- dir:. --- lsseq -ZRPl f01 ---
 f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
 
---- Test 61 --- dir:. --- renum -v --pad 4 f01/f_[05-1005].jpg ---
+--- Test 66 --- dir:. --- renum -v --pad 4 f01/f_[05-1005].jpg ---
 renum: warning: f01/f_[05-1005].jpg is nonexistent
