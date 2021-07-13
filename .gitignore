@@ -1,5 +1,5 @@
 testdir
-test_renum.out.new
+test_renumseq.out.new
 @eaDir
 build
 *egg_info*

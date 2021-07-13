@@ -137,7 +137,7 @@ EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`
 
-echo ------ Begin Tests ------ > $TEST_DIR/test_renum.out.new
+echo ------ Begin Tests ------ > $TEST_DIR/test_renumseq.out.new
 
 set -f # Turn off globbing
 i=1
@@ -149,16 +149,16 @@ while true; do
     workingDir=${args[0]}
     cmd=${args[1]}
     args=(${args[@]:2})
-    echo "" >> $TEST_DIR/test_renum.out.new
+    echo "" >> $TEST_DIR/test_renumseq.out.new
     echo --- Test $i of $NUM_TESTS ---
-    echo --- Test $i --- dir:$workingDir --- $cmd ${args[@]} --- >> $TEST_DIR/test_renum.out.new
+    echo --- Test $i --- dir:$workingDir --- $cmd ${args[@]} --- >> $TEST_DIR/test_renumseq.out.new
     cd $TEST_DIR/testdir/$workingDir
-    $cmd ${args[@]} >> $TEST_DIR/test_renum.out.new 2>&1
+    $cmd ${args[@]} >> $TEST_DIR/test_renumseq.out.new 2>&1
     i=$(expr $i + 1)
 done
 set +f # Turn globbing back on
 
-sed -e "1,$ s-$TEST_DIR-/...absPathToRepo.../renumSeq-g" < $TEST_DIR/test_renum.out.new > $tmpfile
-expand < $tmpfile | sed -e '1,$ s/ *$//' > $TEST_DIR/test_renum.out.new
+sed -e "1,$ s-$TEST_DIR-/...absPathToRepo.../renumSeq-g" < $TEST_DIR/test_renumseq.out.new > $tmpfile
+expand < $tmpfile | sed -e '1,$ s/ *$//' > $TEST_DIR/test_renumseq.out.new
 
 cleanup
