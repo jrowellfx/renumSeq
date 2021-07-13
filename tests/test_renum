@@ -2,13 +2,20 @@
 
 export LC_ALL=POSIX
 
-# !!! This script MUST be run from the root of the renum git repo for this to work.
+# !!! This script MUST be run from the 'tests'
+# !!! directory in the renumseq git repo for this to work.
 #
-REPO_DIR=`pwd`
-export PATH=$REPO_DIR:$PATH
+TEST_DIR=`pwd`
+
+if [[ `basename $TEST_DIR` != 'tests' ]]; then
+    echo $0: error: not running from tests directory, aborted.
+    exit 1
+fi
+
+REPO_DIR=dirname $TEST_DIR
 
 unalias lsseq > /dev/null 2>&1
-unalias renum > /dev/null 2>&1
+unalias renumseq > /dev/null 2>&1
 unalias rm > /dev/null 2>&1
 
 tmpArgs=/tmp/tmpARGS_RENUM.$$
@@ -30,15 +37,15 @@ if [ -z "$REPO_DIR" ]; then
 elif [[ "$REPO_DIR" == "/" ]]; then
     echo $0: error: REPO_DIR set to root, dangerous recursive rm avoided.
     exit 1
-elif [[ "$REPO_DIR" != *renum* ]]; then
-    echo $0: error: REPO_DIR might not be set to renum repo, dangerous recursive rm avoided.
+elif [[ `basename $REPO_DIR` != 'renumseq' ]]; then
+    echo $0: error: REPO_DIR might not be set to renumseq repo, dangerous recursive rm avoided.
     exit 1
 fi
-rm -rf $REPO_DIR/testdir/*
+rm -rf $TEST_DIR/testdir/*
 
 # Create list of test directories needed.
 # Then touch the file names to make testfiles.
-# Note: pwd should still be $REPO_DIR
+# Note: pwd should still be $TEST_DIR
 #
 cat createTestData/create.?Test.files | sed -e '1,$ s/\/[^\/]*$//' | sort -u > $tmpfile
 mkdir -p `cat $tmpfile`
@@ -55,82 +62,82 @@ find testdir -type f -exec touch -t 199201121330 \{\} \;
 
 # The following are tests. One test per line.
 # The first item on a line is the directory relative to
-#     $REPO_DIR/testdir to run the test in.
+#     $TEST_DIR/testdir to run the test in.
 # The second is the command to run.
 # The rest are args to the command.
 #
 cat << EOF > $tmpArgs
-.   lsseq -RPl --noErrorLists -g -m      # List all sequences in the testdir
-.   renum                                # Run with no args - should do nothing
-.   renum --version                      # MUST increment with each update/bug fix, corresp w/ release.
-.   renum --help                         # To keep track of changes with help, plus check if correct
-.   renum      null/foo.jpg              # No args - warning issued -> nothing to do.
-.   renum -o 1 null/foo.jpg              # Not a sequence
-.   renum -o 1 null/foo.[bar].jpg        # Not a sequence
-.   renum -o 1 null/foo.[a-b].jpg        # Not a sequence
-.   renum -o 1 null/foo.[-a-b].jpg       # Not a sequence
-.   renum -o 1 null/foo.[-a--b].jpg      # Not a sequence
-.   renum -o 1 null/foo.[xx-a-b].jpg     # Not a sequence
-.   renum -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg  # Invalid range, [A-B] but A > B
-.   renum -s -o 1 null/foo.jpg           # Repeat all those tests but silent
-.   renum -s -o 1 null/foo.[bar].jpg     #    ditto
-.   renum -s -o 1 null/foo.[a-b].jpg     #    ditto
-.   renum -s -o 1 null/foo.[-a-b].jpg    #    ditto
-.   renum -s -o 1 null/foo.[-a--b].jpg   #    ditto
-.   renum -s -o 1 null/foo.[xx-a-b].jpg  #    ditto
-.   renum -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg  # ditto
-.   lsseq -RPl --noErrorLists -g -m a03  # Record sequence before renumbering
-.   renum -o 30 a03/a.[0100-0110].jpg    # This should error out
-.   renum -s -o 30 a03/a.[0100-0110].jpg # Same with this, but silent.
-a03 ls -l                                # regular ls to see dates of files
-.   lsseq -RPl --noErrorLists -g -m a03  # Seq should be the same as above.
-.   renum -v -o 30 --force --touch 200106011230 a03/a.[0100-0110].jpg # Now they should renumber.
-.   lsseq -RPl --noErrorLists -g -m a03  # Note new range.
-a03 ls -l                                # Note that one files was not overwritten due to missing file in renumed seq
-a02 ls -l                                # This next test was carefully laid out so that the highest x120 goes to x140
-.   lsseq -RPl --noErrorLists -g -m a02  # and the lowest x100 goes into the vacated x120 slot. Furthermore x105 is
-.   renum -v -o 20 --touch 200106011230 a02/a.[0100-0120].jpg # missing leaving x0125 untouched after the renum.
-.   lsseq -RPl --noErrorLists -g -m a02  # Show new seq range.
-a02 ls -l                                # Note all were renumbered EXCEPT x125
-a01 ls -l                                # A list 100-140, 101 missing, 134-139 missing.
-.   lsseq -RPl --noErrorLists -g -m a01  # Move them all 100, so should leave 140 unmoved,
-.   renum -o 100 --touch 200106011230 a01/a.[0100-0133].jpg  # and 201 should be missing
-.   lsseq -RPl --noErrorLists -g -m a01  # and range should go up to 233. missing 141-199 also.
+.   lsseq -RPl --noErrorLists -g -m         # List all sequences in the testdir
+.   renumseq                                # Run with no args - should do nothing
+.   renumseq --version                      # MUST increment with each update/bug fix, corresp w/ release.
+.   renumseq --help                         # To keep track of changes with help, plus check if correct
+.   renumseq      null/foo.jpg              # No args - warning issued -> nothing to do.
+.   renumseq -o 1 null/foo.jpg              # Not a sequence
+.   renumseq -o 1 null/foo.[bar].jpg        # Not a sequence
+.   renumseq -o 1 null/foo.[a-b].jpg        # Not a sequence
+.   renumseq -o 1 null/foo.[-a-b].jpg       # Not a sequence
+.   renumseq -o 1 null/foo.[-a--b].jpg      # Not a sequence
+.   renumseq -o 1 null/foo.[xx-a-b].jpg     # Not a sequence
+.   renumseq -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg  # Invalid range, [A-B] but A > B
+.   renumseq -s -o 1 null/foo.jpg           # Repeat all those tests but silent
+.   renumseq -s -o 1 null/foo.[bar].jpg     #    ditto
+.   renumseq -s -o 1 null/foo.[a-b].jpg     #    ditto
+.   renumseq -s -o 1 null/foo.[-a-b].jpg    #    ditto
+.   renumseq -s -o 1 null/foo.[-a--b].jpg   #    ditto
+.   renumseq -s -o 1 null/foo.[xx-a-b].jpg  #    ditto
+.   renumseq -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg  # ditto
+.   lsseq -RPl --noErrorLists -g -m a03     # Record sequence before renumbering
+.   renumseq -o 30 a03/a.[0100-0110].jpg    # This should error out
+.   renumseq -s -o 30 a03/a.[0100-0110].jpg # Same with this, but silent.
+a03 ls -l                                   # regular ls to see dates of files
+.   lsseq -RPl --noErrorLists -g -m a03     # Seq should be the same as above.
+.   renumseq -v -o 30 --force --touch 200106011230 a03/a.[0100-0110].jpg # Now they should renumber.
+.   lsseq -RPl --noErrorLists -g -m a03     # Note new range.
+a03 ls -l                                   # Note that one files was not overwritten due to missing file in renumed seq
+a02 ls -l                                   # This next test was carefully laid out so that the highest x120 goes to x140
+.   lsseq -RPl --noErrorLists -g -m a02     # and the lowest x100 goes into the vacated x120 slot. Furthermore x105 is
+.   renumseq -v -o 20 --touch 200106011230 a02/a.[0100-0120].jpg # missing leaving x0125 untouched after the renumseq.
+.   lsseq -RPl --noErrorLists -g -m a02     # Show new seq range.
+a02 ls -l                                   # Note all were renumbered EXCEPT x125
+a01 ls -l                                   # A list 100-140, 101 missing, 134-139 missing.
+.   lsseq -RPl --noErrorLists -g -m a01     # Move them all 100, so should leave 140 unmoved,
+.   renumseq -o 100 --touch 200106011230 a01/a.[0100-0133].jpg  # and 201 should be missing
+.   lsseq -RPl --noErrorLists -g -m a01     # and range should go up to 233. missing 141-199 also.
 a01 ls -l
 .   lsseq -RPl --noErrorLists -g -m b01 x01 y01
-.   renum -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg
+.   renumseq -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg
 .   lsseq -RPl --noErrorLists -g -m b01 x01 y01
 .   lsseq -RPl --noErrorLists -g -m a02
-.   renum -v -o 10 a02/a.[0120-0140].jpg 
+.   renumseq -v -o 10 a02/a.[0120-0140].jpg 
 .   lsseq -RPl --noErrorLists -g -m a02
-.   renum -v -o -10 a02/a.[0130-0150].jpg 
+.   renumseq -v -o -10 a02/a.[0130-0150].jpg 
 .   lsseq -RPl --noErrorLists -g -m a02
-.   renum --verbose -o -1 --pad 3 a02/a.[0120-0140].jpg 
+.   renumseq --verbose -o -1 --pad 3 a02/a.[0120-0140].jpg 
 .   lsseq -RPl --noErrorLists -g -m a02
 .   lsseq -RPl --noErrorLists -g -m d01
-.   renum -v -o 20 /d01/d_[0100-0120].jpg
+.   renumseq -v -o 20 /d01/d_[0100-0120].jpg
 .   lsseq -RPl --noErrorLists -g -m d01
-.   renum -v d01/d_[0120-0140].jpg
-.   renum -v --replaceUnderscore d01/d_[0120-0140].jpg
+.   renumseq -v d01/d_[0120-0140].jpg
+.   renumseq -v --replaceUnderscore d01/d_[0120-0140].jpg
 .   lsseq -RPl --noErrorLists -g -m d01
 e01 lsseq -RPl --noErrorLists -g -m
-e01 renum -v --replaceUnderscore e_[5-9999].jpg
+e01 renumseq -v --replaceUnderscore e_[5-9999].jpg
 e01 lsseq -RPl --noErrorLists -g -m
-.   renum -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg
-.   renum -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg
+.   renumseq -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg
+.   renumseq -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg
 .   lsseq -ZRPl d01
 .   lsseq -ZRPl d02
-.   renum -o 20 d02/d.[hi]_[0100-0120].jpg
+.   renumseq -o 20 d02/d.[hi]_[0100-0120].jpg
 .   lsseq -ZRPl d02
-.   renum --replaceUnderscore d02/d.[hi]_[0120-0140].jpg
+.   renumseq --replaceUnderscore d02/d.[hi]_[0120-0140].jpg
 .   lsseq -ZRPl d02
 .   lsseq -ZRPl f01
-.   renum -v --pad 4 f01/f_[05-1005].jpg
+.   renumseq -v --pad 4 f01/f_[05-1005].jpg
 EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`
 
-echo ------ Begin Tests ------ > $REPO_DIR/test_renum.out.new
+echo ------ Begin Tests ------ > $TEST_DIR/test_renum.out.new
 
 set -f # Turn off globbing
 i=1
@@ -142,16 +149,16 @@ while true; do
     workingDir=${args[0]}
     cmd=${args[1]}
     args=(${args[@]:2})
-    echo "" >> $REPO_DIR/test_renum.out.new
+    echo "" >> $TEST_DIR/test_renum.out.new
     echo --- Test $i of $NUM_TESTS ---
-    echo --- Test $i --- dir:$workingDir --- $cmd ${args[@]} --- >> $REPO_DIR/test_renum.out.new
-    cd $REPO_DIR/testdir/$workingDir
-    $cmd ${args[@]} >> $REPO_DIR/test_renum.out.new 2>&1
+    echo --- Test $i --- dir:$workingDir --- $cmd ${args[@]} --- >> $TEST_DIR/test_renum.out.new
+    cd $TEST_DIR/tests/testdir/$workingDir
+    $cmd ${args[@]} >> $TEST_DIR/test_renum.out.new 2>&1
     i=$(expr $i + 1)
 done
 set +f # Turn globbing back on
 
-sed -e "1,$ s-$REPO_DIR-/...absPathToRepo.../renum-g" < $REPO_DIR/test_renum.out.new > $tmpfile
-expand < $tmpfile | sed -e '1,$ s/ *$//' > $REPO_DIR/test_renum.out.new
+sed -e "1,$ s-$TEST_DIR-/...absPathToRepo.../renumseq-g" < $TEST_DIR/test_renum.out.new > $tmpfile
+expand < $tmpfile | sed -e '1,$ s/ *$//' > $TEST_DIR/test_renum.out.new
 
 cleanup

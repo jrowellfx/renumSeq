@@ -1,17 +1,37 @@
-#!/usr/bin/python3
+from setuptools import setup, find_packages
+import pathlib
 
-from distutils.core import setup
-import os
-import shutil
+here = pathlib.Path(__file__).parent.resolve()
 
-setup(name='renum',
-      version='1.1.0',
-      description='tool to renumber image sequences',
-      long_description='Uses lsseq native format to specify sequence to renumber - with various options.  Very safe in terms on not overwriting files accidentally. lsseq must be installed on the system as renum uses a python library (seqLister) that is installed by that package',
-      author='James Philip Rowell',
-      author_email='james@alpha-eleven.com',
-      url='http://www.alpha-eleven.com/',
-      py_modules=[],
-      scripts=['renum'],
-      license = "BSD 3-Clause license",
-     )
+# Get the long description from the README file
+long_description = (here / 'README.md').read_text(encoding='utf-8')
+
+setup(
+    name            = 'renumSeq',
+    version         = '1.1.0',
+    description='Tool to renumber image sequences.',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url             = 'https://github.com/jrowellfx/renumSeq',
+    author          = 'James Philip Rowell',
+    author_email    = 'james@alpha-eleven.com',
+
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: POSIX',
+        'Operating System :: Unix',
+        'Operating System :: MacOS',
+        'Development Status :: 5 - Production/Stable',
+    ],
+
+    packages        = ['renumseq'],
+    python_requires = '>=3.6, <4',
+    install_requires=['seqLister'],
+
+    entry_points = {
+        'console_scripts': [
+            'renumseq = renumseq.__main__:main',
+        ]
+    }
+)

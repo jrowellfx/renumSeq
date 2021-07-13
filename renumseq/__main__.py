@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 # 3-Clause BSD License
 # 
 # Copyright (c) 2008-2021, James Philip Rowell,
