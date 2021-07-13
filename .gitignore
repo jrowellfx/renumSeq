@@ -1,1 +1,7 @@
 testdir
+@eaDir
+build
+*egg_info*
+*egg-info*
+*.bak
+__pycache__
