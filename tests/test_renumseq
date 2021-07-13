@@ -67,6 +67,7 @@ find testdir -type f -exec touch -t 199201121330 \{\} \;
 # The rest are args to the command.
 #
 cat << EOF > $tmpArgs
+.   lsseq --version                         # Double check which version being used for this test.
 .   lsseq -RPl --noErrorLists -g -m         # List all sequences in the testdir
 .   renumseq                                # Run with no args - should do nothing
 .   renumseq --version                      # MUST increment with each update/bug fix, corresp w/ release.
