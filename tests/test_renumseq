@@ -87,23 +87,23 @@ cat << EOF > $tmpArgs
 .   renumseq -s -o 1 null/foo.[-a--b].jpg   #    ditto
 .   renumseq -s -o 1 null/foo.[xx-a-b].jpg  #    ditto
 .   renumseq -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg  # ditto
-.   lsseq -RPl --noErrorLists -g -m a03     # Record sequence before renumbering
-.   renumseq -o 30 a03/a.[0100-0110].jpg    # This should error out
-.   renumseq -s -o 30 a03/a.[0100-0110].jpg # Same with this, but silent.
+a03 lsseq -RPl --noErrorLists -g -m         # Record sequence before renumbering
+a03 renumseq -o 30 a.[0100-0110].jpg        # This should error out
+a03 renumseq -s -o 30 a.[0100-0110].jpg     # Same with this, but silent.
 a03 ls -l                                   # regular ls to see dates of files
-.   lsseq -RPl --noErrorLists -g -m a03     # Seq should be the same as above.
-.   renumseq -v -o 30 --force --touch 200106011230 a03/a.[0100-0110].jpg # Now they should renumber.
-.   lsseq -RPl --noErrorLists -g -m a03     # Note new range.
+a03 lsseq -RPl --noErrorLists -g -m         # Seq should be the same as above.
+a03 renumseq -v -o 30 --force --touch 200106011230 a.[0100-0110].jpg # Now they should renumber.
+a03 lsseq -RPl --noErrorLists -g -m         # Note new range.
 a03 ls -l                                   # Note that one files was not overwritten due to missing file in renumed seq
 a02 ls -l                                   # This next test was carefully laid out so that the highest x120 goes to x140
-.   lsseq -RPl --noErrorLists -g -m a02     # and the lowest x100 goes into the vacated x120 slot. Furthermore x105 is
-.   renumseq -v -o 20 --touch 200106011230 a02/a.[0100-0120].jpg # missing leaving x0125 untouched after the renumseq.
-.   lsseq -RPl --noErrorLists -g -m a02     # Show new seq range.
+a02 lsseq -RPl --noErrorLists -g -m         # and the lowest x100 goes into the vacated x120 slot. Furthermore x105 is
+a02 renumseq -v -o 20 --touch 200106011230 a.[0100-0120].jpg # missing leaving x0125 untouched after the renum.
+a02 lsseq -RPl --noErrorLists -g -m         # Show new seq range.
 a02 ls -l                                   # Note all were renumbered EXCEPT x125
 a01 ls -l                                   # A list 100-140, 101 missing, 134-139 missing.
-.   lsseq -RPl --noErrorLists -g -m a01     # Move them all 100, so should leave 140 unmoved,
-.   renumseq -o 100 --touch 200106011230 a01/a.[0100-0133].jpg  # and 201 should be missing
-.   lsseq -RPl --noErrorLists -g -m a01     # and range should go up to 233. missing 141-199 also.
+a01 lsseq -RPl --noErrorLists -g -m         # Move them all 100, so should leave 140 unmoved,
+a01 renumseq -o 100 --touch 200106011230 a.[0100-0133].jpg  # and 201 should be missing
+a01 lsseq -RPl --noErrorLists -g -m         # and range should go up to 233. missing 141-199 also.
 a01 ls -l
 .   lsseq -RPl --noErrorLists -g -m b01 x01 y01
 .   renumseq -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg
