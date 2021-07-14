@@ -1,0 +1,7 @@
+# Assumes that venv has seqLister installed.
+export TEST_DIR=`pwd`
+pushd $HOME
+source venv/bin/activate
+popd
+ln -sf ../renumseq/__main__.py renumseq
+export PATH="$TEST_DIR:$PATH"

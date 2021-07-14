@@ -1,13 +1,15 @@
-# About `renumseq`
+# About renumseq
 
-`renumseq` is a simple command-line-utility for renumbering frame sequences
-used in CG production.
+`renumseq` is a Unix/Linux command-line-utility for renumbering image-sequences
+which are most
+typically used in CG post-production.
 
-`renumseq` allows you to renumber sequences with an offset, and optionally adjust
-the padding of the frame numbers.
+`renumseq` allows you to renumber sequences with an offset, or give them a new 'start' frame.
+It also allows you adjust the padding of the frame numbers.
 
 `renumseq` borrows the syntax of the native output of
-`lsseq` to specify the sequence to be renumbered, so it is recommended to
+[`lsseq`](https://github.com/jrowellfx/lsseq) to specify
+the sequence to be renumbered. Therefore it is recommended to
 also install `lsseq` as it makes using `renumseq` easier.
 
 For example, use `lsseq` to list a sequence, then
@@ -15,8 +17,9 @@ cut and paste its
 output as the arguments to `renumseq` with appropriate optional
 arguments for setting the offset etc.
 
-`renumseq` was written to be safe in that it won't overwrite any existing files
-(outside of the range of files to be renumbered) during the renumbering.  If
+`renumseq` was written to be safe in that it won't
+unintentionally overwrite any existing files
+during the renumbering.  If
 `renumseq` finds that by renumbering a sequence it will write over another frame
 outside the range specified then it will skip renumbering that sequence
 (printing a warning) and go onto the next sequence in the list.  Naturally
@@ -38,17 +41,17 @@ there is an option to force `renumseq` to overwrite those files if desired.
     filename.[n-m].extension
 ```
 
-As you can see, replacing the underscore separator with a dot.
-If all you want to do is switch the separator from an underscore to a dot, then
+which, as you can see, replaces the underscore-separator with a dot-separator.  
+`Protip`: If all you want to do is switch the separator from an underscore to a dot, then
 use a zero offset, plus the `--replaceUnderscore` argument.
 
-## Installing `renumseq`
+## Installing renumseq
 
 ```
 python3 -m pip install renumSeq
 ```
 
-## Testing `renumseq`
+## Testing renumseq
 
 After installing try the following:
 
@@ -90,7 +93,9 @@ aaa.002.tif -> aaa.012.tif
 aaa.001.tif -> aaa.011.tif
 ```
 
-Also try this:
+Alternatively you can just enclose the argument in quotes like this: `'aaa.[001-005].tif'`.
+
+Type this:
 
 ```
 $ renumseq --help

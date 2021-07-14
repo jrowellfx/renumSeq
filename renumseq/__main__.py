@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # 3-Clause BSD License
 # 
 # Copyright (c) 2008-2021, James Philip Rowell,
@@ -45,9 +47,11 @@ import time
 from datetime import datetime, timedelta, timezone
 import seqLister
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 
 touchTime = -1.0
+
+FIX_BAD_PADDING = False
 
 def warnSeqSyntax(silent, basename, seq) :
     if not silent :
@@ -60,6 +64,8 @@ def main():
     NEVER_START_FRAME = -999999999999
     touchFiles = False
     global touchTime
+    global FIX_BAD_PADDING
+    fixPadFrameList = []
 
 
     # Redefine the exception handling routine so that it does NOT
@@ -130,6 +136,7 @@ def main():
         lsseq's native format output properly lists the sequence \
         range with appropriate padding and can also report when there are \
         incorrectly padded frame-numbers with --showBadPadding")
+
     p.add_argument("--replaceUnderscore", action="store_true",
         dest="fixUnderscore", default=False,
         help="in the case that SEQ uses an underscore ('_') \
@@ -137,12 +144,6 @@ def main():
         SEQ, replace the underscore with a dot-separator ('.'). Note that \
         you can use an offset \
         of zero (default) to replace the underscore with a dot leaving all else the same")
-    p.add_argument("--fixBadPadding", action="store_true",
-        dest="fixBadPad", default=False,
-        help="When SEQ has inconsistent padding, \
-        then repad the frame numbers with \
-        the padding of the smallest index, \
-        unless --pad has been specified, then use <PAD>. JPR Change this to use list of bad-pad numbers")
     p.add_argument("--touch", nargs='?',
         dest="touch",
         default=None, # Value if --touch NOT present on cmd line.
@@ -160,6 +161,20 @@ def main():
         dest="verbose", default=False,
         help="list the mapping from old file-name to new file-name")
 
+    p.add_argument("--fixBadPadList", action="store",
+        dest="badPadList", default=[], nargs='+', metavar="SEQLIST",
+        help="Special purpose option to fix bad-padding on frame-numbers in SEQ. \
+        This rarely-used option over-rides all other options that would change \
+        the names of the files in SEQ and they are ignored (such as --offset). \
+        Only the frame numbers listed as arguments to this option  \
+        will get new padding. The pad size is determined by the padding \
+        of the smallest index specified \
+        in the SEQ argument \
+        or if --pad has been specified then use PAD digits. \
+        The list of badly padded frames can easily be copied from the output of the \
+        utility 'lsseq' using its --showBadPadding option. \
+        Append '--' before the list of SEQs to delineate the end of the options")
+
     p.add_argument("files", metavar="SEQ", nargs="*",
         help="image sequence in lsseq native format")
 
@@ -169,12 +184,47 @@ def main():
     if args.files == [] :
         sys.exit(0)
 
+    # First set up for case that we're asked to FIX_BAD_PADDING.
+    #
+    # Following list is ONLY zero-length if the option was NOT invoked,
+    # because nargs='+' guarantees at LEAST one argument follows the option,
+    # (otherwise argparser thows an error for the user and exits.)
+    # 
+    if len(args.badPadList) > 0 :
+        FIX_BAD_PADDING = True # For later logic
+        cruftList = []
+        simpleBadPadList = []
+        for a in args.badPadList :
+            simpleBadPadList.extend(a.replace(",", " ").split()) # Splits commas AND spaces.
+        fixPadFrameList = seqLister.expandSeq(simpleBadPadList, cruftList)
+        if len(fixPadFrameList) == 0 :
+            if not args.silent :
+                print(os.path.basename(sys.argv[0]),
+                    ": error: invalid bad-padding list, use seqLister syntax",
+                    file=sys.stderr, sep='')
+            sys.exit(0)
+        if len(cruftList) > 0 :
+            if not args.silent :
+                print(os.path.basename(sys.argv[0]),
+                    ": error: invalid entries in the list of badly padded frames: ",
+                    " ".join(cruftList),
+                    file=sys.stderr, sep='')
+            sys.exit(0)
+        #
+        # Over-ride all other options that could change the filenames.
+        #
+        args.offsetFrames = 0
+        args.fixUnderscore = False
+        args.startFrame = NEVER_START_FRAME
+        fixPadFrameList.sort() # To make for nicer verbose output later.
+
     # The following logic means "do nothing" - so just exit cleanly (**a**)
     #
     if args.offsetFrames == 0 \
             and args.pad < 0 \
             and not args.fixUnderscore \
-            and args.startFrame == NEVER_START_FRAME :
+            and args.startFrame == NEVER_START_FRAME \
+            and not FIX_BAD_PADDING :
         if not args.silent :
             print(os.path.basename(sys.argv[0]),
                 ": warning: no offset, no padding change etc., nothing to do",
@@ -358,7 +408,8 @@ def main():
             origFile = seq[0] + currentSeparator + currentFormatStr.format(i) + '.' + seq[2]
             if os.path.exists(origFile) :
                 origNames.append(origFile)
-                newNames.append(seq[0] + newSeparator + newFormatStr.format(i+args.offsetFrames) + '.' + seq[2])
+                newNames.append(seq[0] + newSeparator + newFormatStr.format(i+args.offsetFrames) \
+                    + '.' + seq[2])
 
         if origNames == [] :
             if not args.silent :

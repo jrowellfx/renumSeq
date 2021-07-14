@@ -12,6 +12,9 @@ if [[ `basename $TEST_DIR` != 'tests' ]]; then
     exit 1
 fi
 
+ln -sf ../renumseq/__main__.py renumseq
+export PATH="$TEST_DIR:$PATH"
+
 export REPO_DIR=`dirname $TEST_DIR`
 
 unalias lsseq > /dev/null 2>&1
