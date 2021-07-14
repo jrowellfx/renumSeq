@@ -1,7 +1,7 @@
 ------ Begin Tests ------
 
 --- Test 1 --- dir:. --- lsseq --version ---
-2.4.0
+2.4.1
 
 --- Test 2 --- dir:. --- lsseq -RPl --noErrorLists -g -m ---
 ./a01/a.[0100-0140].jpg m:[101,134-139]
@@ -125,13 +125,13 @@ renumseq: warning: invalid range [11-03] for seq c02/c
 
 --- Test 20 --- dir:. --- renumseq -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg ---
 
---- Test 21 --- dir:. --- lsseq -RPl --noErrorLists -g -m a03 ---
-a03/a.[0100-0133].jpg m:[101]
+--- Test 21 --- dir:a03 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0100-0133].jpg m:[101]
 
---- Test 22 --- dir:. --- renumseq -o 30 a03/a.[0100-0110].jpg ---
-renumseq: warning: skipping a03/a.[0100-0110].jpg: renum would have overwritten a file outside the sequence being renumbered. e.g.: a03/a.0133.jpg
+--- Test 22 --- dir:a03 --- renumseq -o 30 a.[0100-0110].jpg ---
+renumseq: warning: skipping a.[0100-0110].jpg: renum would have overwritten a file outside the sequence being renumbered. e.g.: a.0133.jpg
 
---- Test 23 --- dir:. --- renumseq -s -o 30 a03/a.[0100-0110].jpg ---
+--- Test 23 --- dir:a03 --- renumseq -s -o 30 a.[0100-0110].jpg ---
 
 --- Test 24 --- dir:a03 --- ls -l ---
 total 0
@@ -169,23 +169,23 @@ total 0
 -rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0132.jpg
 -rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0133.jpg
 
---- Test 25 --- dir:. --- lsseq -RPl --noErrorLists -g -m a03 ---
-a03/a.[0100-0133].jpg m:[101]
+--- Test 25 --- dir:a03 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0100-0133].jpg m:[101]
 
---- Test 26 --- dir:. --- renumseq -v -o 30 --force --touch 200106011230 a03/a.[0100-0110].jpg ---
-a03/a.0110.jpg -> a03/a.0140.jpg
-a03/a.0109.jpg -> a03/a.0139.jpg
-a03/a.0108.jpg -> a03/a.0138.jpg
-a03/a.0107.jpg -> a03/a.0137.jpg
-a03/a.0106.jpg -> a03/a.0136.jpg
-a03/a.0105.jpg -> a03/a.0135.jpg
-a03/a.0104.jpg -> a03/a.0134.jpg
-a03/a.0103.jpg -> a03/a.0133.jpg
-a03/a.0102.jpg -> a03/a.0132.jpg
-a03/a.0100.jpg -> a03/a.0130.jpg
+--- Test 26 --- dir:a03 --- renumseq -v -o 30 --force --touch 200106011230 a.[0100-0110].jpg ---
+a.0110.jpg -> a.0140.jpg
+a.0109.jpg -> a.0139.jpg
+a.0108.jpg -> a.0138.jpg
+a.0107.jpg -> a.0137.jpg
+a.0106.jpg -> a.0136.jpg
+a.0105.jpg -> a.0135.jpg
+a.0104.jpg -> a.0134.jpg
+a.0103.jpg -> a.0133.jpg
+a.0102.jpg -> a.0132.jpg
+a.0100.jpg -> a.0130.jpg
 
---- Test 27 --- dir:. --- lsseq -RPl --noErrorLists -g -m a03 ---
-a03/a.[0111-0140].jpg
+--- Test 27 --- dir:a03 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0111-0140].jpg
 
 --- Test 28 --- dir:a03 --- ls -l ---
 total 0
@@ -244,33 +244,33 @@ total 0
 -rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0120.jpg
 -rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0125.jpg
 
---- Test 30 --- dir:. --- lsseq -RPl --noErrorLists -g -m a02 ---
-a02/a.[0100-0125].jpg m:[105,121-124]
+--- Test 30 --- dir:a02 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0100-0125].jpg m:[105,121-124]
 
---- Test 31 --- dir:. --- renumseq -v -o 20 --touch 200106011230 a02/a.[0100-0120].jpg ---
-a02/a.0120.jpg -> a02/a.0140.jpg
-a02/a.0119.jpg -> a02/a.0139.jpg
-a02/a.0118.jpg -> a02/a.0138.jpg
-a02/a.0117.jpg -> a02/a.0137.jpg
-a02/a.0116.jpg -> a02/a.0136.jpg
-a02/a.0115.jpg -> a02/a.0135.jpg
-a02/a.0114.jpg -> a02/a.0134.jpg
-a02/a.0113.jpg -> a02/a.0133.jpg
-a02/a.0112.jpg -> a02/a.0132.jpg
-a02/a.0111.jpg -> a02/a.0131.jpg
-a02/a.0110.jpg -> a02/a.0130.jpg
-a02/a.0109.jpg -> a02/a.0129.jpg
-a02/a.0108.jpg -> a02/a.0128.jpg
-a02/a.0107.jpg -> a02/a.0127.jpg
-a02/a.0106.jpg -> a02/a.0126.jpg
-a02/a.0104.jpg -> a02/a.0124.jpg
-a02/a.0103.jpg -> a02/a.0123.jpg
-a02/a.0102.jpg -> a02/a.0122.jpg
-a02/a.0101.jpg -> a02/a.0121.jpg
-a02/a.0100.jpg -> a02/a.0120.jpg
+--- Test 31 --- dir:a02 --- renumseq -v -o 20 --touch 200106011230 a.[0100-0120].jpg ---
+a.0120.jpg -> a.0140.jpg
+a.0119.jpg -> a.0139.jpg
+a.0118.jpg -> a.0138.jpg
+a.0117.jpg -> a.0137.jpg
+a.0116.jpg -> a.0136.jpg
+a.0115.jpg -> a.0135.jpg
+a.0114.jpg -> a.0134.jpg
+a.0113.jpg -> a.0133.jpg
+a.0112.jpg -> a.0132.jpg
+a.0111.jpg -> a.0131.jpg
+a.0110.jpg -> a.0130.jpg
+a.0109.jpg -> a.0129.jpg
+a.0108.jpg -> a.0128.jpg
+a.0107.jpg -> a.0127.jpg
+a.0106.jpg -> a.0126.jpg
+a.0104.jpg -> a.0124.jpg
+a.0103.jpg -> a.0123.jpg
+a.0102.jpg -> a.0122.jpg
+a.0101.jpg -> a.0121.jpg
+a.0100.jpg -> a.0120.jpg
 
---- Test 32 --- dir:. --- lsseq -RPl --noErrorLists -g -m a02 ---
-a02/a.[0120-0140].jpg
+--- Test 32 --- dir:a02 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0120-0140].jpg
 
 --- Test 33 --- dir:a02 --- ls -l ---
 total 0
@@ -333,13 +333,13 @@ total 0
 -rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0133.jpg
 -rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0140.jpg
 
---- Test 35 --- dir:. --- lsseq -RPl --noErrorLists -g -m a01 ---
-a01/a.[0100-0140].jpg m:[101,134-139]
+--- Test 35 --- dir:a01 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0100-0140].jpg m:[101,134-139]
 
---- Test 36 --- dir:. --- renumseq -o 100 --touch 200106011230 a01/a.[0100-0133].jpg ---
+--- Test 36 --- dir:a01 --- renumseq -o 100 --touch 200106011230 a.[0100-0133].jpg ---
 
---- Test 37 --- dir:. --- lsseq -RPl --noErrorLists -g -m a01 ---
-a01/a.[0140-0233].jpg m:[141-199,201]
+--- Test 37 --- dir:a01 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0140-0233].jpg m:[141-199,201]
 
 --- Test 38 --- dir:a01 --- ls -l ---
 total 0
