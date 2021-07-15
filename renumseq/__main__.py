@@ -36,7 +36,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# renum - renumber images sequences on the command line
+# renumseq - renumber images sequences on the command line
 #         specify the sequences using lsseq's native format
 
 import re
@@ -51,8 +51,6 @@ VERSION = "1.2.0"
 
 touchTime = -1.0
 
-FIX_BAD_PADDING = False
-
 def warnSeqSyntax(silent, basename, seq) :
     if not silent :
         print( os.path.basename(sys.argv[0]),
@@ -64,12 +62,10 @@ def main():
     NEVER_START_FRAME = -999999999999
     touchFiles = False
     global touchTime
-    global FIX_BAD_PADDING
-    fixPadFrameList = []
 
 
     # Redefine the exception handling routine so that it does NOT
-    # do a trace dump if the user types ^C while renum is running.
+    # do a trace dump if the user types ^C while renumseq is running.
     #
     old_excepthook = sys.excepthook
     def new_hook(exceptionType, value, traceback):
@@ -83,14 +79,20 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent('''
             Renumber the frame range of each SEQ listed on the command line.
-            SEQ should be specified using lsseq's native format. (Turning off globbing,
-            or enclosing SEQ in quotes, or placing backslashes ahead of '[' and ']' will
-            likely be necessary on the command line.)
+            SEQ should be specified using lsseq's native format.
+            
+            Protip: Turning off globbing, or enclosing SEQ in quotes, or placing
+            backslashes ahead of '[' and ']' will be necessary to turn off the special
+            treatment of '[' and ']' by the shell.
 
-            For example:
+            Caution: The files in the sequence MUST BE correctly padded.
+            Pay attention to lsseq's --showBadPadding for reports of badly padded frame
+            numbers and fix them before renumbering a sequence with this utility.
+
+            Example usage:
                 $ lsseq
                 aaa.[001-005].tif
-                $ renum -o 10 'aaa.[001-005].tif'
+                $ renumseq -o 10 'aaa.[001-005].tif'
                 $ lsseq
                 aaa.[011-015].tif
             '''),
@@ -161,20 +163,6 @@ def main():
         dest="verbose", default=False,
         help="list the mapping from old file-name to new file-name")
 
-    p.add_argument("--fixBadPadList", action="store",
-        dest="badPadList", default=[], nargs='+', metavar="SEQLIST",
-        help="Special purpose option to fix bad-padding on frame-numbers in SEQ. \
-        This rarely-used option over-rides all other options that would change \
-        the names of the files in SEQ and they are ignored (such as --offset). \
-        Only the frame numbers listed as arguments to this option  \
-        will get new padding. The pad size is determined by the padding \
-        of the smallest index specified \
-        in the SEQ argument \
-        or if --pad has been specified then use PAD digits. \
-        The list of badly padded frames can easily be copied from the output of the \
-        utility 'lsseq' using its --showBadPadding option. \
-        Append '--' before the list of SEQs to delineate the end of the options")
-
     p.add_argument("files", metavar="SEQ", nargs="*",
         help="image sequence in lsseq native format")
 
@@ -184,47 +172,12 @@ def main():
     if args.files == [] :
         sys.exit(0)
 
-    # First set up for case that we're asked to FIX_BAD_PADDING.
-    #
-    # Following list is ONLY zero-length if the option was NOT invoked,
-    # because nargs='+' guarantees at LEAST one argument follows the option,
-    # (otherwise argparser thows an error for the user and exits.)
-    # 
-    if len(args.badPadList) > 0 :
-        FIX_BAD_PADDING = True # For later logic
-        cruftList = []
-        simpleBadPadList = []
-        for a in args.badPadList :
-            simpleBadPadList.extend(a.replace(",", " ").split()) # Splits commas AND spaces.
-        fixPadFrameList = seqLister.expandSeq(simpleBadPadList, cruftList)
-        if len(fixPadFrameList) == 0 :
-            if not args.silent :
-                print(os.path.basename(sys.argv[0]),
-                    ": error: invalid bad-padding list, use seqLister syntax",
-                    file=sys.stderr, sep='')
-            sys.exit(0)
-        if len(cruftList) > 0 :
-            if not args.silent :
-                print(os.path.basename(sys.argv[0]),
-                    ": error: invalid entries in the list of badly padded frames: ",
-                    " ".join(cruftList),
-                    file=sys.stderr, sep='')
-            sys.exit(0)
-        #
-        # Over-ride all other options that could change the filenames.
-        #
-        args.offsetFrames = 0
-        args.fixUnderscore = False
-        args.startFrame = NEVER_START_FRAME
-        fixPadFrameList.sort() # To make for nicer verbose output later.
-
     # The following logic means "do nothing" - so just exit cleanly (**a**)
     #
     if args.offsetFrames == 0 \
             and args.pad < 0 \
             and not args.fixUnderscore \
-            and args.startFrame == NEVER_START_FRAME \
-            and not FIX_BAD_PADDING :
+            and args.startFrame == NEVER_START_FRAME :
         if not args.silent :
             print(os.path.basename(sys.argv[0]),
                 ": warning: no offset, no padding change etc., nothing to do",
@@ -399,10 +352,32 @@ def main():
             currentSeparator = '.'
             newSeparator = '.'
 
-        # The following logic won't create properly named files if they have "bad padding",
-        # e.g. 02, 03, 04, ..., 0998, 0999, 1000, 1001, or any other such badly
-        # padded sequence. Note that the example above, should strictly be two padded,
-        # not four padded.
+        # Note, that if SEQ has some frames with bad-padding(*), then creating the
+        # filename 'origFile' below will make a name that doesn't match the file on
+        # disk so it will be treated like it doesn't exist.
+        #
+        # This will likely lead to unexpected results as far as the user is concerned.
+        # Worst case: A rare combination of circumstances COULD lead to the badly padded
+        # filename being overwritten unintentionally.
+        #
+        # E.g.: renumbering the sequence 'a.[098-102].exr p:[99]', i.e.,
+        #    a.098.exr, a.99.exr, a.100.exr a.101.exr, a.102.exr
+        # with '--offset -2 --force --pad 2' will make a new sequence:
+        #    a.96.exr, a.98.exr, a.99.exr, a.100.exr
+        # i.e., 'a.[96-100].exr m:[99]'
+        #
+        # The old a.99.exr got OVERWRITTEN, but not copied to a.97.exr!
+        #
+        # THIS IS an UNLIKELY OCCURANCE!
+        #
+        # However users should pay attention to the --showBadPadding option of 'lsseq'
+        # and if need be, first fix SEQ with 'fixseqpadding' before using this
+        # util to get correct results in all circumstances.
+        #
+        #  (*) Another example of badly padded frame numbers:
+        #      02, 03, 04, ..., 0998, 0999, 1000, 1001, 
+        #      This example should be two padded, not four padded,
+        #      so 0998 and 0999 are badly padded frame numbers.
         #
         for i in frameList :
             origFile = seq[0] + currentSeparator + currentFormatStr.format(i) + '.' + seq[2]
@@ -429,38 +404,38 @@ def main():
             if abortSeq :
                 if not args.silent :
                     print(os.path.basename(sys.argv[0]), ": warning: skipping ", arg,
-                        ": renum would have overwritten a file outside the sequence being renumbered. e.g.: ",
+                        ": renumbering would have overwritten a file outside the sequence being renumbered. e.g.: ",
                         f, file=sys.stderr, sep='')
                 continue
 
-        # Note: there will be at least one entry in list so the following test catches
-        # the case missed by the test above (**a**). This case will be missed above if
-        # the pad size was explicitly specificed but is already the same as the existing sequence.
-        #
-        # JPR? But some of the files might be the same? if we're ONLY adding padding, but some
-        # don't need to be padded? Like turning two padded into four padded if the range is 1,2000? That is,
-        # 1000,2000 would not have any change.
-        #
-        if origNames[0] == newNames[0] :
-            if not args.silent :
-                print(os.path.basename(sys.argv[0]),
-                    ": warning: no changes being made to ", arg, ": skipping",
-                    file=sys.stderr, sep='')
-            continue
-
         i = 0
         numFiles = len(origNames)
+        fileRenamed = False
         while i < numFiles :
-            if args.verbose and not args.silent :
-                print(origNames[i], " -> ", newNames[i], sep='')
-            if not args.dryRun :
-                os.rename(origNames[i], newNames[i])
-                if touchFiles :
-                    if touchTime == 0.0 :
-                        os.utime(newNames[i])
-                    else :
-                        os.utime(newNames[i], (touchTime, touchTime))
+            #
+            # Only rename files that have changed names.
+            # This catches repadding of SEQ (i.e. no offset),
+            # but some frames are already padded properly.
+            #
+            if origNames[i] != newNames[i] :
+                fileRenamed = True
+                if args.verbose and not args.silent :
+                    print(origNames[i], " -> ", newNames[i], sep='')
+                if not args.dryRun :
+                    os.rename(origNames[i], newNames[i])
+                    if touchFiles :
+                        if touchTime == 0.0 :
+                            os.utime(newNames[i])
+                        else :
+                            os.utime(newNames[i], (touchTime, touchTime))
             i += 1
+        #
+        # Continuation of above logic, printing warning if NO files in SEQ changed names.
+        #
+        if not fileRenamed and not args.silent :
+            print(os.path.basename(sys.argv[0]),
+                ": warning: no changes were made to ", arg, ": skipping",
+                file=sys.stderr, sep='')
 
 if __name__ == '__main__':
     main()

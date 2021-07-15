@@ -20,20 +20,26 @@
 --- Test 3 --- dir:. --- renumseq ---
 
 --- Test 4 --- dir:. --- renumseq --version ---
-1.1.0
+1.2.0
 
 --- Test 5 --- dir:. --- renumseq --help ---
 usage: renumseq [OPTION]... [SEQ]...
 
 Renumber the frame range of each SEQ listed on the command line.
-SEQ should be specified using lsseq's native format. (Turning off globbing,
-or enclosing SEQ in quotes, or placing backslashes ahead of '[' and ']' will
-likely be necessary on the command line.)
+SEQ should be specified using lsseq's native format.
 
-For example:
+Protip: Turning off globbing, or enclosing SEQ in quotes, or placing
+backslashes ahead of '[' and ']' will be necessary to turn off the special
+treatment of '[' and ']' by the shell.
+
+Caution: The files in the sequence MUST BE correctly padded.
+Pay attention to lsseq's --showBadPadding for reports of badly padded frame
+numbers and fix them before renumbering a sequence with this utility.
+
+Example usage:
     $ lsseq
     aaa.[001-005].tif
-    $ renum -o 10 'aaa.[001-005].tif'
+    $ renumseq -o 10 'aaa.[001-005].tif'
     $ lsseq
     aaa.[011-015].tif
 
@@ -71,10 +77,6 @@ optional arguments:
                         dot-separator ('.'). Note that you can use an offset
                         of zero (default) to replace the underscore with a dot
                         leaving all else the same
-  --fixBadPadding       When SEQ has inconsistent padding, then repad the
-                        frame numbers with the padding of the smallest index,
-                        unless --pad has been specified, then use <PAD>. JPR
-                        Change this to use list of bad-pad numbers
   --touch [[CC]YYMMDD[hhmm]]
                         update the access time of the file being renamed to
                         the current time. Optionally specify a date for the
@@ -129,7 +131,7 @@ renumseq: warning: invalid range [11-03] for seq c02/c
 ./a.[0100-0133].jpg m:[101]
 
 --- Test 22 --- dir:a03 --- renumseq -o 30 a.[0100-0110].jpg ---
-renumseq: warning: skipping a.[0100-0110].jpg: renum would have overwritten a file outside the sequence being renumbered. e.g.: a.0133.jpg
+renumseq: warning: skipping a.[0100-0110].jpg: renumbering would have overwritten a file outside the sequence being renumbered. e.g.: a.0133.jpg
 
 --- Test 23 --- dir:a03 --- renumseq -s -o 30 a.[0100-0110].jpg ---
 

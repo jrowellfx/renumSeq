@@ -9,17 +9,16 @@ cd $HOME
 # else
     source venv/bin/activate
 
-# For testing before building.
-# 
-pip install seqLister
-#
-# Then make sure this is the opening 'shebang' line in __main__.py
-# '#!/usr/bin/env python3'
-# Then, in the 'tests' directory in this repo.
-cd <dirWithGitRepos>/renumSeq/tests
-ln -s ../renumseq/__main__.py renumseq
-# Then you can use tests/renumseq to test while modifying
-# and debugging the code.
+    # For testing and code-dev
+    #
+    # Make sure the following shebang is the first line in __main__.py
+    # 
+        #!/usr/bin/env python3
+    # 
+    cd tests
+    source setUpToTest.sourceMe
+    #
+    # Then proceed with code-dev, testing the command at will.
 
 cd <dirWithGitRepos>/renumSeq
 

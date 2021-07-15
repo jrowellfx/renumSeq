@@ -2,6 +2,7 @@
 export TEST_DIR=`pwd`
 pushd $HOME
 source venv/bin/activate
+pip install seqLister --upgrade
 popd
 ln -sf ../renumseq/__main__.py renumseq
 export PATH="$TEST_DIR:$PATH"
