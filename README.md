@@ -103,5 +103,5 @@ $ renumseq --help
 
 ...for much more useful info.
 
-Please contact j a m e s <at> a l p h a - e l e v e n . c o m with any bug
+Please contact j a m e s \<at\> a l p h a - e l e v e n . c o m with any bug
 reports, suggestions or praise as the case may be.
