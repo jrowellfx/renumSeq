@@ -28,7 +28,7 @@ python3 -m build
 # __token__ and password for PyPi account.
 # ...or not needed if .pypirc is installed in $HOME
 #
-python3 -m twine upload --repository pypi dist/renumSeq-1.1.0*
+python3 -m twine upload --repository pypi dist/renumSeq-x.x.x*
 
 # Install it,
     python3 -m pip install renumSeq
