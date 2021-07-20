@@ -62,7 +62,7 @@ $ cd tmp
 $ touch aaa.001.tif aaa.002.tif aaa.003.tif aaa.004.tif aaa.005.tif
 $ lsseq -Z
 aaa.[001-005].tif
-$ renumseq --verbose --offset 10 aaa.[001-005].tif
+$ renumseq --verbose --offset 10 'aaa.[001-005].tif'
 aaa.005.tif -> aaa.015.tif
 aaa.004.tif -> aaa.014.tif
 aaa.003.tif -> aaa.013.tif
