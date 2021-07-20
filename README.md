@@ -73,7 +73,8 @@ aaa.[011-015].tif
 ```
 
 Note that you may get an error from your
-shell when you try to run the `renumseq` command, that might look something like
+shell when you try to run the `renumseq` command above, without the
+quotes around the sequence, that might look something like
 this:
 
 ```
@@ -93,7 +94,7 @@ aaa.002.tif -> aaa.012.tif
 aaa.001.tif -> aaa.011.tif
 ```
 
-Alternatively you can just enclose the argument in quotes like this: `'aaa.[001-005].tif'`.
+Alternatively you can just enclose the argument in quotes like we did above: `'aaa.[001-005].tif'`.
 
 Type this:
 
