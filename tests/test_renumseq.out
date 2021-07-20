@@ -21,7 +21,7 @@
 --- Test 3 --- dir:. --- renumseq ---
 
 --- Test 4 --- dir:. --- renumseq --version ---
-1.2.0
+1.2.1
 
 --- Test 5 --- dir:. --- renumseq --help ---
 usage: renumseq [OPTION]... [SEQ]...
