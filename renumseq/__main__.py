@@ -114,7 +114,7 @@ def main():
     p.add_argument("--dryRun", action="store_true",
         dest="dryRun", default=False,
         help="Don't renumber SEQ, just display how the \
-        files would have been renumbered. Forces --verbose and disables --silent" )
+        files would have been renumbered. Forces --verbose" )
     p.add_argument("--skip", action="store_false",
         dest="clobber", default=False,
         help="if renumbering a file in SEQ would result in overwriting \
@@ -194,19 +194,20 @@ def main():
 
     if args.dryRun : # verbose to show how renumbering would occur.
         args.verbose = True
-        args.silent = False
 
     # The following regular expression is created to match lsseq native sequence syntax
-    # which means (number labels refer to parenthesis groupings):
+    # which means (number labels refer to parenthesis groupings **):
     #
     # 0 - one or more of anything,           followed by
     # 1 - a dot or underscore,               followed by
     #     an open square bracket,            followed by
-    # 2 - one or more digits or minus signs, followed by
+    # 2 - a frame range,                     followed by
     #     a close square bracket then a dot, followed by
-    # 3 - one or more letters or digits (starting with a letter)
+    # 3 - one or more letters, optionally one dot,
+    #     then one or more letters, then one or more letters and numbers
+    #     and the end of the line.
     #
-    pattern = re.compile(r"(.+)([._])\[([0-9-]+)\]\.([a-zA-Z]+[a-zA-Z0-9]*)")
+    pattern = re.compile(r"(.+)([._])\[(-?[0-9]+--?[0-9]+)\]\.([a-zA-Z]+\.?[a-zA-Z]+[a-zA-Z0-9]*$)")
 
     for arg in args.files :
         abortSeq = False
@@ -224,7 +225,7 @@ def main():
         v = match.groups()
 
         usesUnderscore = (v[1] == '_')
-        seq = [v[0], v[2], v[3]] # base filename, range, file-extension.
+        seq = [v[0], v[2], v[3]] # base filename, range, file-extension. (see above **)
 
         # seq might be range with neg numbers. Assume N,M >= 0,
         # then there are only 5 seq cases that we need to be
@@ -419,7 +420,7 @@ def main():
             #
             if origNames[i] != newNames[i] :
                 fileRenamed = True
-                if args.verbose and not args.silent :
+                if args.verbose :
                     print(origNames[i], " -> ", newNames[i], sep='')
                 if not args.dryRun :
                     os.rename(origNames[i], newNames[i])
