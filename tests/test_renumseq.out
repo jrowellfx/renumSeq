@@ -1,7 +1,7 @@
 ------ Begin Tests ------
 
 --- Test 1 --- dir:. --- lsseq --version ---
-2.4.1
+2.4.3
 
 --- Test 2 --- dir:. --- lsseq -RPl --noErrorLists -g -m ---
 ./a01/a.[0100-0140].jpg m:[101,134-139]
@@ -14,6 +14,7 @@
 ./e02/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
 ./e03/e_[5-10005].jpg m:[16-94,106-994,1006-9994]
 ./f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
+./g01/g.[0530-0547].bgeo.gz
 ./x01/x.[-11--03].jpg
 ./y01/y.[-011-0002].jpg
 
@@ -55,8 +56,7 @@ optional arguments:
                         offset SEQ by this number of frames (can be negative).
                         Frame i becomes i + FRAME_OFFSET
   --dryRun              Don't renumber SEQ, just display how the files would
-                        have been renumbered. Forces --verbose and disables
-                        --silent
+                        have been renumbered. Forces --verbose
   --skip                if renumbering a file in SEQ would result in
                         overwriting an existing file (which isn't also being
                         renumbered) then skip renumbering SEQ altogether.
@@ -85,7 +85,7 @@ optional arguments:
                         not specified then append '--' before the list of SEQs
                         to delineate the end of the options
   --silent, --quiet, -s
-                        suppress all output, warning etc.
+                        suppress all errors and warnings
   --verbose, -v         list the mapping from old file-name to new file-name
 
 --- Test 6 --- dir:. --- renumseq null/foo.jpg ---
@@ -671,3 +671,29 @@ f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
 
 --- Test 67 --- dir:. --- renumseq -v --pad 4 f01/f_[05-1005].jpg ---
 renumseq: warning: f01/f_[05-1005].jpg is nonexistent
+
+--- Test 68 --- dir:g01 --- lsseq -n ---
+g.[0530-0547].bgeo.gz
+
+--- Test 69 --- dir:g01 --- renumseq -v -o -400 g.[0530-0547].bgeo.gz ---
+g.0530.bgeo.gz -> g.0130.bgeo.gz
+g.0531.bgeo.gz -> g.0131.bgeo.gz
+g.0532.bgeo.gz -> g.0132.bgeo.gz
+g.0533.bgeo.gz -> g.0133.bgeo.gz
+g.0534.bgeo.gz -> g.0134.bgeo.gz
+g.0535.bgeo.gz -> g.0135.bgeo.gz
+g.0536.bgeo.gz -> g.0136.bgeo.gz
+g.0537.bgeo.gz -> g.0137.bgeo.gz
+g.0538.bgeo.gz -> g.0138.bgeo.gz
+g.0539.bgeo.gz -> g.0139.bgeo.gz
+g.0540.bgeo.gz -> g.0140.bgeo.gz
+g.0541.bgeo.gz -> g.0141.bgeo.gz
+g.0542.bgeo.gz -> g.0142.bgeo.gz
+g.0543.bgeo.gz -> g.0143.bgeo.gz
+g.0544.bgeo.gz -> g.0144.bgeo.gz
+g.0545.bgeo.gz -> g.0145.bgeo.gz
+g.0546.bgeo.gz -> g.0146.bgeo.gz
+g.0547.bgeo.gz -> g.0147.bgeo.gz
+
+--- Test 70 --- dir:g01 --- lsseq -n ---
+g.[0130-0147].bgeo.gz

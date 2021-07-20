@@ -47,7 +47,7 @@ import time
 from datetime import datetime, timedelta, timezone
 import seqLister
 
-VERSION = "1.2.0"
+VERSION = "1.2.1"
 
 touchTime = -1.0
 
@@ -158,7 +158,7 @@ def main():
         append '--' before the list of SEQs to delineate the end of the options")
     p.add_argument("--silent", "--quiet", "-s", action="store_true",
         dest="silent", default=False,
-        help="suppress all output, warning etc.")
+        help="suppress all errors and warnings")
     p.add_argument("--verbose", "-v", action="store_true",
         dest="verbose", default=False,
         help="list the mapping from old file-name to new file-name")
@@ -207,7 +207,7 @@ def main():
     #     then one or more letters, then one or more letters and numbers
     #     and the end of the line.
     #
-    pattern = re.compile(r"(.+)([._])\[(-?[0-9]+--?[0-9]+)\]\.([a-zA-Z]+\.?[a-zA-Z]+[a-zA-Z0-9]*$)")
+    pattern = re.compile(r"(.+)([._])\[(-?[0-9]+-?-?[0-9]+)\]\.([a-zA-Z]+\.?[a-zA-Z]+[a-zA-Z0-9]*$)")
 
     for arg in args.files :
         abortSeq = False

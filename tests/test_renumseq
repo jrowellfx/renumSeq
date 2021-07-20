@@ -137,6 +137,9 @@ e01 lsseq -RPl --noErrorLists -g -m
 .   lsseq -ZRPl d02
 .   lsseq -ZRPl f01
 .   renumseq -v --pad 4 f01/f_[05-1005].jpg
+g01 lsseq -n
+g01 renumseq -v -o -400 g.[0530-0547].bgeo.gz
+g01 lsseq -n
 EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`
