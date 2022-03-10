@@ -615,7 +615,7 @@ def main():
         currentFormatStr = "{0:0=-" + str(currentPad) + "d}"
         newFormatStr = "{0:0=-" + str(newPad) + "d}"
 
-        frameList = seqLister.expandSeq(seq[1])
+        frameList = expandSeq(seq[1])
 
         if frameList == [] :
             warnSeqSyntax(args.silent, seq[0], seq[1])
