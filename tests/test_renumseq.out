@@ -1,7 +1,7 @@
 ------ Begin Tests ------
 
 --- Test 1 --- dir:. --- lsseq --version ---
-2.4.3
+2.6.1
 
 --- Test 2 --- dir:. --- lsseq -RPl --noErrorLists -g -m ---
 ./a01/a.[0100-0140].jpg m:[101,134-139]
@@ -21,7 +21,7 @@
 --- Test 3 --- dir:. --- renumseq ---
 
 --- Test 4 --- dir:. --- renumseq --version ---
-1.2.1
+1.2.2
 
 --- Test 5 --- dir:. --- renumseq --help ---
 usage: renumseq [OPTION]... [SEQ]...
@@ -137,39 +137,39 @@ renumseq: warning: skipping a.[0100-0110].jpg: renumbering would have overwritte
 
 --- Test 24 --- dir:a03 --- ls -l ---
 total 0
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0100.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0102.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0103.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0104.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0105.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0106.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0107.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0108.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0109.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0110.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0111.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0112.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0113.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0114.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0115.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0116.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0117.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0118.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0119.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0120.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0121.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0122.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0123.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0124.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0125.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0126.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0127.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0128.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0129.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0130.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0131.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0132.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0133.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0100.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0102.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0103.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0104.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0105.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0106.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0107.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0108.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0109.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0110.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0111.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0112.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0113.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0114.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0115.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0116.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0117.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0118.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0119.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0120.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0121.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0122.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0123.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0124.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0126.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0127.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0128.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0129.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0130.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0131.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0132.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0133.jpg
 
 --- Test 25 --- dir:a03 --- lsseq -RPl --noErrorLists -g -m ---
 ./a.[0100-0133].jpg m:[101]
@@ -191,60 +191,60 @@ a.0100.jpg -> a.0130.jpg
 
 --- Test 28 --- dir:a03 --- ls -l ---
 total 0
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0111.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0112.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0113.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0114.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0115.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0116.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0117.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0118.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0119.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0120.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0121.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0122.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0123.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0124.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0125.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0126.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0127.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0128.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0129.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0130.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0131.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0132.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0133.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0134.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0135.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0136.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0137.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0138.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0139.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0140.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0111.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0112.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0113.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0114.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0115.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0116.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0117.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0118.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0119.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0120.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0121.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0122.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0123.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0124.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0126.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0127.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0128.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0129.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0130.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0131.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0132.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0133.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0134.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0135.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0136.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0137.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0138.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0139.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0140.jpg
 
 --- Test 29 --- dir:a02 --- ls -l ---
 total 0
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0100.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0101.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0102.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0103.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0104.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0106.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0107.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0108.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0109.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0110.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0111.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0112.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0113.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0114.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0115.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0116.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0117.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0118.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0119.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0120.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0100.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0101.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0102.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0103.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0104.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0106.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0107.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0108.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0109.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0110.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0111.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0112.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0113.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0114.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0115.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0116.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0117.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0118.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0119.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0120.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0125.jpg
 
 --- Test 30 --- dir:a02 --- lsseq -RPl --noErrorLists -g -m ---
 ./a.[0100-0125].jpg m:[105,121-124]
@@ -276,64 +276,64 @@ a.0100.jpg -> a.0120.jpg
 
 --- Test 33 --- dir:a02 --- ls -l ---
 total 0
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0120.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0121.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0122.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0123.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0124.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0125.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0126.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0127.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0128.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0129.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0130.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0131.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0132.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0133.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0134.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0135.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0136.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0137.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0138.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0139.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0140.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0120.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0121.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0122.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0123.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0124.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0126.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0127.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0128.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0129.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0130.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0131.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0132.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0133.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0134.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0135.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0136.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0137.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0138.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0139.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0140.jpg
 
 --- Test 34 --- dir:a01 --- ls -l ---
 total 0
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0100.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0102.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0103.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0104.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0105.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0106.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0107.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0108.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0109.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0110.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0111.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0112.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0113.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0114.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0115.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0116.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0117.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0118.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0119.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0120.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0121.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0122.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0123.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0124.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0125.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0126.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0127.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0128.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0129.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0130.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0131.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0132.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0133.jpg
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0140.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0100.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0102.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0103.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0104.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0105.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0106.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0107.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0108.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0109.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0110.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0111.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0112.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0113.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0114.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0115.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0116.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0117.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0118.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0119.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0120.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0121.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0122.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0123.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0124.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0126.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0127.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0128.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0129.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0130.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0131.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0132.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0133.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0140.jpg
 
 --- Test 35 --- dir:a01 --- lsseq -RPl --noErrorLists -g -m ---
 ./a.[0100-0140].jpg m:[101,134-139]
@@ -345,40 +345,40 @@ total 0
 
 --- Test 38 --- dir:a01 --- ls -l ---
 total 0
--rwxrwxrwx. 1 jrowell users 0 Jan 12  1992 a.0140.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0200.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0202.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0203.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0204.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0205.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0206.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0207.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0208.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0209.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0210.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0211.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0212.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0213.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0214.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0215.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0216.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0217.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0218.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0219.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0220.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0221.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0222.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0223.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0224.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0225.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0226.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0227.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0228.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0229.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0230.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0231.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0232.jpg
--rwxrwxrwx. 1 jrowell users 0 Jun  1  2001 a.0233.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0140.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0200.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0202.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0203.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0204.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0205.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0206.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0207.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0208.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0209.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0210.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0211.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0212.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0213.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0214.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0215.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0216.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0217.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0218.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0219.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0220.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0221.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0222.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0223.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0224.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0225.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0226.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0227.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0228.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0229.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0230.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0231.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0232.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0233.jpg
 
 --- Test 39 --- dir:. --- lsseq -RPl --noErrorLists -g -m b01 x01 y01 ---
 b01/b.[555].jpg

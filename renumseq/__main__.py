@@ -47,7 +47,7 @@ import time
 from datetime import datetime, timedelta, timezone
 import seqLister
 
-VERSION = "1.2.1"
+VERSION = "1.2.2"
 
 touchTime = -1.0
 
@@ -232,8 +232,8 @@ def main():
         # concerned with: N, -N, N-M, -N-M, -N--M,
         # where -N or N is always less than or equal to -M or M.
         #
-        negStart = 1.0
-        negEnd = 1.0
+        negStart = 1
+        negEnd = 1
         startStr = ""
         endStr = ""
         frRange = seq[1].split("-")
@@ -248,8 +248,8 @@ def main():
 
         elif len(frRange) == 2 : # minus-N OR N-M
             if frRange[0] == '' : # Leading minus sign.
-                negStart = -1.0
-                negEnd = -1.0
+                negStart = -1
+                negEnd = -1
                 startStr = frRange[1]
                 endStr = frRange[1]
             else :
@@ -260,7 +260,7 @@ def main():
             if frRange[0] != '' : # Not leading minus sign!
                 warnSeqSyntax(args.silent, seq[0], seq[1])
                 continue # Invalid syntax for range
-            negStart = -1.0
+            negStart = -1
             startStr = frRange[1]
             endStr = frRange[2]
 
@@ -268,8 +268,8 @@ def main():
             if frRange[0] != '' or frRange[2] != '' : # Not leading minus signs!
                 warnSeqSyntax(args.silent, seq[0], seq[1])
                 continue # Invalid syntax for range
-            negStart = -1.0
-            negEnd = -1.0
+            negStart = -1
+            negEnd = -1
             startStr = frRange[1]
             endStr = frRange[3]
 
@@ -296,6 +296,7 @@ def main():
         # args.offsetFrames.
         #
         if args.startFrame != NEVER_START_FRAME :
+
             args.offsetFrames = args.startFrame - start
 
             # This duplicates the test above (**a**) because now
@@ -312,10 +313,10 @@ def main():
                 continue
 
         startPad = len(startStr)
-        if negStart < 0.0 :
+        if negStart < 0 :
             startPad += 1
         endPad = len(endStr)
-        if negEnd < 0.0 :
+        if negEnd < 0 :
             endPad += 1
 
         currentPad = 0
