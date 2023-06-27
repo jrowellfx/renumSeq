@@ -4,5 +4,13 @@ pushd $HOME
 source venv/bin/activate
 pip install seqLister --upgrade
 popd
-ln -sf ../renumseq/__main__.py renumseq
-export PATH="$TEST_DIR:$PATH"
+
+echo
+echo Run the following lines to make the repo versions
+echo of expandseq and condenseseq the active commands
+echo \(instead of those installed sitewide.\)
+echo
+echo "   " ln -sf ../renumseq/__main__.py renumseq
+echo "   " export PATH="$TEST_DIR:$PATH"
+echo
+

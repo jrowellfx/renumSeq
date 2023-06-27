@@ -123,6 +123,7 @@ if [ "$TEST_SYSTEM_RENUMSEQ" = no ]; then
         echo export PATH=\"$TEST_DIR:\$PATH\"
     fi
 else
+    /bin/rm renumseq > /dev/null 2>&1 # In case softlink is in this dir.
     TEST_OUT_FILENAME=test_renumseq.out.`uname`.installed.new
 fi
 
