@@ -1,0 +1,699 @@
+------ Begin Tests ------
+
+--- Test 1 --- dir:. --- lsseq --version ---
+2.7.0
+
+--- Test 2 --- dir:. --- lsseq -RPl --noErrorLists -g -m ---
+./a01/a.[0100-0140].jpg m:[101,134-139]
+./a02/a.[0100-0125].jpg m:[105,121-124]
+./a03/a.[0100-0133].jpg m:[101]
+./b01/b.[555].jpg
+./d01/d_[0100-0125].jpg m:[105,121-124]
+./d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
+./e01/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+./e02/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+./e03/e_[5-10005].jpg m:[16-94,106-994,1006-9994]
+./f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
+./g01/g.[0530-0547].bgeo.gz
+./x01/x.[-11--03].jpg
+./y01/y.[-011-0002].jpg
+
+--- Test 3 --- dir:. --- renumseq ---
+
+--- Test 4 --- dir:. --- renumseq --version ---
+1.2.2
+
+--- Test 5 --- dir:. --- renumseq --help ---
+usage: renumseq [OPTION]... [SEQ]...
+
+Renumber the frame range of each SEQ listed on the command line.
+SEQ should be specified using lsseq's native format.
+
+Protip: Turning off globbing, or enclosing SEQ in quotes, or placing
+backslashes ahead of '[' and ']' will be necessary to turn off the special
+treatment of '[' and ']' by the shell.
+
+Caution: The files in the sequence MUST BE correctly padded.
+Pay attention to lsseq's --showBadPadding for reports of badly padded frame
+numbers and fix them before renumbering a sequence with this utility.
+
+Example usage:
+    $ lsseq
+    aaa.[001-005].tif
+    $ renumseq -o 10 'aaa.[001-005].tif'
+    $ lsseq
+    aaa.[011-015].tif
+
+positional arguments:
+  SEQ                   image sequence in lsseq native format
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --start START_FRAME   Use START_FRAME as the first frame number of each SEQ.
+                        This takes precedence over --offset
+  --offset FRAME_OFFSET, -o FRAME_OFFSET
+                        offset SEQ by this number of frames (can be negative).
+                        Frame i becomes i + FRAME_OFFSET
+  --dryRun              Don't renumber SEQ, just display how the files would
+                        have been renumbered. Forces --verbose
+  --skip                if renumbering a file in SEQ would result in
+                        overwriting an existing file (which isn't also being
+                        renumbered) then skip renumbering SEQ altogether.
+                        [default] The opposite of --force.
+  --force               if renumbering a file in SEQ would result in
+                        overwriting an existing file (which isn't also being
+                        renumbered) then overwrite the file. The opposite of
+                        --skip
+  --pad PAD             set the padding of the frame numbers to be PAD digits.
+                        The default action is to leave the padding unchanged.
+                        Note, lsseq's native format output properly lists the
+                        sequence range with appropriate padding and can also
+                        report when there are incorrectly padded frame-numbers
+                        with --showBadPadding
+  --replaceUnderscore   in the case that SEQ uses an underscore ('_')
+                        separating the filename from the frame number; then
+                        when renumbering SEQ, replace the underscore with a
+                        dot-separator ('.'). Note that you can use an offset
+                        of zero (default) to replace the underscore with a dot
+                        leaving all else the same
+  --touch [[CC]YYMMDD[hhmm]]
+                        update the access time of the file being renamed to
+                        the current time. Optionally specify a date for the
+                        updated access time. Note: if this is the last
+                        argument on the command line and the optional date was
+                        not specified then append '--' before the list of SEQs
+                        to delineate the end of the options
+  --silent, --quiet, -s
+                        suppress all errors and warnings
+  --verbose, -v         list the mapping from old file-name to new file-name
+
+--- Test 6 --- dir:. --- renumseq null/foo.jpg ---
+renumseq: warning: no offset, no padding change etc., nothing to do
+
+--- Test 7 --- dir:. --- renumseq -o 1 null/foo.jpg ---
+renumseq: warning: null/foo.jpg not a sequence or not in lsseq native format
+
+--- Test 8 --- dir:. --- renumseq -o 1 null/foo.[bar].jpg ---
+renumseq: warning: null/foo.[bar].jpg not a sequence or not in lsseq native format
+
+--- Test 9 --- dir:. --- renumseq -o 1 null/foo.[a-b].jpg ---
+renumseq: warning: null/foo.[a-b].jpg not a sequence or not in lsseq native format
+
+--- Test 10 --- dir:. --- renumseq -o 1 null/foo.[-a-b].jpg ---
+renumseq: warning: null/foo.[-a-b].jpg not a sequence or not in lsseq native format
+
+--- Test 11 --- dir:. --- renumseq -o 1 null/foo.[-a--b].jpg ---
+renumseq: warning: null/foo.[-a--b].jpg not a sequence or not in lsseq native format
+
+--- Test 12 --- dir:. --- renumseq -o 1 null/foo.[xx-a-b].jpg ---
+renumseq: warning: null/foo.[xx-a-b].jpg not a sequence or not in lsseq native format
+
+--- Test 13 --- dir:. --- renumseq -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg ---
+renumseq: warning: invalid range [011--003] for seq c01/c
+renumseq: warning: invalid range [11-03] for seq c02/c
+
+--- Test 14 --- dir:. --- renumseq -s -o 1 null/foo.jpg ---
+
+--- Test 15 --- dir:. --- renumseq -s -o 1 null/foo.[bar].jpg ---
+
+--- Test 16 --- dir:. --- renumseq -s -o 1 null/foo.[a-b].jpg ---
+
+--- Test 17 --- dir:. --- renumseq -s -o 1 null/foo.[-a-b].jpg ---
+
+--- Test 18 --- dir:. --- renumseq -s -o 1 null/foo.[-a--b].jpg ---
+
+--- Test 19 --- dir:. --- renumseq -s -o 1 null/foo.[xx-a-b].jpg ---
+
+--- Test 20 --- dir:. --- renumseq -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg ---
+
+--- Test 21 --- dir:a03 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0100-0133].jpg m:[101]
+
+--- Test 22 --- dir:a03 --- renumseq -o 30 a.[0100-0110].jpg ---
+renumseq: warning: skipping a.[0100-0110].jpg: renumbering would have overwritten a file outside the sequence being renumbered. e.g.: a.0133.jpg
+
+--- Test 23 --- dir:a03 --- renumseq -s -o 30 a.[0100-0110].jpg ---
+
+--- Test 24 --- dir:a03 --- ls -l ---
+total 0
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0100.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0102.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0103.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0104.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0105.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0106.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0107.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0108.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0109.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0110.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0111.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0112.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0113.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0114.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0115.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0116.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0117.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0118.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0119.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0120.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0121.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0122.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0123.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0124.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0126.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0127.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0128.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0129.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0130.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0131.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0132.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0133.jpg
+
+--- Test 25 --- dir:a03 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0100-0133].jpg m:[101]
+
+--- Test 26 --- dir:a03 --- renumseq -v -o 30 --force --touch 200106011230 a.[0100-0110].jpg ---
+a.0110.jpg -> a.0140.jpg
+a.0109.jpg -> a.0139.jpg
+a.0108.jpg -> a.0138.jpg
+a.0107.jpg -> a.0137.jpg
+a.0106.jpg -> a.0136.jpg
+a.0105.jpg -> a.0135.jpg
+a.0104.jpg -> a.0134.jpg
+a.0103.jpg -> a.0133.jpg
+a.0102.jpg -> a.0132.jpg
+a.0100.jpg -> a.0130.jpg
+
+--- Test 27 --- dir:a03 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0111-0140].jpg
+
+--- Test 28 --- dir:a03 --- ls -l ---
+total 0
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0111.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0112.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0113.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0114.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0115.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0116.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0117.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0118.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0119.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0120.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0121.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0122.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0123.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0124.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0126.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0127.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0128.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0129.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0130.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0131.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0132.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0133.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0134.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0135.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0136.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0137.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0138.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0139.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0140.jpg
+
+--- Test 29 --- dir:a02 --- ls -l ---
+total 0
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0100.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0101.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0102.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0103.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0104.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0106.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0107.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0108.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0109.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0110.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0111.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0112.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0113.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0114.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0115.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0116.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0117.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0118.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0119.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0120.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0125.jpg
+
+--- Test 30 --- dir:a02 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0100-0125].jpg m:[105,121-124]
+
+--- Test 31 --- dir:a02 --- renumseq -v -o 20 --touch 200106011230 a.[0100-0120].jpg ---
+a.0120.jpg -> a.0140.jpg
+a.0119.jpg -> a.0139.jpg
+a.0118.jpg -> a.0138.jpg
+a.0117.jpg -> a.0137.jpg
+a.0116.jpg -> a.0136.jpg
+a.0115.jpg -> a.0135.jpg
+a.0114.jpg -> a.0134.jpg
+a.0113.jpg -> a.0133.jpg
+a.0112.jpg -> a.0132.jpg
+a.0111.jpg -> a.0131.jpg
+a.0110.jpg -> a.0130.jpg
+a.0109.jpg -> a.0129.jpg
+a.0108.jpg -> a.0128.jpg
+a.0107.jpg -> a.0127.jpg
+a.0106.jpg -> a.0126.jpg
+a.0104.jpg -> a.0124.jpg
+a.0103.jpg -> a.0123.jpg
+a.0102.jpg -> a.0122.jpg
+a.0101.jpg -> a.0121.jpg
+a.0100.jpg -> a.0120.jpg
+
+--- Test 32 --- dir:a02 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0120-0140].jpg
+
+--- Test 33 --- dir:a02 --- ls -l ---
+total 0
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0120.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0121.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0122.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0123.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0124.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0126.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0127.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0128.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0129.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0130.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0131.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0132.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0133.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0134.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0135.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0136.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0137.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0138.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0139.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0140.jpg
+
+--- Test 34 --- dir:a01 --- ls -l ---
+total 0
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0100.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0102.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0103.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0104.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0105.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0106.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0107.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0108.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0109.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0110.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0111.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0112.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0113.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0114.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0115.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0116.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0117.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0118.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0119.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0120.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0121.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0122.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0123.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0124.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0126.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0127.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0128.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0129.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0130.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0131.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0132.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0133.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0140.jpg
+
+--- Test 35 --- dir:a01 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0100-0140].jpg m:[101,134-139]
+
+--- Test 36 --- dir:a01 --- renumseq -o 100 --touch 200106011230 a.[0100-0133].jpg ---
+
+--- Test 37 --- dir:a01 --- lsseq -RPl --noErrorLists -g -m ---
+./a.[0140-0233].jpg m:[141-199,201]
+
+--- Test 38 --- dir:a01 --- ls -l ---
+total 0
+-rw-rw-rw-  1 jrowell  staff  0 Jan 12  1992 a.0140.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0200.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0202.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0203.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0204.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0205.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0206.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0207.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0208.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0209.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0210.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0211.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0212.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0213.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0214.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0215.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0216.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0217.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0218.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0219.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0220.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0221.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0222.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0223.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0224.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0225.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0226.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0227.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0228.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0229.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0230.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0231.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0232.jpg
+-rw-rw-rw-  1 jrowell  staff  0 Jun  1  2001 a.0233.jpg
+
+--- Test 39 --- dir:. --- lsseq -RPl --noErrorLists -g -m b01 x01 y01 ---
+b01/b.[555].jpg
+x01/x.[-11--03].jpg
+y01/y.[-011-0002].jpg
+
+--- Test 40 --- dir:. --- renumseq -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg ---
+b01/b.555.jpg -> b01/b.655.jpg
+x01/x.-03.jpg -> x01/x.097.jpg
+x01/x.-04.jpg -> x01/x.096.jpg
+x01/x.-05.jpg -> x01/x.095.jpg
+x01/x.-06.jpg -> x01/x.094.jpg
+x01/x.-07.jpg -> x01/x.093.jpg
+x01/x.-08.jpg -> x01/x.092.jpg
+x01/x.-09.jpg -> x01/x.091.jpg
+x01/x.-10.jpg -> x01/x.090.jpg
+x01/x.-11.jpg -> x01/x.089.jpg
+y01/y.0002.jpg -> y01/y.0102.jpg
+y01/y.0001.jpg -> y01/y.0101.jpg
+y01/y.0000.jpg -> y01/y.0100.jpg
+y01/y.-001.jpg -> y01/y.0099.jpg
+y01/y.-002.jpg -> y01/y.0098.jpg
+y01/y.-003.jpg -> y01/y.0097.jpg
+y01/y.-004.jpg -> y01/y.0096.jpg
+y01/y.-005.jpg -> y01/y.0095.jpg
+y01/y.-006.jpg -> y01/y.0094.jpg
+y01/y.-007.jpg -> y01/y.0093.jpg
+y01/y.-008.jpg -> y01/y.0092.jpg
+y01/y.-009.jpg -> y01/y.0091.jpg
+y01/y.-010.jpg -> y01/y.0090.jpg
+y01/y.-011.jpg -> y01/y.0089.jpg
+
+--- Test 41 --- dir:. --- lsseq -RPl --noErrorLists -g -m b01 x01 y01 ---
+b01/b.[655].jpg
+x01/x.[089-097].jpg
+y01/y.[0089-0102].jpg
+
+--- Test 42 --- dir:. --- lsseq -RPl --noErrorLists -g -m a02 ---
+a02/a.[0120-0140].jpg
+
+--- Test 43 --- dir:. --- renumseq -v -o 10 a02/a.[0120-0140].jpg ---
+a02/a.0140.jpg -> a02/a.0150.jpg
+a02/a.0139.jpg -> a02/a.0149.jpg
+a02/a.0138.jpg -> a02/a.0148.jpg
+a02/a.0137.jpg -> a02/a.0147.jpg
+a02/a.0136.jpg -> a02/a.0146.jpg
+a02/a.0135.jpg -> a02/a.0145.jpg
+a02/a.0134.jpg -> a02/a.0144.jpg
+a02/a.0133.jpg -> a02/a.0143.jpg
+a02/a.0132.jpg -> a02/a.0142.jpg
+a02/a.0131.jpg -> a02/a.0141.jpg
+a02/a.0130.jpg -> a02/a.0140.jpg
+a02/a.0129.jpg -> a02/a.0139.jpg
+a02/a.0128.jpg -> a02/a.0138.jpg
+a02/a.0127.jpg -> a02/a.0137.jpg
+a02/a.0126.jpg -> a02/a.0136.jpg
+a02/a.0125.jpg -> a02/a.0135.jpg
+a02/a.0124.jpg -> a02/a.0134.jpg
+a02/a.0123.jpg -> a02/a.0133.jpg
+a02/a.0122.jpg -> a02/a.0132.jpg
+a02/a.0121.jpg -> a02/a.0131.jpg
+a02/a.0120.jpg -> a02/a.0130.jpg
+
+--- Test 44 --- dir:. --- lsseq -RPl --noErrorLists -g -m a02 ---
+a02/a.[0130-0150].jpg
+
+--- Test 45 --- dir:. --- renumseq -v -o -10 a02/a.[0130-0150].jpg ---
+a02/a.0130.jpg -> a02/a.0120.jpg
+a02/a.0131.jpg -> a02/a.0121.jpg
+a02/a.0132.jpg -> a02/a.0122.jpg
+a02/a.0133.jpg -> a02/a.0123.jpg
+a02/a.0134.jpg -> a02/a.0124.jpg
+a02/a.0135.jpg -> a02/a.0125.jpg
+a02/a.0136.jpg -> a02/a.0126.jpg
+a02/a.0137.jpg -> a02/a.0127.jpg
+a02/a.0138.jpg -> a02/a.0128.jpg
+a02/a.0139.jpg -> a02/a.0129.jpg
+a02/a.0140.jpg -> a02/a.0130.jpg
+a02/a.0141.jpg -> a02/a.0131.jpg
+a02/a.0142.jpg -> a02/a.0132.jpg
+a02/a.0143.jpg -> a02/a.0133.jpg
+a02/a.0144.jpg -> a02/a.0134.jpg
+a02/a.0145.jpg -> a02/a.0135.jpg
+a02/a.0146.jpg -> a02/a.0136.jpg
+a02/a.0147.jpg -> a02/a.0137.jpg
+a02/a.0148.jpg -> a02/a.0138.jpg
+a02/a.0149.jpg -> a02/a.0139.jpg
+a02/a.0150.jpg -> a02/a.0140.jpg
+
+--- Test 46 --- dir:. --- lsseq -RPl --noErrorLists -g -m a02 ---
+a02/a.[0120-0140].jpg
+
+--- Test 47 --- dir:. --- renumseq --verbose -o -1 --pad 3 a02/a.[0120-0140].jpg ---
+a02/a.0120.jpg -> a02/a.119.jpg
+a02/a.0121.jpg -> a02/a.120.jpg
+a02/a.0122.jpg -> a02/a.121.jpg
+a02/a.0123.jpg -> a02/a.122.jpg
+a02/a.0124.jpg -> a02/a.123.jpg
+a02/a.0125.jpg -> a02/a.124.jpg
+a02/a.0126.jpg -> a02/a.125.jpg
+a02/a.0127.jpg -> a02/a.126.jpg
+a02/a.0128.jpg -> a02/a.127.jpg
+a02/a.0129.jpg -> a02/a.128.jpg
+a02/a.0130.jpg -> a02/a.129.jpg
+a02/a.0131.jpg -> a02/a.130.jpg
+a02/a.0132.jpg -> a02/a.131.jpg
+a02/a.0133.jpg -> a02/a.132.jpg
+a02/a.0134.jpg -> a02/a.133.jpg
+a02/a.0135.jpg -> a02/a.134.jpg
+a02/a.0136.jpg -> a02/a.135.jpg
+a02/a.0137.jpg -> a02/a.136.jpg
+a02/a.0138.jpg -> a02/a.137.jpg
+a02/a.0139.jpg -> a02/a.138.jpg
+a02/a.0140.jpg -> a02/a.139.jpg
+
+--- Test 48 --- dir:. --- lsseq -RPl --noErrorLists -g -m a02 ---
+a02/a.[119-139].jpg
+
+--- Test 49 --- dir:. --- lsseq -RPl --noErrorLists -g -m d01 ---
+d01/d_[0100-0125].jpg m:[105,121-124]
+
+--- Test 50 --- dir:. --- renumseq -v -o 20 /d01/d_[0100-0120].jpg ---
+renumseq: warning: /d01/d_[0100-0120].jpg is nonexistent
+
+--- Test 51 --- dir:. --- lsseq -RPl --noErrorLists -g -m d01 ---
+d01/d_[0100-0125].jpg m:[105,121-124]
+
+--- Test 52 --- dir:. --- renumseq -v d01/d_[0120-0140].jpg ---
+renumseq: warning: no offset, no padding change etc., nothing to do
+
+--- Test 53 --- dir:. --- renumseq -v --replaceUnderscore d01/d_[0120-0140].jpg ---
+d01/d_0120.jpg -> d01/d.0120.jpg
+d01/d_0125.jpg -> d01/d.0125.jpg
+
+--- Test 54 --- dir:. --- lsseq -RPl --noErrorLists -g -m d01 ---
+d01/d.[0120-0125].jpg m:[121-124]
+d01/d_[0100-0119].jpg m:[105]
+
+--- Test 55 --- dir:e01 --- lsseq -RPl --noErrorLists -g -m ---
+./e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+
+--- Test 56 --- dir:e01 --- renumseq -v --replaceUnderscore e_[5-9999].jpg ---
+e_5.jpg -> e.5.jpg
+e_6.jpg -> e.6.jpg
+e_7.jpg -> e.7.jpg
+e_8.jpg -> e.8.jpg
+e_9.jpg -> e.9.jpg
+e_10.jpg -> e.10.jpg
+e_11.jpg -> e.11.jpg
+e_12.jpg -> e.12.jpg
+e_13.jpg -> e.13.jpg
+e_14.jpg -> e.14.jpg
+e_15.jpg -> e.15.jpg
+e_95.jpg -> e.95.jpg
+e_96.jpg -> e.96.jpg
+e_97.jpg -> e.97.jpg
+e_98.jpg -> e.98.jpg
+e_99.jpg -> e.99.jpg
+e_100.jpg -> e.100.jpg
+e_101.jpg -> e.101.jpg
+e_102.jpg -> e.102.jpg
+e_103.jpg -> e.103.jpg
+e_104.jpg -> e.104.jpg
+e_105.jpg -> e.105.jpg
+e_995.jpg -> e.995.jpg
+e_996.jpg -> e.996.jpg
+e_997.jpg -> e.997.jpg
+e_998.jpg -> e.998.jpg
+e_999.jpg -> e.999.jpg
+e_1000.jpg -> e.1000.jpg
+e_1001.jpg -> e.1001.jpg
+e_1002.jpg -> e.1002.jpg
+e_1003.jpg -> e.1003.jpg
+e_1004.jpg -> e.1004.jpg
+e_1005.jpg -> e.1005.jpg
+e_9995.jpg -> e.9995.jpg
+e_9996.jpg -> e.9996.jpg
+e_9997.jpg -> e.9997.jpg
+e_9998.jpg -> e.9998.jpg
+e_9999.jpg -> e.9999.jpg
+
+--- Test 57 --- dir:e01 --- lsseq -RPl --noErrorLists -g -m ---
+./e.[5-9999].jpg m:[16-94,106-994,1006-9994]
+
+--- Test 58 --- dir:. --- renumseq -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg ---
+e02/e_5.jpg -> e02/e.0005.jpg
+e02/e_6.jpg -> e02/e.0006.jpg
+e02/e_7.jpg -> e02/e.0007.jpg
+e02/e_8.jpg -> e02/e.0008.jpg
+e02/e_9.jpg -> e02/e.0009.jpg
+e02/e_10.jpg -> e02/e.0010.jpg
+e02/e_11.jpg -> e02/e.0011.jpg
+e02/e_12.jpg -> e02/e.0012.jpg
+e02/e_13.jpg -> e02/e.0013.jpg
+e02/e_14.jpg -> e02/e.0014.jpg
+e02/e_15.jpg -> e02/e.0015.jpg
+e02/e_95.jpg -> e02/e.0095.jpg
+e02/e_96.jpg -> e02/e.0096.jpg
+e02/e_97.jpg -> e02/e.0097.jpg
+e02/e_98.jpg -> e02/e.0098.jpg
+e02/e_99.jpg -> e02/e.0099.jpg
+e02/e_100.jpg -> e02/e.0100.jpg
+e02/e_101.jpg -> e02/e.0101.jpg
+e02/e_102.jpg -> e02/e.0102.jpg
+e02/e_103.jpg -> e02/e.0103.jpg
+e02/e_104.jpg -> e02/e.0104.jpg
+e02/e_105.jpg -> e02/e.0105.jpg
+e02/e_995.jpg -> e02/e.0995.jpg
+e02/e_996.jpg -> e02/e.0996.jpg
+e02/e_997.jpg -> e02/e.0997.jpg
+e02/e_998.jpg -> e02/e.0998.jpg
+e02/e_999.jpg -> e02/e.0999.jpg
+e02/e_1000.jpg -> e02/e.1000.jpg
+e02/e_1001.jpg -> e02/e.1001.jpg
+e02/e_1002.jpg -> e02/e.1002.jpg
+e02/e_1003.jpg -> e02/e.1003.jpg
+e02/e_1004.jpg -> e02/e.1004.jpg
+e02/e_1005.jpg -> e02/e.1005.jpg
+e02/e_9995.jpg -> e02/e.9995.jpg
+e02/e_9996.jpg -> e02/e.9996.jpg
+e02/e_9997.jpg -> e02/e.9997.jpg
+e02/e_9998.jpg -> e02/e.9998.jpg
+e02/e_9999.jpg -> e02/e.9999.jpg
+
+--- Test 59 --- dir:. --- renumseq -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg ---
+e03/e_5.jpg -> e03/e.0005.jpg
+e03/e_6.jpg -> e03/e.0006.jpg
+e03/e_7.jpg -> e03/e.0007.jpg
+e03/e_8.jpg -> e03/e.0008.jpg
+e03/e_9.jpg -> e03/e.0009.jpg
+e03/e_10.jpg -> e03/e.0010.jpg
+e03/e_11.jpg -> e03/e.0011.jpg
+e03/e_12.jpg -> e03/e.0012.jpg
+e03/e_13.jpg -> e03/e.0013.jpg
+e03/e_14.jpg -> e03/e.0014.jpg
+e03/e_15.jpg -> e03/e.0015.jpg
+e03/e_95.jpg -> e03/e.0095.jpg
+e03/e_96.jpg -> e03/e.0096.jpg
+e03/e_97.jpg -> e03/e.0097.jpg
+e03/e_98.jpg -> e03/e.0098.jpg
+e03/e_99.jpg -> e03/e.0099.jpg
+e03/e_100.jpg -> e03/e.0100.jpg
+e03/e_101.jpg -> e03/e.0101.jpg
+e03/e_102.jpg -> e03/e.0102.jpg
+e03/e_103.jpg -> e03/e.0103.jpg
+e03/e_104.jpg -> e03/e.0104.jpg
+e03/e_105.jpg -> e03/e.0105.jpg
+e03/e_995.jpg -> e03/e.0995.jpg
+e03/e_996.jpg -> e03/e.0996.jpg
+e03/e_997.jpg -> e03/e.0997.jpg
+e03/e_998.jpg -> e03/e.0998.jpg
+e03/e_999.jpg -> e03/e.0999.jpg
+e03/e_1000.jpg -> e03/e.1000.jpg
+e03/e_1001.jpg -> e03/e.1001.jpg
+e03/e_1002.jpg -> e03/e.1002.jpg
+e03/e_1003.jpg -> e03/e.1003.jpg
+e03/e_1004.jpg -> e03/e.1004.jpg
+e03/e_1005.jpg -> e03/e.1005.jpg
+e03/e_9995.jpg -> e03/e.9995.jpg
+e03/e_9996.jpg -> e03/e.9996.jpg
+e03/e_9997.jpg -> e03/e.9997.jpg
+e03/e_9998.jpg -> e03/e.9998.jpg
+e03/e_9999.jpg -> e03/e.9999.jpg
+e03/e_10000.jpg -> e03/e.10000.jpg
+e03/e_10001.jpg -> e03/e.10001.jpg
+e03/e_10002.jpg -> e03/e.10002.jpg
+e03/e_10003.jpg -> e03/e.10003.jpg
+e03/e_10004.jpg -> e03/e.10004.jpg
+e03/e_10005.jpg -> e03/e.10005.jpg
+
+--- Test 60 --- dir:. --- lsseq -ZRPl d01 ---
+d01/d.[0120-0125].jpg m:[121-124]
+d01/d_[0100-0119].jpg m:[105]
+
+--- Test 61 --- dir:. --- lsseq -ZRPl d02 ---
+d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
+
+--- Test 62 --- dir:. --- renumseq -o 20 d02/d.[hi]_[0100-0120].jpg ---
+
+--- Test 63 --- dir:. --- lsseq -ZRPl d02 ---
+d02/d.[hi]_[0120-0140].jpg
+
+--- Test 64 --- dir:. --- renumseq --replaceUnderscore d02/d.[hi]_[0120-0140].jpg ---
+
+--- Test 65 --- dir:. --- lsseq -ZRPl d02 ---
+d02/d.[hi].[0120-0140].jpg
+
+--- Test 66 --- dir:. --- lsseq -ZRPl f01 ---
+f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
+
+--- Test 67 --- dir:. --- renumseq -v --pad 4 f01/f_[05-1005].jpg ---
+renumseq: warning: f01/f_[05-1005].jpg is nonexistent
+
+--- Test 68 --- dir:g01 --- lsseq -n ---
+g.[0530-0547].bgeo.gz
+
+--- Test 69 --- dir:g01 --- renumseq -v -o -400 g.[0530-0547].bgeo.gz ---
+g.0530.bgeo.gz -> g.0130.bgeo.gz
+g.0531.bgeo.gz -> g.0131.bgeo.gz
+g.0532.bgeo.gz -> g.0132.bgeo.gz
+g.0533.bgeo.gz -> g.0133.bgeo.gz
+g.0534.bgeo.gz -> g.0134.bgeo.gz
+g.0535.bgeo.gz -> g.0135.bgeo.gz
+g.0536.bgeo.gz -> g.0136.bgeo.gz
+g.0537.bgeo.gz -> g.0137.bgeo.gz
+g.0538.bgeo.gz -> g.0138.bgeo.gz
+g.0539.bgeo.gz -> g.0139.bgeo.gz
+g.0540.bgeo.gz -> g.0140.bgeo.gz
+g.0541.bgeo.gz -> g.0141.bgeo.gz
+g.0542.bgeo.gz -> g.0142.bgeo.gz
+g.0543.bgeo.gz -> g.0143.bgeo.gz
+g.0544.bgeo.gz -> g.0144.bgeo.gz
+g.0545.bgeo.gz -> g.0145.bgeo.gz
+g.0546.bgeo.gz -> g.0146.bgeo.gz
+g.0547.bgeo.gz -> g.0147.bgeo.gz
+
+--- Test 70 --- dir:g01 --- lsseq -n ---
+g.[0130-0147].bgeo.gz
