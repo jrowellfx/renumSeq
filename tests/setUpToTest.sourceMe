@@ -11,6 +11,8 @@ echo of expandseq and condenseseq the active commands
 echo \(instead of those installed sitewide.\)
 echo
 echo "   " ln -sf ../renumseq/__main__.py renumseq
-echo "   " export PATH="$TEST_DIR:$PATH"
+echo "   " if [[ ! ":$PATH:" == *":$TEST_DIR:"* ]]; then
+echo "       " export PATH="$TEST_DIR:$PATH"
+echo "   " fi
 echo
 

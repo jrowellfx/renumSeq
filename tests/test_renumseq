@@ -119,8 +119,6 @@ if [ "$TEST_SYSTEM_RENUMSEQ" = no ]; then
 
     if [[ ! ":$PATH:" == *":$TEST_DIR:"* ]]; then
         export PATH="$TEST_DIR:$PATH"
-        echo \# Run the following command once to help live testing.
-        echo export PATH=\"$TEST_DIR:\$PATH\"
     fi
 else
     /bin/rm renumseq > /dev/null 2>&1 # In case softlink is in this dir.
