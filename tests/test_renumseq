@@ -1,7 +1,85 @@
 #!/bin/bash
 
-# JPR note to self - check lsseq for usage and new command line arg to test
-# system installed renumseq etc...
+# 3-Clause BSD License
+#
+# Copyright (c) 2008-2023, James Philip Rowell,
+# Alpha Eleven Incorporated
+# www.alpha-eleven.com
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#  1. Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in
+#     the documentation and/or other materials provided with the
+#     distribution.
+#
+#  3. Neither the name of the copyright holder, "Alpha Eleven, Inc.",
+#     nor the names of its contributors may be used to endorse or
+#     promote products derived from this software without specific prior
+#     written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT
+# HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# test_renumseq - Run the renumseq regression tests.
+
+usage_exit() {
+    echo "Usage: ${0##*/} [-h | --help] [--testSystem-renumseq]"
+    if [ "$1" = help ]; then
+	cat - <<@eof
+
+${0##*/} Run regression tests on renumseq. Must be run in the
+<renumseq-repository>/tests directory.
+
+Options:
+
+ -h, --help         show this help and exit
+ --testSystem-renumseq run the regression tests on the version of
+                    renumseq installed on the system. Output test
+                    results to appropriatly named file.
+
+@eof
+    fi
+    exit 1
+}
+
+TEST_SYSTEM_RENUMSEQ=no
+
+#
+# Parse options.  Stop when you get to the file list.
+#
+shopt -s extglob
+while :
+do
+    case "$1" in
+        -h|--help) usage_exit help
+        ;;
+
+        --testSystem-renumseq) TEST_SYSTEM_RENUMSEQ=yes
+             shift
+        ;;
+
+        --*|-*) usage_exit
+        ;;
+
+        *) break # We're done processing arguments, so let's get on with it. :-)
+    esac
+done
 
 export LC_ALL=POSIX
 
@@ -14,9 +92,6 @@ if [[ `basename $TEST_DIR` != 'tests' ]]; then
     echo $0: error: not running from tests directory, aborted.
     exit 1
 fi
-
-ln -sf ../renumseq/__main__.py renumseq
-export PATH="$TEST_DIR:$PATH"
 
 export REPO_DIR=`dirname $TEST_DIR`
 
@@ -34,6 +109,24 @@ cleanup() {
 }
 
 trap cleanup INT
+
+TEST_OUT_FILENAME=test_renumseq.out.`uname`.new
+
+trap cleanup INT
+
+if [ "$TEST_SYSTEM_RENUMSEQ" = no ]; then
+    ln -sf ../renumseq/__main__.py  renumseq
+
+    if [[ ! ":$PATH:" == *":$TEST_DIR:"* ]]; then
+        export PATH="$TEST_DIR:$PATH"
+        echo \# Run the following command once to help live testing.
+        echo export PATH=\"$TEST_DIR:\$PATH\"
+    fi
+else
+    TEST_OUT_FILENAME=test_renumseq.out.`uname`.installed.new
+fi
+
+echo "Test is using " `which renumseq`
 
 # Double check sensible REPO_DIR value before removing old testdir
 #
@@ -56,6 +149,7 @@ rm -rf $TEST_DIR/testdir/*
 cat createTestData/create.?Test.files | sed -e '1,$ s/\/[^\/]*$//' | sort -u > $tmpfile
 mkdir -p `cat $tmpfile`
 touch `cat createTestData/create.?Test.files`
+chmod 666 `cat createTestData/create.?Test.files`
 
 # Timestamp the files to be older so that when we renumber
 # them we can use --touch to visually check the results more easily (ls -lt)
@@ -147,7 +241,7 @@ EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`
 
-echo ------ Begin Tests ------ > $TEST_DIR/test_renumseq.out.new
+echo ------ Begin Tests ------ > $TEST_DIR/$TEST_OUT_FILENAME
 
 set -f # Turn off globbing
 i=1
@@ -159,16 +253,16 @@ while true; do
     workingDir=${args[0]}
     cmd=${args[1]}
     args=(${args[@]:2})
-    echo "" >> $TEST_DIR/test_renumseq.out.new
+    echo "" >> $TEST_DIR/$TEST_OUT_FILENAME
     echo --- Test $i of $NUM_TESTS ---
-    echo --- Test $i --- dir:$workingDir --- $cmd ${args[@]} --- >> $TEST_DIR/test_renumseq.out.new
+    echo --- Test $i --- dir:$workingDir --- $cmd ${args[@]} --- >> $TEST_DIR/$TEST_OUT_FILENAME
     cd $TEST_DIR/testdir/$workingDir
-    $cmd ${args[@]} >> $TEST_DIR/test_renumseq.out.new 2>&1
+    $cmd ${args[@]} >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
     i=$(expr $i + 1)
 done
 set +f # Turn globbing back on
 
-sed -e "1,$ s-$TEST_DIR-/...absPathToRepo.../renumSeq-g" < $TEST_DIR/test_renumseq.out.new > $tmpfile
-expand < $tmpfile | sed -e '1,$ s/ *$//' > $TEST_DIR/test_renumseq.out.new
+sed -e "1,$ s-$TEST_DIR-/...absPathToRepo.../renumSeq-g" < $TEST_DIR/$TEST_OUT_FILENAME > $tmpfile
+expand < $tmpfile | sed -e '1,$ s/ *$//' > $TEST_DIR/$TEST_OUT_FILENAME
 
 cleanup
