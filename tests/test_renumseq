@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# JPR note to self - check lsseq for usage and new command line arg to test
+# system installed renumseq etc...
+
 export LC_ALL=POSIX
 
 # !!! This script MUST be run from the 'tests'

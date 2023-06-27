@@ -47,6 +47,10 @@ import time
 from datetime import datetime, timedelta, timezone
 import seqLister
 
+# MAJOR version for incompatible API changes
+# MINOR version for added functionality in a backwards compatible manner
+# PATCH version for backwards compatible bug fixes
+#
 VERSION = "1.2.2"
 
 touchTime = -1.0
