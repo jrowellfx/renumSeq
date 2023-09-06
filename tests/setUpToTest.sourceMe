@@ -7,9 +7,10 @@ popd
 
 echo
 echo Run the following lines to make the repo versions
-echo of expandseq and condenseseq the active commands
-echo \(instead of those installed sitewide.\)
+echo of renumseq the active command \(instead of the one
+echo installed sitewide.\)
 echo
+echo '    export TEST_DIR=`pwd`'
 echo '    ln -sf ../renumseq/__main__.py renumseq'
 echo '    if [[ ! ":$PATH:" == *":$TEST_DIR:"* ]]; then'
 echo '        export PATH="$TEST_DIR:$PATH"'

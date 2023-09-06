@@ -6,9 +6,15 @@ here = pathlib.Path(__file__).parent.resolve()
 # Get the long description from the README file
 long_description = (here / 'README.md').read_text(encoding='utf-8')
 
+# Semantic Versioning 2.0.0
+#
+# MAJOR version for incompatible API changes
+# MINOR version for added functionality in a backwards compatible manner
+# PATCH version for backwards compatible bug fixes
+
 setup(
     name            = 'renumSeq',
-    version         = '1.2.2',
+    version         = '1.3.0',
     description='Tool to renumber image sequences.',
     long_description=long_description,
     long_description_content_type='text/markdown',

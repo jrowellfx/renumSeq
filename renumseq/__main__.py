@@ -46,14 +46,31 @@ import textwrap
 import time
 from datetime import datetime, timedelta, timezone
 import seqLister
+from enum import Enum
 
 # MAJOR version for incompatible API changes
 # MINOR version for added functionality in a backwards compatible manner
 # PATCH version for backwards compatible bug fixes
 #
-VERSION = "1.2.2"
+VERSION = "1.3.0"
 
-touchTime = -1.0
+DATE_FORMAT_LIST = [
+    '%y%m%d',
+    '%Y%m%d',
+    '%y%m%d-%H',
+    '%Y%m%d-%H',
+    '%y%m%d-%H%M',
+    '%Y%m%d-%H%M',
+    '%y%m%d-%H%M%S',
+    '%Y%m%d-%H%M%S',
+    '%y%m%d%H%M',    # Undocumented, but kept for compatibility
+    '%Y%m%d%H%M',    # with earlier versions (v1.2.2 and earlier)
+]
+
+class Touch(Enum):
+    CURRENT_TIME = 1
+    ORIGINAL_TIME = 2
+    SPECIFIC_TIME = 3
 
 def warnSeqSyntax(silent, basename, seq) :
     if not silent :
@@ -64,9 +81,9 @@ def warnSeqSyntax(silent, basename, seq) :
 def main():
 
     NEVER_START_FRAME = -999999999999
-    touchFiles = False
-    global touchTime
-
+    howToTouch = Touch.ORIGINAL_TIME
+    currentTime = time.time()
+    specificTime = 0 # Set below.
 
     # Redefine the exception handling routine so that it does NOT
     # do a trace dump if the user types ^C while renumseq is running.
@@ -142,7 +159,6 @@ def main():
         lsseq's native format output properly lists the sequence \
         range with appropriate padding and can also report when there are \
         incorrectly padded frame-numbers with --showBadPadding")
-
     p.add_argument("--replaceUnderscore", action="store_true",
         dest="fixUnderscore", default=False,
         help="in the case that SEQ uses an underscore ('_') \
@@ -150,16 +166,21 @@ def main():
         SEQ, replace the underscore with a dot-separator ('.'). Note that \
         you can use an offset \
         of zero (default) to replace the underscore with a dot leaving all else the same")
+
     p.add_argument("--touch", nargs='?',
         dest="touch",
         default=None, # Value if --touch NOT present on cmd line.
         const="0",    # Value if --touch present but NO argument passed to it.
-        metavar="[CC]YYMMDD[hhmm]",
+        metavar="[CC]YYMMDD[-hh[mm[ss]]]",
         help="update the access time of the file being renamed to the \
         current time. Optionally specify a date for the updated access time. \
+        The optional CC (century) defaults to the current century. \
+        The optional '-hh' (hours), 'mm' (minutes) or 'ss' (seconds) \
+        default to zero if not specified. \
         Note: if this is the last argument on the command line and the optional \
         date was not specified then \
-        append '--' before the list of SEQs to delineate the end of the options")
+        append '--' before the list of SEQs to delineate the end of the options.")
+
     p.add_argument("--silent", "--quiet", "-s", action="store_true",
         dest="silent", default=False,
         help="suppress all errors and warnings")
@@ -188,13 +209,43 @@ def main():
                 file=sys.stderr, sep='')
         sys.exit(0)
 
+    ## DEBUGGING TMP
+    ## print(args.touch)
+    ## exit(1)
+    ## ...and output follows.
+    ## (venv) [jrowell@euclid renumSeq]$ renumseq --start 100 --touch -- 'aaa.[1-2].jpg'
+    ## 0
+    ## (venv) [jrowell@euclid renumSeq]$ renumseq --start 100 --touch 230101 -- 'aaa.[1-2].jpg'
+    ## 230101
+    ## (venv) [jrowell@euclid renumSeq]$ renumseq --start 100 -- 'aaa.[1-2].jpg'
+
     if args.touch != None : # --touch called
-        touchFiles = True
         if args.touch == "0" : # Touch with current time.
-            touchTime = 0.0
-        else :
-            # Temporary - parse this with string passed in.
-            touchTime = datetime.timestamp(datetime(2001, 6, 1, 12, 30))
+            howToTouch = Touch.CURRENT_TIME
+
+        else : # Touch with time specified on the command line.
+            import datetime
+            import dateparser
+
+            howToTouch = Touch.SPECIFIC_TIME
+
+            # Process the cutoff time set.
+            #
+            tzName = datetime.datetime.now(datetime.timezone.utc).astimezone().tzname()
+            parsers = ['custom-formats']
+            timeData = dateparser.parse( \
+                args.touch, \
+                date_formats=DATE_FORMAT_LIST, \
+                settings={'TIMEZONE': tzName, 'PARSERS': parsers})
+
+            if timeData == None :
+                if not args.silent :
+                    print(PROG_NAME,
+                        ": error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]",
+                        file=sys.stderr, sep='')
+                sys.exit(1)
+
+            specificTime = int(time.mktime(timeData.timetuple())) # Epoch time
 
     if args.dryRun : # verbose to show how renumbering would occur.
         args.verbose = True
@@ -344,8 +395,8 @@ def main():
 
         frameList.sort(reverse=(args.offsetFrames > 0))
 
-        origNames = []
-        newNames = []
+        origName = []
+        newName = []
         checkNames = []
 
         if usesUnderscore :
@@ -388,18 +439,18 @@ def main():
         for i in frameList :
             origFile = seq[0] + currentSeparator + currentFormatStr.format(i) + '.' + seq[2]
             if os.path.exists(origFile) :
-                origNames.append(origFile)
-                newNames.append(seq[0] + newSeparator + newFormatStr.format(i+args.offsetFrames) \
+                origName.append(origFile)
+                newName.append(seq[0] + newSeparator + newFormatStr.format(i+args.offsetFrames) \
                     + '.' + seq[2])
 
-        if origNames == [] :
+        if origName == [] :
             if not args.silent :
                 print(os.path.basename(sys.argv[0]), ": warning: ", arg,
                     " is nonexistent", file=sys.stderr, sep='')
             continue
 
         if not args.clobber :
-            checkNames = [ x for x in newNames if x not in origNames ]
+            checkNames = [ x for x in newName if x not in origName ]
 
             f = ""
             for f in checkNames :
@@ -415,7 +466,7 @@ def main():
                 continue
 
         i = 0
-        numFiles = len(origNames)
+        numFiles = len(origName)
         fileRenamed = False
         while i < numFiles :
             #
@@ -423,17 +474,19 @@ def main():
             # This catches repadding of SEQ (i.e. no offset),
             # but some frames are already padded properly.
             #
-            if origNames[i] != newNames[i] :
+            if origName[i] != newName[i] :
                 fileRenamed = True
                 if args.verbose :
-                    print(origNames[i], " -> ", newNames[i], sep='')
+                    print(origName[i], " -> ", newName[i], sep='')
                 if not args.dryRun :
-                    os.rename(origNames[i], newNames[i])
-                    if touchFiles :
-                        if touchTime == 0.0 :
-                            os.utime(newNames[i])
-                        else :
-                            os.utime(newNames[i], (touchTime, touchTime))
+                    stat = os.stat(origName[i])
+                    os.rename(origName[i], newName[i])
+                    if howToTouch == Touch.CURRENT_TIME :
+                        os.utime(newName[i] (currentTime, currentTime))
+                    if howToTouch == Touch.SPECIFIC_TIME :
+                        os.utime(newName[i], (specificTime, specificTime))
+                    else :
+                        os.utime(newName[i], (stat.st_atime, stat.st_mtime))
             i += 1
         #
         # Continuation of above logic, printing warning if NO files in SEQ changed names.
