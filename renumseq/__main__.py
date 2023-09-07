@@ -54,6 +54,8 @@ from enum import Enum
 #
 VERSION = "1.3.0"
 
+PROG_NAME = "renumseq"
+
 DATE_FORMAT_LIST = [
     '%y%m%d',
     '%Y%m%d',
@@ -74,7 +76,7 @@ class Touch(Enum):
 
 def warnSeqSyntax(silent, basename, seq) :
     if not silent :
-        print( os.path.basename(sys.argv[0]),
+        print( PROG_NAME,
             ": warning: invalid range [", seq, "] for seq ", basename,
             file=sys.stderr, sep='')
 
@@ -204,7 +206,7 @@ def main():
             and not args.fixUnderscore \
             and args.startFrame == NEVER_START_FRAME :
         if not args.silent :
-            print(os.path.basename(sys.argv[0]),
+            print(PROG_NAME,
                 ": warning: no offset, no padding change etc., nothing to do",
                 file=sys.stderr, sep='')
         sys.exit(0)
@@ -218,6 +220,7 @@ def main():
     ## (venv) [jrowell@euclid renumSeq]$ renumseq --start 100 --touch 230101 -- 'aaa.[1-2].jpg'
     ## 230101
     ## (venv) [jrowell@euclid renumSeq]$ renumseq --start 100 -- 'aaa.[1-2].jpg'
+    ## None
 
     if args.touch != None : # --touch called
         if args.touch == "0" : # Touch with current time.
@@ -247,6 +250,8 @@ def main():
 
             specificTime = int(time.mktime(timeData.timetuple())) # Epoch time
 
+    ## print("How To Touch: ", howToTouch) ## JPR DEBUG
+
     if args.dryRun : # verbose to show how renumbering would occur.
         args.verbose = True
 
@@ -272,7 +277,7 @@ def main():
         match = pattern.search(arg)
         if not match :
             if not args.silent :
-                print(os.path.basename(sys.argv[0]), ": warning: ", arg,
+                print(PROG_NAME, ": warning: ", arg,
                     " not a sequence or not in lsseq native format",
                     file=sys.stderr, sep='')
             continue
@@ -362,7 +367,7 @@ def main():
                     and args.pad < 0 \
                     and not args.fixUnderscore :
                 if not args.silent :
-                    print(os.path.basename(sys.argv[0]),
+                    print(PROG_NAME,
                         ": warning: no offset, no padding/underscore change, skipping sequence: ",
                         arg, file=sys.stderr, sep='')
                 continue
@@ -445,7 +450,7 @@ def main():
 
         if origName == [] :
             if not args.silent :
-                print(os.path.basename(sys.argv[0]), ": warning: ", arg,
+                print(PROG_NAME, ": warning: ", arg,
                     " is nonexistent", file=sys.stderr, sep='')
             continue
 
@@ -460,7 +465,7 @@ def main():
 
             if abortSeq :
                 if not args.silent :
-                    print(os.path.basename(sys.argv[0]), ": warning: skipping ", arg,
+                    print(PROG_NAME, ": warning: skipping ", arg,
                         ": renumbering would have overwritten a file outside the sequence being renumbered. e.g.: ",
                         f, file=sys.stderr, sep='')
                 continue
@@ -482,8 +487,8 @@ def main():
                     stat = os.stat(origName[i])
                     os.rename(origName[i], newName[i])
                     if howToTouch == Touch.CURRENT_TIME :
-                        os.utime(newName[i] (currentTime, currentTime))
-                    if howToTouch == Touch.SPECIFIC_TIME :
+                        os.utime(newName[i], (currentTime, currentTime))
+                    elif howToTouch == Touch.SPECIFIC_TIME :
                         os.utime(newName[i], (specificTime, specificTime))
                     else :
                         os.utime(newName[i], (stat.st_atime, stat.st_mtime))
@@ -492,7 +497,7 @@ def main():
         # Continuation of above logic, printing warning if NO files in SEQ changed names.
         #
         if not fileRenamed and not args.silent :
-            print(os.path.basename(sys.argv[0]),
+            print(PROG_NAME,
                 ": warning: no changes were made to ", arg, ": skipping",
                 file=sys.stderr, sep='')
 

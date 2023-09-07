@@ -112,8 +112,6 @@ trap cleanup INT
 
 TEST_OUT_FILENAME=test_renumseq.out.`uname`.new
 
-trap cleanup INT
-
 if [ "$TEST_SYSTEM_RENUMSEQ" = no ]; then
     ln -sf ../renumseq/__main__.py  renumseq
 
@@ -191,17 +189,17 @@ a03 renumseq -o 30 a.[0100-0110].jpg        # This should error out
 a03 renumseq -s -o 30 a.[0100-0110].jpg     # Same with this, but silent.
 a03 ls -l                                   # regular ls to see dates of files
 a03 lsseq -RPl --noErrorLists -g -m         # Seq should be the same as above.
-a03 renumseq -v -o 30 --force --touch 200106011230 a.[0100-0110].jpg # Now they should renumber.
+a03 renumseq -v -o 30 --force --touch 20010601-1230 a.[0100-0110].jpg # Now they should renumber.
 a03 lsseq -RPl --noErrorLists -g -m         # Note new range.
 a03 ls -l                                   # Note that one files was not overwritten due to missing file in renumed seq
 a02 ls -l                                   # This next test was carefully laid out so that the highest x120 goes to x140
 a02 lsseq -RPl --noErrorLists -g -m         # and the lowest x100 goes into the vacated x120 slot. Furthermore x105 is
-a02 renumseq -v -o 20 --touch 200106011230 a.[0100-0120].jpg # missing leaving x0125 untouched after the renum.
+a02 renumseq -v -o 20 --touch 20010601-1300 a.[0100-0120].jpg # missing leaving x0125 untouched after the renum.
 a02 lsseq -RPl --noErrorLists -g -m         # Show new seq range.
 a02 ls -l                                   # Note all were renumbered EXCEPT x125
 a01 ls -l                                   # A list 100-140, 101 missing, 134-139 missing.
 a01 lsseq -RPl --noErrorLists -g -m         # Move them all 100, so should leave 140 unmoved,
-a01 renumseq -o 100 --touch 200106011230 a.[0100-0133].jpg  # and 201 should be missing
+a01 renumseq -o 100 --touch 20010602 a.[0100-0133].jpg  # and 201 should be missing
 a01 lsseq -RPl --noErrorLists -g -m         # and range should go up to 233. missing 141-199 also.
 a01 ls -l
 .   lsseq -RPl --noErrorLists -g -m b01 x01 y01
@@ -236,6 +234,20 @@ e01 lsseq -RPl --noErrorLists -g -m
 g01 lsseq -n
 g01 renumseq -v -o -400 g.[0530-0547].bgeo.gz
 g01 lsseq -n
+h01 ls -l
+h01 renumseq --start 101 --touch xxxx h.[001-010].jpg
+h01 renumseq --start 101 --touch 2010 h.[001-010].jpg
+h01 renumseq --start 101 --touch 0101 h.[001-010].jpg
+h01 renumseq --start 101 --touch 20100101 h.[001-010].jpg
+h01 ls -l
+h01 renumseq --start 1 --touch -- h.[101-110].jpg
+h01 ls -l
+h01 date
+h01 echo The dates of the files in the last ls -l should match the prior date command.
+h01 renumseq --foobar h.[001-010].jpg
+h01 renumseq --start 101 --touch 20200631 h.[001-010].jpg
+h01 renumseq --start 101 --touch 20200630 h.[001-010].jpg
+h01 ls -l
 EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`
@@ -254,7 +266,7 @@ while true; do
     args=(${args[@]:2})
     echo "" >> $TEST_DIR/$TEST_OUT_FILENAME
     echo --- Test $i of $NUM_TESTS ---
-    echo --- Test $i --- dir:$workingDir --- $cmd ${args[@]} --- >> $TEST_DIR/$TEST_OUT_FILENAME
+    echo ----- Test $i -+- dir:$workingDir -+- $cmd ${args[@]} ----- >> $TEST_DIR/$TEST_OUT_FILENAME
     cd $TEST_DIR/testdir/$workingDir
     $cmd ${args[@]} >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
     i=$(expr $i + 1)
