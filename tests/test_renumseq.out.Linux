@@ -22,7 +22,7 @@
 ----- Test 3 -+- dir:. -+- renumseq -----
 
 ----- Test 4 -+- dir:. -+- renumseq --version -----
-1.2.2
+1.3.0
 
 ----- Test 5 -+- dir:. -+- renumseq --help -----
 usage: renumseq [OPTION]... [SEQ]...
@@ -78,13 +78,16 @@ optional arguments:
                         dot-separator ('.'). Note that you can use an offset
                         of zero (default) to replace the underscore with a dot
                         leaving all else the same
-  --touch [[CC]YYMMDD[hhmm]]
+  --touch [[CC]YYMMDD[-hh[mm[ss]]]]
                         update the access time of the file being renamed to
                         the current time. Optionally specify a date for the
-                        updated access time. Note: if this is the last
+                        updated access time. The optional CC (century)
+                        defaults to the current century. The optional '-hh'
+                        (hours), 'mm' (minutes) or 'ss' (seconds) default to
+                        zero if not specified. Note: if this is the last
                         argument on the command line and the optional date was
                         not specified then append '--' before the list of SEQs
-                        to delineate the end of the options
+                        to delineate the end of the options.
   --silent, --quiet, -s
                         suppress all errors and warnings
   --verbose, -v         list the mapping from old file-name to new file-name
@@ -347,39 +350,39 @@ total 0
 ----- Test 38 -+- dir:a01 -+- ls -l -----
 total 0
 -rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0140.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0200.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0202.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0203.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0204.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0205.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0206.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0207.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0208.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0209.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0210.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0211.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0212.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0213.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0214.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0215.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0216.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0217.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0218.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0219.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0220.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0221.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0222.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0223.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0224.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0225.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0226.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0227.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0228.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0229.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0230.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0231.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0232.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0233.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0200.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0202.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0203.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0204.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0205.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0206.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0207.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0208.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0209.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0210.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0211.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0212.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0213.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0214.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0215.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0216.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0217.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0218.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0219.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0220.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0221.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0222.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0223.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0224.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0225.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0226.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0227.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0228.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0229.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0230.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0231.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0232.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0233.jpg
 
 ----- Test 39 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m b01 x01 y01 -----
 b01/b.[555].jpg
@@ -713,46 +716,46 @@ total 0
 -rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 h.010.jpg
 
 ----- Test 72 -+- dir:h01 -+- renumseq --start 101 --touch xxxx h.[001-010].jpg -----
+renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
 
 ----- Test 73 -+- dir:h01 -+- renumseq --start 101 --touch 2010 h.[001-010].jpg -----
-renumseq: warning: h.[001-010].jpg is nonexistent
+renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
 
 ----- Test 74 -+- dir:h01 -+- renumseq --start 101 --touch 0101 h.[001-010].jpg -----
-renumseq: warning: h.[001-010].jpg is nonexistent
+renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
 
 ----- Test 75 -+- dir:h01 -+- renumseq --start 101 --touch 20100101 h.[001-010].jpg -----
-renumseq: warning: h.[001-010].jpg is nonexistent
 
 ----- Test 76 -+- dir:h01 -+- ls -l -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.101.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.102.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.103.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.104.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.105.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.106.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.107.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.108.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.109.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.110.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.101.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.102.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.103.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.104.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.105.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.106.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.107.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.108.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.109.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.110.jpg
 
 ----- Test 77 -+- dir:h01 -+- renumseq --start 1 --touch -- h.[101-110].jpg -----
 
 ----- Test 78 -+- dir:h01 -+- ls -l -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Sep  8 09:32 h.001.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  8 09:32 h.002.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  8 09:32 h.003.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  8 09:32 h.004.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  8 09:32 h.005.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  8 09:32 h.006.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  8 09:32 h.007.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  8 09:32 h.008.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  8 09:32 h.009.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  8 09:32 h.010.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  8 10:19 h.001.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  8 10:19 h.002.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  8 10:19 h.003.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  8 10:19 h.004.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  8 10:19 h.005.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  8 10:19 h.006.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  8 10:19 h.007.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  8 10:19 h.008.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  8 10:19 h.009.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  8 10:19 h.010.jpg
 
 ----- Test 79 -+- dir:h01 -+- date -----
-Fri Sep  8 09:32:35 CDT 2023
+Fri Sep  8 10:19:46 CDT 2023
 
 ----- Test 80 -+- dir:h01 -+- echo The dates of the files in the last ls -l should match the prior date command. -----
 The dates of the files in the last ls -l should match the prior date command.
@@ -762,19 +765,34 @@ usage: renumseq [OPTION]... [SEQ]...
 renumseq: error: unrecognized arguments: --foobar
 
 ----- Test 82 -+- dir:h01 -+- renumseq --start 101 --touch 20200631 h.[001-010].jpg -----
+renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
 
 ----- Test 83 -+- dir:h01 -+- renumseq --start 101 --touch 20200630 h.[001-010].jpg -----
-renumseq: warning: h.[001-010].jpg is nonexistent
 
 ----- Test 84 -+- dir:h01 -+- ls -l -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.101.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.102.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.103.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.104.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.105.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.106.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.107.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.108.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.109.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 h.110.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.101.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.102.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.103.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.104.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.105.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.106.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.107.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.108.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.109.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.110.jpg
+
+----- Test 85 -+- dir:h01 -+- renumseq --start 1 --touch 200730 h.[101-110].jpg -----
+
+----- Test 86 -+- dir:h01 -+- ls -l -----
+total 0
+-rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.001.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.002.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.003.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.004.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.005.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.006.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.007.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.008.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.009.jpg
+-rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.010.jpg

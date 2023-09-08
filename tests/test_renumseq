@@ -248,6 +248,8 @@ h01 renumseq --foobar h.[001-010].jpg
 h01 renumseq --start 101 --touch 20200631 h.[001-010].jpg
 h01 renumseq --start 101 --touch 20200630 h.[001-010].jpg
 h01 ls -l
+h01 renumseq --start 1 --touch 200730 h.[101-110].jpg
+h01 ls -l
 EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`

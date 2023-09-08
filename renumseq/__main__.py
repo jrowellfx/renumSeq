@@ -56,17 +56,26 @@ VERSION = "1.3.0"
 
 PROG_NAME = "renumseq"
 
+# Note: Must list %y before %y in each case - to make sure 
+# that, for example, "200631" get's interpreted as June 31, 2020
+# and not May 1, 2006, as it will because strptime does not 
+# enforce interpretation of leading zeros.
+#
+# Note the ordered pair. The second integer entry is how long
+# the padded string MUST be to help catch cases where 
+# strptime interpretes a date without a zero padding.
+#
 DATE_FORMAT_LIST = [
-    '%y%m%d',
-    '%Y%m%d',
-    '%y%m%d-%H',
-    '%Y%m%d-%H',
-    '%y%m%d-%H%M',
-    '%Y%m%d-%H%M',
-    '%y%m%d-%H%M%S',
-    '%Y%m%d-%H%M%S',
-    '%y%m%d%H%M',    # Undocumented, but kept for compatibility
-    '%Y%m%d%H%M',    # with earlier versions (v1.2.2 and earlier)
+    ('%y%m%d', 6),
+    ('%Y%m%d', 8),
+    ('%y%m%d-%H', 9),
+    ('%Y%m%d-%H', 11),
+    ('%y%m%d-%H%M', 11),
+    ('%Y%m%d-%H%M', 13),
+    ('%y%m%d-%H%M%S', 13),
+    ('%Y%m%d-%H%M%S', 15),
+    ('%y%m%d%H%M', 10),    # Undocumented, but kept for compatibility
+    ('%Y%m%d%H%M', 12)     # with earlier versions (v1.2.2 and earlier)
 ]
 
 class Touch(Enum):
@@ -227,21 +236,37 @@ def main():
             howToTouch = Touch.CURRENT_TIME
 
         else : # Touch with time specified on the command line.
-            import datetime
-            import dateparser
 
             howToTouch = Touch.SPECIFIC_TIME
 
+            ## tzName = datetime.datetime.now(datetime.timezone.utc).astimezone().tzname()
+            ## parsers = ['custom-formats']
+            ## timeData = dateparser.parse( \
+                ## args.touch, \
+                ## date_formats=DATE_FORMAT_LIST, \
+                ## settings={'TIMEZONE': tzName, 'PARSERS': parsers})
+
             # Process the cutoff time set.
             #
-            tzName = datetime.datetime.now(datetime.timezone.utc).astimezone().tzname()
-            parsers = ['custom-formats']
-            timeData = dateparser.parse( \
-                args.touch, \
-                date_formats=DATE_FORMAT_LIST, \
-                settings={'TIMEZONE': tzName, 'PARSERS': parsers})
+            matchedDate = False
+            for dateFormat in DATE_FORMAT_LIST :
+                ## print(dateFormat)
+                try: 
+                    timeData = datetime.strptime(args.touch, dateFormat[0])
 
-            if timeData == None :
+                    # Make sure strptime() above, matched against a string
+                    # with proper zero padding. If it doesn't match then
+                    # just keep looping.
+                    #
+                    if len(args.touch) == dateFormat[1] :
+                        matchedDate = True
+                        break
+
+                except ValueError as ve:
+                    continue
+                    ## print("ValueError:", ve)
+
+            if not matchedDate :
                 if not args.silent :
                     print(PROG_NAME,
                         ": error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]",
