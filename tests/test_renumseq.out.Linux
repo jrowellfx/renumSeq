@@ -1,7 +1,7 @@
 ------ Begin Tests ------
 
 ----- Test 1 -+- dir:. -+- lsseq --version -----
-2.7.0
+2.7.1
 
 ----- Test 2 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m -----
 ./a01/a.[0100-0140].jpg m:[101,134-139]
@@ -22,7 +22,7 @@
 ----- Test 3 -+- dir:. -+- renumseq -----
 
 ----- Test 4 -+- dir:. -+- renumseq --version -----
-1.3.2
+1.3.3
 
 ----- Test 5 -+- dir:. -+- renumseq --help -----
 usage: renumseq [OPTION]... [SEQ]...
@@ -37,7 +37,7 @@ treatment of '[' and ']' by the shell.
 Caution: The files in the sequence MUST BE correctly padded.
 Pay attention to lsseq's --showBadPadding for reports of badly padded frame
 numbers and fix them before renumbering a sequence with this utility.
-(This is a Rare issue.)
+(This is a rare issue that can be fixed with the command 'fixSeqPadding'.)
 
 Example usage:
     $ lsseq
@@ -143,41 +143,41 @@ renumseq: warning: skipping a.[0100-0110].jpg: renumbering would have overwritte
 
 ----- Test 23 -+- dir:a03 -+- renumseq -s -o 30 a.[0100-0110].jpg -----
 
------ Test 24 -+- dir:a03 -+- ls -l -----
+----- Test 24 -+- dir:a03 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0100.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0102.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0103.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0104.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0105.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0106.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0107.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0108.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0109.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0110.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0111.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0112.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0113.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0114.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0115.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0116.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0117.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0118.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0119.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0120.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0121.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0122.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0123.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0124.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0125.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0126.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0127.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0128.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0129.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0130.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0131.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0132.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0133.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0100.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0102.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0103.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0104.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0105.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0106.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0107.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0108.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0109.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0110.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0111.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0112.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0113.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0114.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0115.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0116.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0117.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0118.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0119.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0120.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0121.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0122.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0123.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0124.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0126.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0127.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0128.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0129.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0130.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0131.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0132.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0133.jpg
 
 ----- Test 25 -+- dir:a03 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0100-0133].jpg m:[101]
@@ -197,62 +197,62 @@ a.0100.jpg -> a.0130.jpg
 ----- Test 27 -+- dir:a03 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0111-0140].jpg
 
------ Test 28 -+- dir:a03 -+- ls -l -----
+----- Test 28 -+- dir:a03 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0111.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0112.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0113.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0114.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0115.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0116.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0117.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0118.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0119.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0120.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0121.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0122.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0123.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0124.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0125.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0126.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0127.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0128.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0129.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0130.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0131.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0132.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0133.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0134.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0135.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0136.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0137.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0138.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0139.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0140.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0111.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0112.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0113.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0114.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0115.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0116.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0117.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0118.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0119.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0120.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0121.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0122.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0123.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0124.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0126.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0127.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0128.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0129.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0130.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0131.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0132.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0133.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0134.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0135.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0136.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0137.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0138.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0139.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0140.jpg
 
------ Test 29 -+- dir:a02 -+- ls -l -----
+----- Test 29 -+- dir:a02 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0100.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0101.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0102.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0103.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0104.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0106.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0107.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0108.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0109.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0110.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0111.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0112.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0113.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0114.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0115.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0116.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0117.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0118.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0119.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0120.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0100.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0101.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0102.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0103.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0104.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0106.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0107.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0108.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0109.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0110.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0111.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0112.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0113.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0114.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0115.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0116.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0117.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0118.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0119.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0120.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0125.jpg
 
 ----- Test 30 -+- dir:a02 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0100-0125].jpg m:[105,121-124]
@@ -282,66 +282,66 @@ a.0100.jpg -> a.0120.jpg
 ----- Test 32 -+- dir:a02 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0120-0140].jpg
 
------ Test 33 -+- dir:a02 -+- ls -l -----
+----- Test 33 -+- dir:a02 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0120.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0121.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0122.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0123.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0124.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0125.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0126.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0127.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0128.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0129.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0130.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0131.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0132.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0133.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0134.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0135.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0136.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0137.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0138.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0139.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  1  2001 a.0140.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0120.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0121.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0122.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0123.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0124.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0126.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0127.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0128.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0129.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0130.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0131.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0132.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0133.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0134.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0135.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0136.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0137.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0138.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0139.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  1  2001 a.0140.jpg
 
------ Test 34 -+- dir:a01 -+- ls -l -----
+----- Test 34 -+- dir:a01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0100.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0102.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0103.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0104.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0105.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0106.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0107.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0108.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0109.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0110.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0111.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0112.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0113.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0114.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0115.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0116.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0117.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0118.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0119.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0120.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0121.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0122.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0123.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0124.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0125.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0126.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0127.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0128.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0129.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0130.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0131.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0132.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0133.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0140.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0100.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0102.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0103.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0104.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0105.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0106.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0107.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0108.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0109.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0110.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0111.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0112.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0113.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0114.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0115.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0116.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0117.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0118.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0119.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0120.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0121.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0122.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0123.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0124.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0125.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0126.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0127.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0128.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0129.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0130.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0131.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0132.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0133.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0140.jpg
 
 ----- Test 35 -+- dir:a01 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0100-0140].jpg m:[101,134-139]
@@ -351,42 +351,42 @@ total 0
 ----- Test 37 -+- dir:a01 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0140-0233].jpg m:[141-199,201]
 
------ Test 38 -+- dir:a01 -+- ls -l -----
+----- Test 38 -+- dir:a01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 a.0140.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0200.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0202.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0203.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0204.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0205.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0206.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0207.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0208.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0209.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0210.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0211.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0212.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0213.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0214.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0215.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0216.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0217.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0218.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0219.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0220.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0221.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0222.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0223.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0224.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0225.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0226.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0227.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0228.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0229.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0230.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0231.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0232.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun  2  2001 a.0233.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 a.0140.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0200.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0202.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0203.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0204.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0205.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0206.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0207.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0208.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0209.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0210.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0211.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0212.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0213.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0214.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0215.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0216.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0217.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0218.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0219.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0220.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0221.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0222.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0223.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0224.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0225.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0226.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0227.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0228.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0229.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0230.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0231.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0232.jpg
+-rw-rw-rw-. 1 testUser 0 Jun  2  2001 a.0233.jpg
 
 ----- Test 39 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m b01 x01 y01 -----
 b01/b.[555].jpg
@@ -706,18 +706,18 @@ g.0547.bgeo.gz -> g.0147.bgeo.gz
 ----- Test 70 -+- dir:g01 -+- lsseq -n -----
 g.[0130-0147].bgeo.gz
 
------ Test 71 -+- dir:h01 -+- ls -l -----
+----- Test 71 -+- dir:h01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 h.001.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 h.002.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 h.003.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 h.004.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 h.005.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 h.006.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 h.007.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 h.008.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 h.009.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan 12  1992 h.010.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 h.001.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 h.002.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 h.003.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 h.004.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 h.005.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 h.006.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 h.007.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 h.008.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 h.009.jpg
+-rw-rw-rw-. 1 testUser 0 Jan 12  1992 h.010.jpg
 
 ----- Test 72 -+- dir:h01 -+- renumseq --start 101 --touch xxxx h.[001-010].jpg -----
 renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
@@ -730,39 +730,39 @@ renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[m
 
 ----- Test 75 -+- dir:h01 -+- renumseq --start 101 --touch 20100101 h.[001-010].jpg -----
 
------ Test 76 -+- dir:h01 -+- ls -l -----
+----- Test 76 -+- dir:h01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.101.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.102.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.103.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.104.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.105.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.106.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.107.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.108.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.109.jpg
--rw-rw-rw-. 1 jrowell users 0 Jan  1  2010 h.110.jpg
+-rw-rw-rw-. 1 testUser 0 Jan  1  2010 h.101.jpg
+-rw-rw-rw-. 1 testUser 0 Jan  1  2010 h.102.jpg
+-rw-rw-rw-. 1 testUser 0 Jan  1  2010 h.103.jpg
+-rw-rw-rw-. 1 testUser 0 Jan  1  2010 h.104.jpg
+-rw-rw-rw-. 1 testUser 0 Jan  1  2010 h.105.jpg
+-rw-rw-rw-. 1 testUser 0 Jan  1  2010 h.106.jpg
+-rw-rw-rw-. 1 testUser 0 Jan  1  2010 h.107.jpg
+-rw-rw-rw-. 1 testUser 0 Jan  1  2010 h.108.jpg
+-rw-rw-rw-. 1 testUser 0 Jan  1  2010 h.109.jpg
+-rw-rw-rw-. 1 testUser 0 Jan  1  2010 h.110.jpg
 
 ----- Test 77 -+- dir:h01 -+- renumseq --start 1 --touch -- h.[101-110].jpg -----
 
------ Test 78 -+- dir:h01 -+- ls -l -----
+----- Test 78 -+- dir:h01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Sep  9 22:31 h.001.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 22:31 h.002.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 22:31 h.003.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 22:31 h.004.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 22:31 h.005.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 22:31 h.006.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 22:31 h.007.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 22:31 h.008.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 22:31 h.009.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 22:31 h.010.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 10 16:52 h.001.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 10 16:52 h.002.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 10 16:52 h.003.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 10 16:52 h.004.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 10 16:52 h.005.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 10 16:52 h.006.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 10 16:52 h.007.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 10 16:52 h.008.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 10 16:52 h.009.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 10 16:52 h.010.jpg
 
 ----- Test 79 -+- dir:h01 -+- date -----
-Sat Sep  9 22:31:00 CDT 2023
+Sun Sep 10 16:52:51 CDT 2023
 
------ Test 80 -+- dir:h01 -+- echo The dates of the files in the last ls -l should match the prior date command. -----
-The dates of the files in the last ls -l should match the prior date command.
+----- Test 80 -+- dir:h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
+The dates of the files in the last ls -o should match the prior date command.
 
 ----- Test 81 -+- dir:h01 -+- renumseq --foobar h.[001-010].jpg -----
 usage: renumseq [OPTION]... [SEQ]...
@@ -773,30 +773,30 @@ renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[m
 
 ----- Test 83 -+- dir:h01 -+- renumseq --start 101 --touch 20200630 h.[001-010].jpg -----
 
------ Test 84 -+- dir:h01 -+- ls -l -----
+----- Test 84 -+- dir:h01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.101.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.102.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.103.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.104.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.105.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.106.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.107.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.108.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.109.jpg
--rw-rw-rw-. 1 jrowell users 0 Jun 30  2020 h.110.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 30  2020 h.101.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 30  2020 h.102.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 30  2020 h.103.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 30  2020 h.104.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 30  2020 h.105.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 30  2020 h.106.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 30  2020 h.107.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 30  2020 h.108.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 30  2020 h.109.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 30  2020 h.110.jpg
 
 ----- Test 85 -+- dir:h01 -+- renumseq --start 1 --touch 200730 h.[101-110].jpg -----
 
------ Test 86 -+- dir:h01 -+- ls -l -----
+----- Test 86 -+- dir:h01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.001.jpg
--rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.002.jpg
--rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.003.jpg
--rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.004.jpg
--rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.005.jpg
--rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.006.jpg
--rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.007.jpg
--rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.008.jpg
--rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.009.jpg
--rw-rw-rw-. 1 jrowell users 0 Jul 30  2020 h.010.jpg
+-rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.001.jpg
+-rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.002.jpg
+-rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.003.jpg
+-rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.004.jpg
+-rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.005.jpg
+-rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.006.jpg
+-rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.007.jpg
+-rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.008.jpg
+-rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.009.jpg
+-rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.010.jpg
