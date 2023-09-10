@@ -52,7 +52,7 @@ from enum import Enum
 # MINOR version for added functionality in a backwards compatible manner
 # PATCH version for backwards compatible bug fixes
 #
-VERSION = "1.3.0"
+VERSION = "1.3.1"
 
 PROG_NAME = "renumseq"
 
@@ -76,9 +76,7 @@ DATE_FORMAT_LIST = [
     ('%y%m%d-%H%M', 11),
     ('%Y%m%d-%H%M', 13),
     ('%y%m%d-%H%M%S', 13),
-    ('%Y%m%d-%H%M%S', 15),
-    ('%y%m%d%H%M', 10),    # Undocumented, but kept for compatibility
-    ('%Y%m%d%H%M', 12)     # with earlier versions (v1.2.2 and earlier)
+    ('%Y%m%d-%H%M%S', 15)
 ]
 
 class Touch(Enum):

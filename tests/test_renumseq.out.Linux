@@ -22,7 +22,7 @@
 ----- Test 3 -+- dir:. -+- renumseq -----
 
 ----- Test 4 -+- dir:. -+- renumseq --version -----
-1.3.0
+1.3.1
 
 ----- Test 5 -+- dir:. -+- renumseq --help -----
 usage: renumseq [OPTION]... [SEQ]...
@@ -747,19 +747,19 @@ total 0
 
 ----- Test 78 -+- dir:h01 -+- ls -l -----
 total 0
--rw-rw-rw-. 1 jrowell users 0 Sep  9 20:01 h.001.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 20:01 h.002.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 20:01 h.003.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 20:01 h.004.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 20:01 h.005.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 20:01 h.006.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 20:01 h.007.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 20:01 h.008.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 20:01 h.009.jpg
--rw-rw-rw-. 1 jrowell users 0 Sep  9 20:01 h.010.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  9 21:59 h.001.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  9 21:59 h.002.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  9 21:59 h.003.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  9 21:59 h.004.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  9 21:59 h.005.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  9 21:59 h.006.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  9 21:59 h.007.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  9 21:59 h.008.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  9 21:59 h.009.jpg
+-rw-rw-rw-. 1 jrowell users 0 Sep  9 21:59 h.010.jpg
 
 ----- Test 79 -+- dir:h01 -+- date -----
-Sat Sep  9 20:01:37 CDT 2023
+Sat Sep  9 21:59:46 CDT 2023
 
 ----- Test 80 -+- dir:h01 -+- echo The dates of the files in the last ls -l should match the prior date command. -----
 The dates of the files in the last ls -l should match the prior date command.
