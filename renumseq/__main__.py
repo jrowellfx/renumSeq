@@ -52,7 +52,7 @@ from enum import Enum
 # MINOR version for added functionality in a backwards compatible manner
 # PATCH version for backwards compatible bug fixes
 #
-VERSION = "1.3.2"
+VERSION = "1.3.3"
 
 PROG_NAME = "renumseq"
 
@@ -121,7 +121,7 @@ def main():
             Caution: The files in the sequence MUST BE correctly padded.
             Pay attention to lsseq's --showBadPadding for reports of badly padded frame
             numbers and fix them before renumbering a sequence with this utility.
-            (This is a Rare issue.)
+            (This is a rare issue that can be fixed with the command 'fixSeqPadding'.)
 
             Example usage:
                 $ lsseq
