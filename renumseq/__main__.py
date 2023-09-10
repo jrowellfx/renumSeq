@@ -238,7 +238,6 @@ def main():
         howToTouch = Touch.SPECIFIC_TIME
 
         # Loop through list of acceptable formats declared globally.
-        # Note that the order of the formats listed 
         #
         matchedDate = False
         for dateFormat in DATE_FORMAT_LIST :
