@@ -44,7 +44,7 @@ import argparse
 import os, sys
 import textwrap
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 import seqLister
 from enum import Enum
 
