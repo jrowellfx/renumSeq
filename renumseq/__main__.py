@@ -56,14 +56,17 @@ VERSION = "1.3.0"
 
 PROG_NAME = "renumseq"
 
-# Note: Must list %y before %y in each case - to make sure 
-# that, for example, "200631" get's interpreted as June 31, 2020
-# and not May 1, 2006, as it will because strptime does not 
-# enforce interpretation of leading zeros.
+# List of date formats accepted to set file times with --touch.
+# They are same as the formats used by 'lsseq --onlyShow'.
 #
-# Note the ordered pair. The second integer entry is how long
-# the padded string MUST be to help catch cases where 
-# strptime interpretes a date without a zero padding.
+# Note: We MUST list %y before %Y in each case below to make sure 
+# that, for example, "200731" get's interpreted as July 31, 2020
+# and not May 1, 2007, as it will if %Y is listed first because
+# strptime() does not enforce zero padding for month, day, etc.
+#
+# Note the ordered pairs below. The second entry is the length
+# of a properly zero padded date string, used to double check
+# any matches that strptime() makes.
 #
 DATE_FORMAT_LIST = [
     ('%y%m%d', 6),
@@ -91,10 +94,10 @@ def warnSeqSyntax(silent, basename, seq) :
 
 def main():
 
-    NEVER_START_FRAME = -999999999999
-    howToTouch = Touch.ORIGINAL_TIME
+    NEVER_START_FRAME = -999999999999 # Seems safe enough.
+    howToTouch = ""   # Set below.
+    specificTime = 0  # Set below.
     currentTime = time.time()
-    specificTime = 0 # Set below.
 
     # Redefine the exception handling routine so that it does NOT
     # do a trace dump if the user types ^C while renumseq is running.
@@ -114,12 +117,13 @@ def main():
             SEQ should be specified using lsseq's native format.
             
             Protip: Turning off globbing, or enclosing SEQ in quotes, or placing
-            backslashes ahead of '[' and ']' will be necessary to turn off the special
+            backslashes ahead of '[' and ']' will likely be necessary to turn off the special
             treatment of '[' and ']' by the shell.
 
             Caution: The files in the sequence MUST BE correctly padded.
             Pay attention to lsseq's --showBadPadding for reports of badly padded frame
             numbers and fix them before renumbering a sequence with this utility.
+            (This is a Rare issue.)
 
             Example usage:
                 $ lsseq
@@ -183,9 +187,12 @@ def main():
         default=None, # Value if --touch NOT present on cmd line.
         const="0",    # Value if --touch present but NO argument passed to it.
         metavar="[CC]YYMMDD[-hh[mm[ss]]]",
-        help="update the access time of the file being renamed to the \
-        current time. Optionally specify a date for the updated access time. \
-        The optional CC (century) defaults to the current century. \
+        help="If no date is provided then update the access time of \
+        the files being renumbered to the current time. \
+        Otherwise, use the date provided to update the \
+        file's access time. (Default: renumbering a sequence leaves \
+        the access time unchanged.) \
+        When specifying the date, the optional CC (century) defaults to the current century. \
         The optional '-hh' (hours), 'mm' (minutes) or 'ss' (seconds) \
         default to zero if not specified. \
         Note: if this is the last argument on the command line and the optional \
@@ -204,7 +211,6 @@ def main():
 
     args = p.parse_args()
 
-    
     if args.files == [] :
         sys.exit(0)
 
@@ -220,62 +226,58 @@ def main():
                 file=sys.stderr, sep='')
         sys.exit(0)
 
-    ## DEBUGGING TMP
-    ## print(args.touch)
-    ## exit(1)
-    ## ...and output follows.
-    ## (venv) [jrowell@euclid renumSeq]$ renumseq --start 100 --touch -- 'aaa.[1-2].jpg'
-    ## 0
-    ## (venv) [jrowell@euclid renumSeq]$ renumseq --start 100 --touch 230101 -- 'aaa.[1-2].jpg'
-    ## 230101
-    ## (venv) [jrowell@euclid renumSeq]$ renumseq --start 100 -- 'aaa.[1-2].jpg'
-    ## None
+    # args.touch is either a string, presumably containing a date (so need to
+    # check its validity), the string "0" (meaning --touch was called with NO argument),
+    # or None, meaning --touch was not invoked on the command line.
+    # 
+    if args.touch == None : # --touch NOT called
+        howToTouch = Touch.ORIGINAL_TIME
 
-    if args.touch != None : # --touch called
-        if args.touch == "0" : # Touch with current time.
-            howToTouch = Touch.CURRENT_TIME
+    elif args.touch == "0" : # Touch with current time.
+        howToTouch = Touch.CURRENT_TIME
 
-        else : # Touch with time specified on the command line.
+    else : # Touch with time specified on the command line.
+        howToTouch = Touch.SPECIFIC_TIME
 
-            howToTouch = Touch.SPECIFIC_TIME
+        # Loop through list of acceptable formats declared globally.
+        # Note that the order of the formats listed 
+        #
+        matchedDate = False
+        for dateFormat in DATE_FORMAT_LIST :
+            try: 
+                timeData = datetime.strptime(args.touch, dateFormat[0])
 
-            ## tzName = datetime.datetime.now(datetime.timezone.utc).astimezone().tzname()
-            ## parsers = ['custom-formats']
-            ## timeData = dateparser.parse( \
-                ## args.touch, \
-                ## date_formats=DATE_FORMAT_LIST, \
-                ## settings={'TIMEZONE': tzName, 'PARSERS': parsers})
+                # Make sure the prior strptime() call matched against a string
+                # with zero padding for month, day, etc. If the length of the matched
+                # string doesn't add up to what it should be if zero padded
+                # then reject the match and keep looping.
+                # 
+                # This test is needed since strptime() does not ENFORCE zero
+                # padding of months, days, minutes etc. leading to possible
+                # ambiguity and thus is an undesireable feature of strptime().
+                #
+                # This code works around that limitation.
+                #
+                if len(args.touch) == dateFormat[1] :
+                    matchedDate = True
+                    break
 
-            # Process the cutoff time set.
-            #
-            matchedDate = False
-            for dateFormat in DATE_FORMAT_LIST :
-                ## print(dateFormat)
-                try: 
-                    timeData = datetime.strptime(args.touch, dateFormat[0])
+            except ValueError as ve:
+                # Note, we could probably make clever use of the ValueError
+                # reported here, but since we have a list of possible formats
+                # sorting it out if everthing fails seems like more trouble
+                # than it's worth.
+                #
+                continue
 
-                    # Make sure strptime() above, matched against a string
-                    # with proper zero padding. If it doesn't match then
-                    # just keep looping.
-                    #
-                    if len(args.touch) == dateFormat[1] :
-                        matchedDate = True
-                        break
+        if not matchedDate :
+            if not args.silent :
+                print(PROG_NAME,
+                    ": error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]",
+                    file=sys.stderr, sep='')
+            sys.exit(1)
 
-                except ValueError as ve:
-                    continue
-                    ## print("ValueError:", ve)
-
-            if not matchedDate :
-                if not args.silent :
-                    print(PROG_NAME,
-                        ": error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]",
-                        file=sys.stderr, sep='')
-                sys.exit(1)
-
-            specificTime = int(time.mktime(timeData.timetuple())) # Epoch time
-
-    ## print("How To Touch: ", howToTouch) ## JPR DEBUG
+        specificTime = int(time.mktime(timeData.timetuple())) # Epoch time
 
     if args.dryRun : # verbose to show how renumbering would occur.
         args.verbose = True
