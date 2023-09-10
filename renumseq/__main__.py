@@ -52,7 +52,7 @@ from enum import Enum
 # MINOR version for added functionality in a backwards compatible manner
 # PATCH version for backwards compatible bug fixes
 #
-VERSION = "1.3.1"
+VERSION = "1.3.2"
 
 PROG_NAME = "renumseq"
 

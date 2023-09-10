@@ -41,3 +41,6 @@ cd tests
 ./test_renum
 diff test_renum.out test_renum.out.new
 
+CHECK IN AN COMMIT ALL CHANGES AND PUSH UP TO GITHUB
+
+MAKE NEW RELEASE to match VERSION

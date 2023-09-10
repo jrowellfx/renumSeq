@@ -14,7 +14,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name            = 'renumSeq',
-    version         = '1.3.1',
+    version         = '1.3.2',
     description='Tool to renumber image sequences.',
     long_description=long_description,
     long_description_content_type='text/markdown',
