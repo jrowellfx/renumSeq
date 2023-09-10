@@ -9,18 +9,31 @@ cd $HOME
 # else
     source venv/bin/activate
 
-    # For testing and code-dev
-    #
-    # Make sure the following shebang is the first line in __main__.py
-    # 
-        #!/usr/bin/env python3
-    # 
-    cd tests
-    source setUpToTest.sourceMe
-    #
-    # Then proceed with code-dev, testing the command at will.
-
 cd <dirWithGitRepos>/renumSeq
+
+# For testing and code-dev
+#
+# Make sure the following shebang is the first line in __main__.py
+# 
+                    #!/usr/bin/env python3
+
+make sure the VERSION is set properly in renumseq/__main__.py, namely
+
+    Given a version number MAJOR.MINOR.PATCH, increment the:
+
+    MAJOR version for incompatible API changes
+    MINOR version for added functionality in a backwards compatible manner
+    PATCH version for backwards compatible bug fixes
+
+change the version to match in setup.py
+cd tests
+source setUpToTest.sourceMe
+#
+# Then proceed with code-dev, testing the command at will.
+
+run the tests - make sure everthing is OK
+    and that the version in test_lsseq.out is updated
+    for BOTH Darwin (MacOS) and Linux.
 
 python3 -m build
 
