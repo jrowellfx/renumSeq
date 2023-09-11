@@ -32,7 +32,7 @@ source setUpToTest.sourceMe
 # Then proceed with code-dev, testing the command at will.
 
 run the tests - make sure everthing is OK
-    and that the version in test_lsseq.out is updated
+    and that the version in test_renumseq.out is updated
     for BOTH Darwin (MacOS) and Linux.
 
 python3 -m build
