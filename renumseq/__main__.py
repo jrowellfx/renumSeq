@@ -109,6 +109,7 @@ def main():
     sys.excepthook = new_hook
 
     p = argparse.ArgumentParser(
+        prog=PROG_NAME,
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent('''
             Renumber the frame range of each SEQ listed on the command line.
