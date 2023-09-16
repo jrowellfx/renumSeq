@@ -4,18 +4,18 @@
 which are most
 typically used in CG post-production.
 
-`renumseq` allows you to renumber sequences with an offset, or give them a new `start` frame.
+`renumseq` allows you to renumber sequences with an offset or give them a new `start` frame.
 It also allows you adjust the padding of the frame numbers.
 
-`renumseq` borrows the syntax of the native output of
+`renumseq` uses the syntax of the native output of
 [`lsseq`](https://github.com/jrowellfx/lsseq) to specify
 the sequence to be renumbered. Therefore it is recommended to
 also install `lsseq` as it makes using `renumseq` easier.
 
 For example, use `lsseq` to list a sequence, then
 cut and paste its
-output as the arguments to `renumseq` with appropriate optional
-arguments for setting the offset etc.
+output as the arguments to `renumseq` with the appropriate 
+arguments for setting the offset.
 
 `renumseq` was written to be safe in that it won't
 unintentionally overwrite any existing files
