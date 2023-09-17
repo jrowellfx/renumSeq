@@ -146,10 +146,6 @@ def main():
         help="offset SEQ by this number of frames (can be negative). \
         Frame i becomes i + FRAME_OFFSET")
 
-    p.add_argument("--dryRun", action="store_true",
-        dest="dryRun", default=False,
-        help="Don't renumber SEQ, just display how the \
-        files would have been renumbered. Forces --verbose" )
     p.add_argument("--skip", action="store_false",
         dest="clobber", default=False,
         help="if renumbering a file in SEQ would result in overwriting \
@@ -173,6 +169,13 @@ def main():
         lsseq's native format output properly lists the sequence \
         range with appropriate padding and can also report when there are \
         incorrectly padded frame-numbers with --showBadPadding")
+    p.add_argument("--rename", type=str, nargs=1,
+        dest="newFileName",
+        default=[],
+        metavar="NEW_FILENAME",
+        help="Rename the sequence from its existing name to NEW_FILENAME. \
+        When using this option then the command will exit with an error unless \
+        exactly one SEQ is being renamed/renumbered.")
     p.add_argument("--replaceUnderscore", action="store_true",
         dest="fixUnderscore", default=False,
         help="in the case that SEQ uses an underscore ('_') \
@@ -198,6 +201,10 @@ def main():
         date was not specified then \
         append '--' before the list of SEQs to delineate the end of the options.")
 
+    p.add_argument("--dryRun", "--dryrun", action="store_true",
+        dest="dryRun", default=False,
+        help="Don't renumber SEQ, just display how the \
+        files would have been renumbered. Forces --verbose" )
     p.add_argument("--silent", "--quiet", "-s", action="store_true",
         dest="silent", default=False,
         help="suppress all errors and warnings")
@@ -209,6 +216,40 @@ def main():
         help="image sequence in lsseq native format")
 
     args = p.parse_args()
+
+    # The following regular expression is created to match lsseq native sequence syntax
+    # which means (number labels refer to parenthesis groupings **):
+    #
+    # 0 - one or more of anything,           followed by
+    # 1 - a dot or underscore,               followed by
+    #     an open square bracket,            followed by
+    # 2 - a frame range,                     followed by
+    #     a close square bracket then a dot, followed by
+    # 3 - one or more letters, optionally one dot,
+    #     then one or more letters, then one or more letters and numbers
+    #     and the end of the line.
+    #
+    lsseqPattern = re.compile(r"(.+)([._])\[(-?[0-9]+-?-?[0-9]+)\]\.([a-zA-Z]+\.?[a-zA-Z]+[a-zA-Z0-9]*$)")
+
+    # Check this one case before anything else. In case of user error and
+    # they typed the --rename option LAST on the command line, but forgot to
+    # type the new name of the file, instead picking up the first sequence as
+    # a new filename.
+    #
+    ## print(args.newFileName)
+    ## print(len(args.newFileName))
+    if len(args.newFileName) == 1 :
+        match = lsseqPattern.search(args.newFileName[0])
+        if match :
+            if not args.silent :
+                print(PROG_NAME, ": error: The NEW_FILENAME ", args.newFileName[0],
+                    " is not allowed to be a string that matches lsseq native format.",
+                    file=sys.stderr, sep='')
+                print("                 Perhaps the intended NEW_FILENAME was omitted",
+                    file=sys.stderr, sep='')
+                print("                 from the command line by mistake?",
+                    file=sys.stderr, sep='')
+            exit(1)
 
     if args.files == [] :
         sys.exit(0)
@@ -280,26 +321,12 @@ def main():
     if args.dryRun : # verbose to show how renumbering would occur.
         args.verbose = True
 
-    # The following regular expression is created to match lsseq native sequence syntax
-    # which means (number labels refer to parenthesis groupings **):
-    #
-    # 0 - one or more of anything,           followed by
-    # 1 - a dot or underscore,               followed by
-    #     an open square bracket,            followed by
-    # 2 - a frame range,                     followed by
-    #     a close square bracket then a dot, followed by
-    # 3 - one or more letters, optionally one dot,
-    #     then one or more letters, then one or more letters and numbers
-    #     and the end of the line.
-    #
-    pattern = re.compile(r"(.+)([._])\[(-?[0-9]+-?-?[0-9]+)\]\.([a-zA-Z]+\.?[a-zA-Z]+[a-zA-Z0-9]*$)")
-
     for arg in args.files :
         abortSeq = False
 
         # Check if 'arg' is a sequence in valid lsseq native format
         #
-        match = pattern.search(arg)
+        match = lsseqPattern.search(arg)
         if not match :
             if not args.silent :
                 print(PROG_NAME, ": warning: ", arg,

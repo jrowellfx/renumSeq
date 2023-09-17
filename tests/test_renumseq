@@ -199,6 +199,7 @@ a02 renumseq -v -o 20 --touch 20010601-1300 a.[0100-0120].jpg # missing leaving 
 a02 lsseq -RPl --noErrorLists -g -m         # Show new seq range.
 a02 ls -o                                   # Note all were renumbered EXCEPT x125
 a01 ls -o                                   # A list 100-140, 101 missing, 134-139 missing.
+a01 renumseq --dryrun --start 1 --rename a.[0140-0233].jpg # Should be an error about use of --rename
 a01 lsseq -RPl --noErrorLists -g -m         # Move them all 100, so should leave 140 unmoved,
 a01 renumseq -o 100 --touch 20010602 a.[0100-0133].jpg  # and 201 should be missing
 a01 lsseq -RPl --noErrorLists -g -m         # and range should go up to 233. missing 141-199 also.
@@ -272,6 +273,10 @@ while true; do
     echo ----- Test $i -+- dir:$workingDir -+- $cmd ${args[@]} ----- >> $TEST_DIR/$TEST_OUT_FILENAME
     cd $TEST_DIR/testdir/$workingDir
     $cmd ${args[@]} >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
+    retVal=$?
+    if [ $retVal -ne 0 ]; then
+        echo "$cmd returned non-zero error code: $retVal" >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
+    fi
     i=$(expr $i + 1)
 done
 set +f # Turn globbing back on
