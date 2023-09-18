@@ -170,10 +170,10 @@ def main():
         range with appropriate padding and can also report when there are \
         incorrectly padded frame-numbers with --showBadPadding")
     p.add_argument("--rename", type=str, nargs=1,
-        dest="newFileName",
+        dest="newSeqName",
         default=[],
-        metavar="NEW_FILENAME",
-        help="Rename the sequence from its existing name to NEW_FILENAME. \
+        metavar="NEW_SEQNAME",
+        help="Rename SEQ from its existing name to NEW_SEQNAME. \
         When using this option then the command will exit with an error unless \
         exactly one SEQ is being renamed/renumbered.")
     p.add_argument("--replaceUnderscore", action="store_true",
@@ -217,8 +217,9 @@ def main():
 
     args = p.parse_args()
 
-    # The following regular expression is created to match lsseq native sequence syntax
-    # which means (number labels refer to parenthesis groupings **):
+    # The following regular expression is created to match lsseq native
+    # sequence syntax which means (number below refer to parenthesis
+    # groupings.):
     #
     # 0 - one or more of anything,           followed by
     # 1 - a dot or underscore,               followed by
@@ -231,27 +232,58 @@ def main():
     #
     lsseqPattern = re.compile(r"(.+)([._])\[(-?[0-9]+-?-?[0-9]+)\]\.([a-zA-Z]+\.?[a-zA-Z]+[a-zA-Z0-9]*$)")
 
-    # Check this one case before anything else. In case of user error and
-    # they typed the --rename option LAST on the command line, but forgot to
-    # type the new name of the file, instead picking up the first sequence as
-    # a new filename.
+    # --rename has nargs set to "1", so parse_args() above will catch
+    # most invalid cases. Now we need to catch three other invalid cases.
     #
-    ## print(args.newFileName)
-    ## print(len(args.newFileName))
-    if len(args.newFileName) == 1 :
-        match = lsseqPattern.search(args.newFileName[0])
-        if match :
+    # 1) renumseq --rename aaa.[1-10].jpg
+    # 2) renumseq --rename xxx aaa.[1-10].jpg bbb.[1-10].jpg
+    # 3) renumseq --rename aaa.[1-10].jpg bbb.[1-10].jpg
+    #
+    # Case 1) is when the user likely forgot to put the NEW_SEQNAME 
+    #         on the command-line when renaming 'aaa'.
+    # Case 2) is when the user is trying to rename TWO sequences to
+    #         the same name ('xxx') which is obviously undesirable.
+    # Case 3) Hard to say what the user is doing here exactly, but
+    #         they either forgot to add new NEW_SEQNAME *and* to
+    #         remove one or other of the two SEQ from the command-line.
+    #         *OR* they didn't want to actually use --rename at all.
+    #         How to catch this one is if the NEW_SEQNAME
+    #         looks like an SEQ in lsseq native-format.
+    #
+    ## print(args.newSeqName)
+    ## print(len(args.newSeqName))
+    if len(args.newSeqName) == 1 :
+        match = lsseqPattern.search(args.newSeqName[0])
+
+        if len(args.files) == 0 and match : # If 'not match', command will just exit cleanly below.
             if not args.silent :
-                print(PROG_NAME, ": error: The NEW_FILENAME ", args.newFileName[0],
-                    " is not allowed to be a string that matches lsseq native format.",
+                print(PROG_NAME, ": error: No SEQ supplied but trying to --rename to ", args.newSeqName[0],
                     file=sys.stderr, sep='')
-                print("                 Perhaps the intended NEW_FILENAME was omitted",
+                print("                 Perhaps the intended NEW_SEQNAME was omitted from the ",
                     file=sys.stderr, sep='')
-                print("                 from the command line by mistake?",
+                print("                 command line by mistake?",
                     file=sys.stderr, sep='')
             exit(1)
 
-    if args.files == [] :
+        elif len(args.files) >= 1 and match : # If len() > 1 then also invalid, but this catches both.
+            if not args.silent :
+                print(PROG_NAME, ": error: --rename NEW_SEQNAME. NEW_SEQNAME can NOT be a string in",
+                    file=sys.stderr, sep='')
+                print("                 lsseq's native-format. That is, ", args.newSeqName[0],
+                    file=sys.stderr, sep='')
+                print("                 is an INVALID NEW_SEQNAME.",
+                    file=sys.stderr, sep='')
+            exit(1)
+
+        elif len(args.files) > 1 :
+            if not args.silent :
+                print(PROG_NAME, ": error: can NOT rename more than one SEQ at a time.",
+                    file=sys.stderr, sep='')
+            exit(1)
+
+
+
+    if len(args.files) == 0 :
         sys.exit(0)
 
     # The following logic means "do nothing" - so just exit cleanly (**a**)
@@ -497,8 +529,14 @@ def main():
             origFile = seq[0] + currentSeparator + currentFormatStr.format(i) + '.' + seq[2]
             if os.path.exists(origFile) :
                 origName.append(origFile)
-                newName.append(seq[0] + newSeparator + newFormatStr.format(i+args.offsetFrames) \
-                    + '.' + seq[2])
+                if len(args.newSeqName) == 1 :
+                    newName.append(args.newSeqName[0] + newSeparator + \
+                        newFormatStr.format(i+args.offsetFrames) \
+                        + '.' + seq[2])
+                else :
+                    newName.append(seq[0] + newSeparator + \
+                        newFormatStr.format(i+args.offsetFrames) \
+                        + '.' + seq[2])
 
         if origName == [] :
             if not args.silent :
