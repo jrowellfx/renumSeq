@@ -19,6 +19,11 @@ Linux
 ./f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
 ./g01/g.[0530-0547].bgeo.gz
 ./h01/h.[001-010].jpg
+./i01/aaa.[1-10].jpg
+./i01/bbb.[1-10].jpg
+./i01/ccc.[01-10].jpg
+./i01/ddd.[01-10].jpg
+./i01/eee.[0001-0010].jpg
 ./x01/x.[-11--03].jpg
 ./y01/y.[-011-0002].jpg
 
@@ -60,8 +65,6 @@ optional arguments:
   --offset FRAME_OFFSET, -o FRAME_OFFSET
                         offset SEQ by this number of frames (can be negative).
                         Frame i becomes i + FRAME_OFFSET
-  --dryRun              Don't renumber SEQ, just display how the files would
-                        have been renumbered. Forces --verbose
   --skip                if renumbering a file in SEQ would result in
                         overwriting an existing file (which isn't also being
                         renumbered) then skip renumbering SEQ altogether.
@@ -76,6 +79,10 @@ optional arguments:
                         sequence range with appropriate padding and can also
                         report when there are incorrectly padded frame-numbers
                         with --showBadPadding
+  --rename NEW_SEQNAME  Rename the DESCRIPTIVE_NAME part of SEQ from its
+                        existing name to NEW_SEQNAME. When using this option
+                        then the command will exit with an error unless
+                        exactly one SEQ is being renamed and/or renumbered.
   --replaceUnderscore   in the case that SEQ uses an underscore ('_')
                         separating the filename from the frame number; then
                         when renumbering SEQ, replace the underscore with a
@@ -95,6 +102,8 @@ optional arguments:
                         the optional date was not specified then append '--'
                         before the list of SEQs to delineate the end of the
                         options.
+  --dryRun, --dryrun    Don't renumber SEQ, just display how the files would
+                        have been renumbered. Forces --verbose
   --silent, --quiet, -s
                         suppress all errors and warnings
   --verbose, -v         list the mapping from old file-name to new file-name
@@ -724,12 +733,15 @@ total 0
 
 ----- Test 73 -+- dir:h01 -+- renumseq --start 101 --touch xxxx h.[001-010].jpg -----
 renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
+renumseq returned non-zero error code: 1
 
 ----- Test 74 -+- dir:h01 -+- renumseq --start 101 --touch 2010 h.[001-010].jpg -----
 renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
+renumseq returned non-zero error code: 1
 
 ----- Test 75 -+- dir:h01 -+- renumseq --start 101 --touch 0101 h.[001-010].jpg -----
 renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
+renumseq returned non-zero error code: 1
 
 ----- Test 76 -+- dir:h01 -+- renumseq --start 101 --touch 20100101 h.[001-010].jpg -----
 
@@ -750,19 +762,19 @@ total 0
 
 ----- Test 79 -+- dir:h01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 testUser 0 Sep 12 18:41 h.001.jpg
--rw-rw-rw-. 1 testUser 0 Sep 12 18:41 h.002.jpg
--rw-rw-rw-. 1 testUser 0 Sep 12 18:41 h.003.jpg
--rw-rw-rw-. 1 testUser 0 Sep 12 18:41 h.004.jpg
--rw-rw-rw-. 1 testUser 0 Sep 12 18:41 h.005.jpg
--rw-rw-rw-. 1 testUser 0 Sep 12 18:41 h.006.jpg
--rw-rw-rw-. 1 testUser 0 Sep 12 18:41 h.007.jpg
--rw-rw-rw-. 1 testUser 0 Sep 12 18:41 h.008.jpg
--rw-rw-rw-. 1 testUser 0 Sep 12 18:41 h.009.jpg
--rw-rw-rw-. 1 testUser 0 Sep 12 18:41 h.010.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 18 11:47 h.001.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 18 11:47 h.002.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 18 11:47 h.003.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 18 11:47 h.004.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 18 11:47 h.005.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 18 11:47 h.006.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 18 11:47 h.007.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 18 11:47 h.008.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 18 11:47 h.009.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 18 11:47 h.010.jpg
 
 ----- Test 80 -+- dir:h01 -+- date -----
-Tue Sep 12 18:41:50 CDT 2023
+Mon Sep 18 11:47:27 CDT 2023
 
 ----- Test 81 -+- dir:h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
 The dates of the files in the last ls -o should match the prior date command.
@@ -770,9 +782,11 @@ The dates of the files in the last ls -o should match the prior date command.
 ----- Test 82 -+- dir:h01 -+- renumseq --foobar h.[001-010].jpg -----
 usage: renumseq [OPTION]... [SEQ]...
 renumseq: error: unrecognized arguments: --foobar
+renumseq returned non-zero error code: 2
 
 ----- Test 83 -+- dir:h01 -+- renumseq --start 101 --touch 20200631 h.[001-010].jpg -----
 renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
+renumseq returned non-zero error code: 1
 
 ----- Test 84 -+- dir:h01 -+- renumseq --start 101 --touch 20200630 h.[001-010].jpg -----
 
@@ -803,3 +817,25 @@ total 0
 -rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.008.jpg
 -rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.009.jpg
 -rw-rw-rw-. 1 testUser 0 Jul 30  2020 h.010.jpg
+
+----- Test 88 -+- dir:i01 -+- renumseq --dryrun --start 100 --rename aaa.[1-10].jpg -----
+renumseq: error: No SEQ supplied but trying to --rename to aaa.[1-10].jpg
+                 Perhaps the intended NEW_SEQNAME was omitted from the
+                 command line by mistake?
+renumseq returned non-zero error code: 1
+
+----- Test 89 -+- dir:i01 -+- renumseq --dryrun --start 100 --rename a.[1-10].jpg b.[01-10].jpg -----
+renumseq: error: --rename NEW_SEQNAME. NEW_SEQNAME can NOT be a string in
+                 lsseq's native-format. That is, a.[1-10].jpg
+                 is an invalid NEW_SEQNAME.
+renumseq returned non-zero error code: 1
+
+----- Test 90 -+- dir:i01 -+- renumseq --dryrun --start 100 --rename xxx a.[1-10].jpg b.[01-10].jpg -----
+renumseq: error: can NOT rename more than one SEQ at a time.
+renumseq returned non-zero error code: 1
+
+----- Test 91 -+- dir:i01 -+- renumseq --pad 4 --dryrun --start 100 --rename xxx a.[1-10].jpg -----
+renumseq: warning: a.[1-10].jpg is nonexistent
+
+----- Test 92 -+- dir:i01 -+- renumseq --pad 3 --dryrun --start 20 --rename xxx b.[01-10].jpg -----
+renumseq: warning: b.[01-10].jpg is nonexistent

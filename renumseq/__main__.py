@@ -173,9 +173,9 @@ def main():
         dest="newSeqName",
         default=[],
         metavar="NEW_SEQNAME",
-        help="Rename SEQ from its existing name to NEW_SEQNAME. \
+        help="Rename the DESCRIPTIVE_NAME part of SEQ from its existing name to NEW_SEQNAME. \
         When using this option then the command will exit with an error unless \
-        exactly one SEQ is being renamed/renumbered.")
+        exactly one SEQ is being renamed and/or renumbered.")
     p.add_argument("--replaceUnderscore", action="store_true",
         dest="fixUnderscore", default=False,
         help="in the case that SEQ uses an underscore ('_') \
@@ -233,7 +233,7 @@ def main():
     lsseqPattern = re.compile(r"(.+)([._])\[(-?[0-9]+-?-?[0-9]+)\]\.([a-zA-Z]+\.?[a-zA-Z]+[a-zA-Z0-9]*$)")
 
     # --rename has nargs set to "1", so parse_args() above will catch
-    # most invalid cases. Now we need to catch three other invalid cases.
+    # most invalid cases. Now we need to catch four other invalid cases.
     #
     # 1) renumseq --rename aaa.[1-10].jpg
     # 2) renumseq --rename xxx aaa.[1-10].jpg bbb.[1-10].jpg
@@ -249,6 +249,15 @@ def main():
     #         *OR* they didn't want to actually use --rename at all.
     #         How to catch this one is if the NEW_SEQNAME
     #         looks like an SEQ in lsseq native-format.
+    # Case 4) $ lsseq
+    #         aaa.[1-10].jpg
+    #         bbb.[0101-0110].jpg
+    #         $ renumseq --start 20 --rename bbb aaa.[1-10].jpg
+    #
+    #         In this case, regardless of the start frame, or padding differences,
+    #         seq 'aaa' is attempting to be renamed to an SEQ 'bbb' that already exists.
+    #         This check will have to wait until later in the code where the rename is
+    #         actually taking place, in order to properly test for the name collision.
     #
     ## print(args.newSeqName)
     ## print(len(args.newSeqName))
@@ -271,7 +280,7 @@ def main():
                     file=sys.stderr, sep='')
                 print("                 lsseq's native-format. That is, ", args.newSeqName[0],
                     file=sys.stderr, sep='')
-                print("                 is an INVALID NEW_SEQNAME.",
+                print("                 is an invalid NEW_SEQNAME.",
                     file=sys.stderr, sep='')
             exit(1)
 
@@ -280,8 +289,6 @@ def main():
                 print(PROG_NAME, ": error: can NOT rename more than one SEQ at a time.",
                     file=sys.stderr, sep='')
             exit(1)
-
-
 
     if len(args.files) == 0 :
         sys.exit(0)
@@ -473,6 +480,7 @@ def main():
         if args.pad >= 0 :
             newPad = args.pad
 
+        ## JPR DEBUG HERE - not picking up no padding example aaa.[1-10].jpg
         currentFormatStr = "{0:0=-" + str(currentPad) + "d}"
         newFormatStr = "{0:0=-" + str(newPad) + "d}"
 
@@ -530,6 +538,8 @@ def main():
             if os.path.exists(origFile) :
                 origName.append(origFile)
                 if len(args.newSeqName) == 1 :
+                    # First check to see that an SEQ with the newSeqName does NOT exist.
+                    exit(1) # WIP
                     newName.append(args.newSeqName[0] + newSeparator + \
                         newFormatStr.format(i+args.offsetFrames) \
                         + '.' + seq[2])

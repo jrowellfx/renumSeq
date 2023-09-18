@@ -199,7 +199,6 @@ a02 renumseq -v -o 20 --touch 20010601-1300 a.[0100-0120].jpg # missing leaving 
 a02 lsseq -RPl --noErrorLists -g -m         # Show new seq range.
 a02 ls -o                                   # Note all were renumbered EXCEPT x125
 a01 ls -o                                   # A list 100-140, 101 missing, 134-139 missing.
-a01 renumseq --dryrun --start 1 --rename a.[0140-0233].jpg # Should be an error about use of --rename
 a01 lsseq -RPl --noErrorLists -g -m         # Move them all 100, so should leave 140 unmoved,
 a01 renumseq -o 100 --touch 20010602 a.[0100-0133].jpg  # and 201 should be missing
 a01 lsseq -RPl --noErrorLists -g -m         # and range should go up to 233. missing 141-199 also.
@@ -252,6 +251,12 @@ h01 renumseq --start 101 --touch 20200630 h.[001-010].jpg
 h01 ls -o
 h01 renumseq --start 1 --touch 200730 h.[101-110].jpg
 h01 ls -o
+i01 lsseq --noErrorLists
+i01 renumseq --dryrun --start 100 --rename aaa.[1-10].jpg
+i01 renumseq --dryrun --start 100 --rename a.[1-10].jpg b.[01-10].jpg
+i01 renumseq --dryrun --start 100 --rename xxx a.[1-10].jpg b.[01-10].jpg
+i01 renumseq --pad 4 --dryrun --start 100 --rename xxx a.[1-10].jpg
+i01 renumseq --pad 3 --dryrun --start 20 --rename xxx b.[01-10].jpg
 EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`
