@@ -33,7 +33,7 @@ setup(
 
     packages        = ['renumseq'],
     python_requires = '>=3.6, <4',
-    install_requires=['seqLister'],
+    install_requires=['seqLister', 'lsseq'],
 
     entry_points = {
         'console_scripts': [

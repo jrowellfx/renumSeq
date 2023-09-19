@@ -219,7 +219,7 @@ def main():
 
     # The following regular expression is created to match lsseq native
     # sequence syntax which means (number below refer to parenthesis
-    # groupings.):
+    # groupings (**a**)):
     #
     # 0 - one or more of anything,           followed by
     # 1 - a dot or underscore,               followed by
@@ -256,8 +256,6 @@ def main():
     #
     #         In this case, regardless of the start frame, or padding differences,
     #         seq 'aaa' is attempting to be renamed to an SEQ 'bbb' that already exists.
-    #         This check will have to wait until later in the code where the rename is
-    #         actually taking place, in order to properly test for the name collision.
     #
     ## print(args.newSeqName)
     ## print(len(args.newSeqName))
@@ -293,7 +291,7 @@ def main():
     if len(args.files) == 0 :
         sys.exit(0)
 
-    # The following logic means "do nothing" - so just exit cleanly (**a**)
+    # The following logic means "do nothing" - so just exit cleanly (**b**)
     #
     if args.offsetFrames == 0 \
             and args.pad < 0 \
@@ -377,7 +375,7 @@ def main():
         v = match.groups()
 
         usesUnderscore = (v[1] == '_')
-        seq = [v[0], v[2], v[3]] # base filename, range, file-extension. (see above **)
+        seq = [v[0], v[2], v[3]] # base filename, range, file-extension. (see above (**a**))
 
         # seq might be range with neg numbers. Assume N,M >= 0,
         # then there are only 5 seq cases that we need to be
@@ -451,7 +449,7 @@ def main():
 
             args.offsetFrames = args.startFrame - start
 
-            # This duplicates the test above (**a**) because now
+            # This duplicates the test above (**b**) because now
             # we might have a zero offset for this sequence.
             # Instead of exiting we just skip to the next seq.
             #
@@ -481,7 +479,6 @@ def main():
         if args.pad >= 0 :
             newPad = args.pad
 
-        ## JPR DEBUG HERE - not picking up no padding example aaa.[1-10].jpg
         currentFormatStr = "{0:0=-" + str(currentPad) + "d}"
         newFormatStr = "{0:0=-" + str(newPad) + "d}"
 
@@ -540,7 +537,10 @@ def main():
                 origName.append(origFile)
                 if len(args.newSeqName) == 1 :
                     # First check to see that an SEQ with the newSeqName does NOT exist.
-                    ## exit(1) # WIP
+                    #
+                    origPath = '/'.join(seq[0].split('/')[:-1])
+                    ## print(origPath)
+                    ## exit(1)
                     newName.append(args.newSeqName[0] + newSeparator + \
                         newFormatStr.format(i+args.offsetFrames) \
                         + '.' + seq[2])
