@@ -298,7 +298,7 @@ def main():
     if args.offsetFrames == 0 \
             and args.pad < 0 \
             and not args.fixUnderscore \
-            and args.startFrame == NEVER_START_FRAME 
+            and args.startFrame == NEVER_START_FRAME \
             and len(args.newSeqName) == 0 :
         if not args.silent :
             print(PROG_NAME,
@@ -540,7 +540,7 @@ def main():
                 origName.append(origFile)
                 if len(args.newSeqName) == 1 :
                     # First check to see that an SEQ with the newSeqName does NOT exist.
-                    exit(1) # WIP
+                    ## exit(1) # WIP
                     newName.append(args.newSeqName[0] + newSeparator + \
                         newFormatStr.format(i+args.offsetFrames) \
                         + '.' + seq[2])

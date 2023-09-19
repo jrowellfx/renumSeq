@@ -253,10 +253,10 @@ h01 renumseq --start 1 --touch 200730 h.[101-110].jpg
 h01 ls -o
 i01 lsseq --noErrorLists
 i01 renumseq --dryrun --start 100 --rename aaa.[1-10].jpg
-i01 renumseq --dryrun --start 100 --rename a.[1-10].jpg b.[01-10].jpg
-i01 renumseq --dryrun --start 100 --rename xxx a.[1-10].jpg b.[01-10].jpg
-i01 renumseq --pad 4 --dryrun --start 100 --rename xxx a.[1-10].jpg
-i01 renumseq --pad 3 --dryrun --start 20 --rename xxx b.[01-10].jpg
+i01 renumseq --dryrun --start 100 --rename aaa.[1-10].jpg bbb.[01-10].jpg
+i01 renumseq --dryrun --start 100 --rename xxx aaa.[1-10].jpg bbb.[01-10].jpg
+i01 renumseq --pad 4 --dryrun --start 100 --rename xxx aaa.[1-10].jpg
+i01 renumseq --pad 3 --dryrun --start 20 --rename xxx bbb.[01-10].jpg
 EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`
