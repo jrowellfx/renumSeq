@@ -541,6 +541,10 @@ def main():
                     origPath = '/'.join(seq[0].split('/')[:-1])
                     ## print(origPath)
                     ## exit(1)
+                    ## Also how to handle soft-links? See rename(1) to 
+                    ## see how they do it. I think if the file being 
+                    ## changed is a soft link, then that's the name
+                    ## that should be changed, not the file being linked.
                     newName.append(args.newSeqName[0] + newSeparator + \
                         newFormatStr.format(i+args.offsetFrames) \
                         + '.' + seq[2])
