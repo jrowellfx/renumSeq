@@ -298,10 +298,11 @@ def main():
     if args.offsetFrames == 0 \
             and args.pad < 0 \
             and not args.fixUnderscore \
-            and args.startFrame == NEVER_START_FRAME :
+            and args.startFrame == NEVER_START_FRAME 
+            and len(args.newSeqName) == 0 :
         if not args.silent :
             print(PROG_NAME,
-                ": warning: no offset, no padding change etc., nothing to do",
+                ": warning: no offset, no rename, no padding change, etc., nothing to do",
                 file=sys.stderr, sep='')
         sys.exit(0)
 
