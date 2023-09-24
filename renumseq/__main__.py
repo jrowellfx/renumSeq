@@ -324,7 +324,7 @@ def main():
             ## print(globResult)
 
             if len(globResult) > 0 :
-                lsseqCmd = ['lsseq', '--looseNumSeparator', '--onlySequences', '--skipBadFrames'] + globResult
+                lsseqCmd = ['lsseq', '--looseNumSeparator', '--onlySequences', '--noErrorLists'] + globResult
                 lsseqResult = subprocess.run(lsseqCmd, capture_output=True, text=True)
                 if len(lsseqResult.stdout) > 0 :
                     if not args.silent :

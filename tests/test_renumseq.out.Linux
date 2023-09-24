@@ -4,7 +4,7 @@
 Linux
 
 ----- Test 2 -+- dir:. -+- lsseq --version -----
-2.7.1
+3.0.0a
 
 ----- Test 3 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m -----
 ./a01/a.[0100-0140].jpg m:[101,134-139]
@@ -30,7 +30,7 @@ Linux
 ----- Test 4 -+- dir:. -+- renumseq -----
 
 ----- Test 5 -+- dir:. -+- renumseq --version -----
-1.3.3
+1.4.0
 
 ----- Test 6 -+- dir:. -+- renumseq --help -----
 usage: renumseq [OPTION]... [SEQ]...
@@ -762,19 +762,19 @@ total 0
 
 ----- Test 79 -+- dir:h01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 testUser 0 Sep 19 11:54 h.001.jpg
--rw-rw-rw-. 1 testUser 0 Sep 19 11:54 h.002.jpg
--rw-rw-rw-. 1 testUser 0 Sep 19 11:54 h.003.jpg
--rw-rw-rw-. 1 testUser 0 Sep 19 11:54 h.004.jpg
--rw-rw-rw-. 1 testUser 0 Sep 19 11:54 h.005.jpg
--rw-rw-rw-. 1 testUser 0 Sep 19 11:54 h.006.jpg
--rw-rw-rw-. 1 testUser 0 Sep 19 11:54 h.007.jpg
--rw-rw-rw-. 1 testUser 0 Sep 19 11:54 h.008.jpg
--rw-rw-rw-. 1 testUser 0 Sep 19 11:54 h.009.jpg
--rw-rw-rw-. 1 testUser 0 Sep 19 11:54 h.010.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 15:52 h.001.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 15:52 h.002.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 15:52 h.003.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 15:52 h.004.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 15:52 h.005.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 15:52 h.006.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 15:52 h.007.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 15:52 h.008.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 15:52 h.009.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 15:52 h.010.jpg
 
 ----- Test 80 -+- dir:h01 -+- date -----
-Tue Sep 19 11:54:41 CDT 2023
+Sun Sep 24 15:52:30 CDT 2023
 
 ----- Test 81 -+- dir:h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
 The dates of the files in the last ls -o should match the prior date command.
@@ -826,15 +826,15 @@ ddd.[01-10].jpg
 eee.[0001-0010].jpg
 
 ----- Test 89 -+- dir:i01 -+- renumseq --dryrun --start 100 --rename aaa.[1-10].jpg -----
-renumseq: error: No SEQ supplied but trying to --rename to aaa.[1-10].jpg
+renumseq: error: No NEW_SEQNAME supplied but used option '--rename aaa.[1-10].jpg'
                  Perhaps the intended NEW_SEQNAME was omitted from the
                  command line by mistake?
 renumseq returned non-zero error code: 1
 
 ----- Test 90 -+- dir:i01 -+- renumseq --dryrun --start 100 --rename aaa.[1-10].jpg bbb.[01-10].jpg -----
-renumseq: error: --rename NEW_SEQNAME. NEW_SEQNAME can NOT be a string in
-                 lsseq's native-format. That is, aaa.[1-10].jpg
-                 is an invalid NEW_SEQNAME.
+renumseq: error: --rename NEW_SEQNAME should only supply the descriptive-name
+                 part of the new name. That is, aaa.[1-10].jpg
+                 appears to be a full lsseq native-format description of a sequence.
 renumseq returned non-zero error code: 1
 
 ----- Test 91 -+- dir:i01 -+- renumseq --dryrun --start 100 --rename xxx aaa.[1-10].jpg bbb.[01-10].jpg -----
@@ -853,5 +853,8 @@ aaa.3.jpg -> xxx.0102.jpg
 aaa.2.jpg -> xxx.0101.jpg
 aaa.1.jpg -> xxx.0100.jpg
 
------ Test 93 -+- dir:i01 -+- renumseq --pad 3 --dryrun --start 20 --rename xxx bbb.[01-10].jpg -----
-bbb.10.jpg -> xxx.029.jpg
+----- Test 93 -+- dir:i01 -+- renumseq --pad 4 --start 100 --rename xxx aaa.[1-10].jpg -----
+
+----- Test 94 -+- dir:i01 -+- renumseq --pad 3 --dryrun --start 20 --rename xxx ccc.[01-10].jpg -----
+renumseq: error: can NOT rename to an existing sequence xxx.[0100-0109].jpg
+renumseq returned non-zero error code: 1
