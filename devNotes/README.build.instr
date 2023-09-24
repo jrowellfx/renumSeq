@@ -12,7 +12,7 @@ cd $HOME
 
 cd <dirWithGitRepos>/renumSeq
 
-make sure the VERSION is set properly in renumseq/__main__.py, namely
+# make sure the VERSION is set properly in renumseq/__main__.py, namely
 
     Given a version number MAJOR.MINOR.PATCH, increment the:
 
@@ -20,15 +20,20 @@ make sure the VERSION is set properly in renumseq/__main__.py, namely
     MINOR version for added functionality in a backwards compatible manner
     PATCH version for backwards compatible bug fixes
 
-change the version to match in setup.py
+# change the version to match in setup.py
 cd tests
 source setUpToTest.sourceMe
 #
 # Then proceed with code-dev, testing the command at will.
-
-run the tests - make sure everthing is OK
+#
+# run the tests - make sure everthing is OK
     and that the version in test_renumseq.out is updated
     for BOTH Darwin (MacOS) and Linux.
+
+# If on Linux, then PUSH up to github, and pull down to macos and test before building
+# and uploading to pypi
+
+# IF on working branch FIRST merge it back to master
 
 python3 -m build
 
@@ -36,19 +41,40 @@ python3 -m build
 # __token__ and password for PyPi account.
 # ...or not needed if .pypirc is installed in $HOME
 #
+# TEST INSTALLATION
+#
+#   python3 -m twine upload --repository testpypi dist/renumseq-x.x.x*
+#
+# or FOR REAL
 python3 -m twine upload --repository pypi dist/renumSeq-x.x.x*
 
-# Install it,
-    python3 -m pip install renumSeq
-# or update it.
-    python3 -m pip install renumSeq --upgrade
+
+# Install it locally in venv,
+    #
+    # TEST (First one is for test.pypi - second is for non-test dependencies)
+    #
+    # python3 -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ renumseq
+    #
+    # or the REAL one on pypi
+    #
+    python3 -m pip install renumseq
+
+# or update it, append '--upgrade' to either of the above lines.
 
 # Test installation.
 #
 cd tests
+# Make sure using locally installed testing version in venv
 ./test_renum
 diff test_renum.out test_renum.out.new
 
+# As superuser
+su -
+cd /usr/local/venv
+bin/pip install lsseq --upgrade
+exit
+lsseq --version
+
 CHECK IN AN COMMIT ALL CHANGES AND PUSH UP TO GITHUB
 
-MAKE NEW RELEASE to match VERSION
+MAKE NEW github RELEASE to match VERSION

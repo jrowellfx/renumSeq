@@ -47,6 +47,8 @@ import time
 from datetime import datetime
 import seqLister
 from enum import Enum
+import subprocess
+import glob
 
 # MAJOR version for incompatible API changes
 # MINOR version for added functionality in a backwards compatible manner
@@ -238,6 +240,7 @@ def main():
     # 1) renumseq --rename aaa.[1-10].jpg
     # 2) renumseq --rename xxx aaa.[1-10].jpg bbb.[1-10].jpg
     # 3) renumseq --rename aaa.[1-10].jpg bbb.[1-10].jpg
+    # 4) see below
     #
     # Case 1) is when the user likely forgot to put the NEW_SEQNAME 
     #         on the command-line when renaming 'aaa'.
@@ -260,33 +263,75 @@ def main():
     ## print(args.newSeqName)
     ## print(len(args.newSeqName))
     if len(args.newSeqName) == 1 :
+
+        # One other case not mentioned above. --rename is assuming that the "newSeqName" is
+        # just the "descriptiveName" part of the sequence, i.e no path (and no ".<framenum>.ext",
+        # checked below), so check for a possibly embedded path.
+        #
+        if len(args.newSeqName[0].split('/')) > 1 :
+            if not args.silent :
+                print(PROG_NAME, ": error: --rename will rename the sequence in-place, so please omit the path ",
+                    '/'.join(args.newSeqName[0].split('/')[:-1]),
+                    file=sys.stderr, sep='')
+            sys.exit(1)
+
         match = lsseqPattern.search(args.newSeqName[0])
 
         if len(args.files) == 0 and match : # If 'not match', command will just exit cleanly below.
             if not args.silent :
-                print(PROG_NAME, ": error: No SEQ supplied but trying to --rename to ", args.newSeqName[0],
+                print(PROG_NAME, ": error: No NEW_SEQNAME supplied but used option '--rename ", args.newSeqName[0], "'",
                     file=sys.stderr, sep='')
                 print("                 Perhaps the intended NEW_SEQNAME was omitted from the ",
                     file=sys.stderr, sep='')
                 print("                 command line by mistake?",
                     file=sys.stderr, sep='')
-            exit(1)
+            sys.exit(1)
 
         elif len(args.files) >= 1 and match : # If len() > 1 then also invalid, but this catches both.
             if not args.silent :
-                print(PROG_NAME, ": error: --rename NEW_SEQNAME. NEW_SEQNAME can NOT be a string in",
+                print(PROG_NAME, ": error: --rename NEW_SEQNAME should only supply the descriptive-name",
                     file=sys.stderr, sep='')
-                print("                 lsseq's native-format. That is, ", args.newSeqName[0],
+                print("                 part of the new name. That is, ", args.newSeqName[0],
                     file=sys.stderr, sep='')
-                print("                 is an invalid NEW_SEQNAME.",
+                print("                 appears to be a full lsseq native-format description of a sequence.",
                     file=sys.stderr, sep='')
-            exit(1)
+            sys.exit(1)
 
         elif len(args.files) > 1 :
             if not args.silent :
                 print(PROG_NAME, ": error: can NOT rename more than one SEQ at a time.",
                     file=sys.stderr, sep='')
-            exit(1)
+            sys.exit(1)
+
+        # Now check to see if a sequence with NEW_SEQNAME exists already.
+        # This code relies on lsseq v3.0.0 at least.
+        #
+        elif len(args.files) == 1 :
+            seqPath = '/'.join(args.files[0].split('/')[:-1])
+            if len(seqPath) > 0 :
+                seqPath = seqPath + '/'
+            ## print("seqpath:", seqPath)
+
+            # This next globPattern will put us in the ballpark - lsseq will check more carefully
+            # based on this. If NEW_SEQNAME contains a '*', '?', '[' or ']', then this isn't going
+            # to work so well, so hopefully the user isn't trying to rename to something with
+            # a globbing-wildcard as part of the new name.
+            #
+            globPattern = seqPath + args.newSeqName[0] + '[._]' + '[0-9]*.*'
+            ## print(globPattern)
+
+            globResult = glob.glob(globPattern)
+            ## print(globResult)
+
+            if len(globResult) > 0 :
+                lsseqCmd = ['lsseq', '--looseNumSeparator', '--onlySequences', '--skipBadFrames'] + globResult
+                lsseqResult = subprocess.run(lsseqCmd, capture_output=True, text=True)
+                if len(lsseqResult.stdout) > 0 :
+                    if not args.silent :
+                        print(PROG_NAME, ": error: can NOT rename to an existing sequence ",
+                            lsseqResult.stdout,
+                            file=sys.stderr, sep='', end='')
+                    sys.exit(1)
 
     if len(args.files) == 0 :
         sys.exit(0)
@@ -541,10 +586,6 @@ def main():
                     origPath = '/'.join(seq[0].split('/')[:-1])
                     ## print(origPath)
                     ## exit(1)
-                    ## Also how to handle soft-links? See rename(1) to 
-                    ## see how they do it. I think if the file being 
-                    ## changed is a soft link, then that's the name
-                    ## that should be changed, not the file being linked.
                     newName.append(args.newSeqName[0] + newSeparator + \
                         newFormatStr.format(i+args.offsetFrames) \
                         + '.' + seq[2])

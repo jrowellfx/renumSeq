@@ -148,6 +148,8 @@ mkdir -p `cat $tmpfile`
 touch `cat createTestData/create.?Test.files`
 chmod 666 `cat createTestData/create.?Test.files`
 
+## cleanup
+
 # Timestamp the files to be older so that when we renumber
 # them we can use --touch to visually check the results more easily (ls -lt)
 #
@@ -256,7 +258,8 @@ i01 renumseq --dryrun --start 100 --rename aaa.[1-10].jpg
 i01 renumseq --dryrun --start 100 --rename aaa.[1-10].jpg bbb.[01-10].jpg
 i01 renumseq --dryrun --start 100 --rename xxx aaa.[1-10].jpg bbb.[01-10].jpg
 i01 renumseq --pad 4 --dryrun --start 100 --rename xxx aaa.[1-10].jpg
-i01 renumseq --pad 3 --dryrun --start 20 --rename xxx bbb.[01-10].jpg
+i01 renumseq --pad 4 --start 100 --rename xxx aaa.[1-10].jpg
+i01 renumseq --pad 3 --dryrun --start 20 --rename xxx ccc.[01-10].jpg
 EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`
