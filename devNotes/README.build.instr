@@ -62,18 +62,11 @@ python3 -m twine upload --repository pypi dist/renumSeq-x.x.x*
 # or update it, append '--upgrade' to either of the above lines.
 
 # Test installation.
-#
-cd tests
-# Make sure using locally installed testing version in venv
-./test_renum
-diff test_renum.out test_renum.out.new
+# locally
 
-# As superuser
-su -
-cd /usr/local/venv
-bin/pip install lsseq --upgrade
-exit
-lsseq --version
+# If was testing on branch and testpypi - MERGE back to MASTER and
+# double check that version is correct (i.e., no extra trailing digits)
+# Test on Dawin/Linux both
 
 CHECK IN AN COMMIT ALL CHANGES AND PUSH UP TO GITHUB
 

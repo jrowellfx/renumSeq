@@ -4,7 +4,7 @@
 Linux
 
 ----- Test 2 -+- dir: . -+- lsseq --version -----
-3.0.0a
+3.0.0.0
 
 ----- Test 3 -+- dir: . -+- lsseq -RPl --noErrorLists -g -m -----
 ./a01/a.[0100-0140].jpg m:[101,134-139]
@@ -30,7 +30,7 @@ Linux
 ----- Test 4 -+- dir: . -+- renumseq -----
 
 ----- Test 5 -+- dir: . -+- renumseq --version -----
-1.4.0
+1.4.0.0
 
 ----- Test 6 -+- dir: . -+- renumseq --help -----
 usage: renumseq [OPTION]... [SEQ]...
@@ -762,19 +762,19 @@ total 0
 
 ----- Test 79 -+- dir: h01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.001.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.002.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.003.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.004.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.005.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.006.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.007.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.008.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.009.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.010.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 25 15:20 h.001.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 25 15:20 h.002.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 25 15:20 h.003.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 25 15:20 h.004.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 25 15:20 h.005.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 25 15:20 h.006.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 25 15:20 h.007.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 25 15:20 h.008.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 25 15:20 h.009.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 25 15:20 h.010.jpg
 
 ----- Test 80 -+- dir: h01 -+- date -----
-Sun Sep 24 23:21:11 CDT 2023
+Mon Sep 25 15:20:44 CDT 2023
 
 ----- Test 81 -+- dir: h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
 The dates of the files in the last ls -o should match the prior date command.
