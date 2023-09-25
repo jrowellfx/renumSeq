@@ -54,7 +54,7 @@ import glob
 # MINOR version for added functionality in a backwards compatible manner
 # PATCH version for backwards compatible bug fixes
 #
-VERSION = "1.4.0"
+VERSION = "1.4.0.0"
 
 PROG_NAME = "renumseq"
 
@@ -305,7 +305,7 @@ def main():
             sys.exit(EXIT_ARGPARSE_ERROR)
 
         # Now check to see if a sequence with NEW_SEQNAME exists already.
-        # This code relies on lsseq v3.0.0 at least.
+        # This code relies on lsseq >= v2.5.0 be installed.
         #
         elif len(args.files) == 1 :
             seqPath = '/'.join(args.files[0].split('/')[:-1])
