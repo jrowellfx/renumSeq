@@ -58,6 +58,10 @@ VERSION = "1.4.0"
 
 PROG_NAME = "renumseq"
 
+EXIT_NO_ERROR         = 0 # Clean exit.
+EXIT_ERROR            = 1 # Internal error other than argparse - currently not used.
+EXIT_ARGPARSE_ERROR   = 2 # The default code that argparse exits with if bad option.
+
 # List of date formats accepted to set file times with --touch.
 # They are same as the formats used by 'lsseq --onlyShow'.
 #
@@ -98,6 +102,7 @@ def main():
     howToTouch = ""   # Set below.
     specificTime = 0  # Set below.
     currentTime = time.time()
+    seqPath = '' # Used for --rename option, set early, also used later.
 
     # Redefine the exception handling routine so that it does NOT
     # do a trace dump if the user types ^C while renumseq is running.
@@ -260,8 +265,6 @@ def main():
     #         In this case, regardless of the start frame, or padding differences,
     #         seq 'aaa' is attempting to be renamed to an SEQ 'bbb' that already exists.
     #
-    ## print(args.newSeqName)
-    ## print(len(args.newSeqName))
     if len(args.newSeqName) == 1 :
 
         # One other case not mentioned above. --rename is assuming that the "newSeqName" is
@@ -273,19 +276,17 @@ def main():
                 print(PROG_NAME, ": error: --rename will rename the sequence in-place, so please omit the path ",
                     '/'.join(args.newSeqName[0].split('/')[:-1]),
                     file=sys.stderr, sep='')
-            sys.exit(1)
+            sys.exit(EXIT_ARGPARSE_ERROR)
 
         match = lsseqPattern.search(args.newSeqName[0])
 
         if len(args.files) == 0 and match : # If 'not match', command will just exit cleanly below.
             if not args.silent :
-                print(PROG_NAME, ": error: No NEW_SEQNAME supplied but used option '--rename ", args.newSeqName[0], "'",
+                print(PROG_NAME, ": error: NEW_SEQNAME not supplied. Perhaps NEW_SEQNAME was",
                     file=sys.stderr, sep='')
-                print("                 Perhaps the intended NEW_SEQNAME was omitted from the ",
+                print("                 omitted from '--rename ", args.newSeqName[0], "'", " by mistake?",
                     file=sys.stderr, sep='')
-                print("                 command line by mistake?",
-                    file=sys.stderr, sep='')
-            sys.exit(1)
+            sys.exit(EXIT_ARGPARSE_ERROR)
 
         elif len(args.files) >= 1 and match : # If len() > 1 then also invalid, but this catches both.
             if not args.silent :
@@ -295,13 +296,13 @@ def main():
                     file=sys.stderr, sep='')
                 print("                 appears to be a full lsseq native-format description of a sequence.",
                     file=sys.stderr, sep='')
-            sys.exit(1)
+            sys.exit(EXIT_ARGPARSE_ERROR)
 
         elif len(args.files) > 1 :
             if not args.silent :
                 print(PROG_NAME, ": error: can NOT rename more than one SEQ at a time.",
                     file=sys.stderr, sep='')
-            sys.exit(1)
+            sys.exit(EXIT_ARGPARSE_ERROR)
 
         # Now check to see if a sequence with NEW_SEQNAME exists already.
         # This code relies on lsseq v3.0.0 at least.
@@ -310,7 +311,6 @@ def main():
             seqPath = '/'.join(args.files[0].split('/')[:-1])
             if len(seqPath) > 0 :
                 seqPath = seqPath + '/'
-            ## print("seqpath:", seqPath)
 
             # This next globPattern will put us in the ballpark - lsseq will check more carefully
             # based on this. If NEW_SEQNAME contains a '*', '?', '[' or ']', then this isn't going
@@ -318,10 +318,8 @@ def main():
             # a globbing-wildcard as part of the new name.
             #
             globPattern = seqPath + args.newSeqName[0] + '[._]' + '[0-9]*.*'
-            ## print(globPattern)
 
             globResult = glob.glob(globPattern)
-            ## print(globResult)
 
             if len(globResult) > 0 :
                 lsseqCmd = ['lsseq', '--looseNumSeparator', '--onlySequences', '--noErrorLists'] + globResult
@@ -331,10 +329,10 @@ def main():
                         print(PROG_NAME, ": error: can NOT rename to an existing sequence ",
                             lsseqResult.stdout,
                             file=sys.stderr, sep='', end='')
-                    sys.exit(1)
+                    sys.exit(EXIT_ARGPARSE_ERROR)
 
     if len(args.files) == 0 :
-        sys.exit(0)
+        sys.exit(EXIT_NO_ERROR)
 
     # The following logic means "do nothing" - so just exit cleanly (**b**)
     #
@@ -347,7 +345,7 @@ def main():
             print(PROG_NAME,
                 ": warning: no offset, no rename, no padding change, etc., nothing to do",
                 file=sys.stderr, sep='')
-        sys.exit(0)
+        sys.exit(EXIT_NO_ERROR)
 
     # args.touch is either a string, presumably containing a date (so need to
     # check its validity), the string "0" (meaning --touch was called with NO argument),
@@ -397,7 +395,7 @@ def main():
                 print(PROG_NAME,
                     ": error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]",
                     file=sys.stderr, sep='')
-            sys.exit(1)
+            sys.exit(EXIT_ARGPARSE_ERROR)
 
         specificTime = int(time.mktime(timeData.timetuple())) # Epoch time
 
@@ -581,12 +579,7 @@ def main():
             if os.path.exists(origFile) :
                 origName.append(origFile)
                 if len(args.newSeqName) == 1 :
-                    # First check to see that an SEQ with the newSeqName does NOT exist.
-                    #
-                    origPath = '/'.join(seq[0].split('/')[:-1])
-                    ## print(origPath)
-                    ## exit(1)
-                    newName.append(args.newSeqName[0] + newSeparator + \
+                    newName.append(seqPath + args.newSeqName[0] + newSeparator + \
                         newFormatStr.format(i+args.offsetFrames) \
                         + '.' + seq[2])
                 else :
