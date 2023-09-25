@@ -762,19 +762,19 @@ total 0
 
 ----- Test 79 -+- dir: h01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 testUser 0 Sep 24 23:08 h.001.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:08 h.002.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:08 h.003.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:08 h.004.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:08 h.005.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:08 h.006.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:08 h.007.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:08 h.008.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:08 h.009.jpg
--rw-rw-rw-. 1 testUser 0 Sep 24 23:08 h.010.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.001.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.002.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.003.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.004.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.005.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.006.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.007.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.008.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.009.jpg
+-rw-rw-rw-. 1 testUser 0 Sep 24 23:21 h.010.jpg
 
 ----- Test 80 -+- dir: h01 -+- date -----
-Sun Sep 24 23:08:34 CDT 2023
+Sun Sep 24 23:21:11 CDT 2023
 
 ----- Test 81 -+- dir: h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
 The dates of the files in the last ls -o should match the prior date command.
@@ -900,6 +900,25 @@ renumseq: warning: i01/noSuchSeq.[01-10].jpg is nonexistent
 ----- Test 101 -+- dir: i01 -+- lsseq --noErrorLists --onlySequences -----
 bbb.[1-10].jpg
 ddd.[01-10].jpg
+xxx.[0100-0109].jpg
+yyy.[0005-0014].jpg
+zzz.[005-014].jpg
+
+----- Test 102 -+- dir: i01 -+- renumseq --pad 3 -v --start 50 --rename n.11.m_v001_ bbb.[1-10].jpg -----
+bbb.10.jpg -> n.11.m_v001_.059.jpg
+bbb.9.jpg -> n.11.m_v001_.058.jpg
+bbb.8.jpg -> n.11.m_v001_.057.jpg
+bbb.7.jpg -> n.11.m_v001_.056.jpg
+bbb.6.jpg -> n.11.m_v001_.055.jpg
+bbb.5.jpg -> n.11.m_v001_.054.jpg
+bbb.4.jpg -> n.11.m_v001_.053.jpg
+bbb.3.jpg -> n.11.m_v001_.052.jpg
+bbb.2.jpg -> n.11.m_v001_.051.jpg
+bbb.1.jpg -> n.11.m_v001_.050.jpg
+
+----- Test 103 -+- dir: i01 -+- lsseq --noErrorLists --onlySequences -----
+ddd.[01-10].jpg
+n.11.m_v001_.[050-059].jpg
 xxx.[0100-0109].jpg
 yyy.[0005-0014].jpg
 zzz.[005-014].jpg
