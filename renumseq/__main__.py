@@ -54,8 +54,7 @@ import glob
 # MINOR version for added functionality in a backwards compatible manner
 # PATCH version for backwards compatible bug fixes
 #
-VERSION = "1.4.0.2"
-# JPR - FIX   ^^^^^ before checking into MASTER branch
+VERSION = "1.4.0"
 
 PROG_NAME = "renumseq"
 
