@@ -14,7 +14,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name            = 'renumSeq',
-    version         = '1.3.2',
+    version         = '1.4.0',
     description='Tool to renumber image sequences.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -32,8 +32,8 @@ setup(
     ],
 
     packages        = ['renumseq'],
-    python_requires = '>=3.6, <4',
-    install_requires=['seqLister'],
+    python_requires = '>=3.7, <4',
+    install_requires=['seqLister>=1.2.0', 'lsseq>=2.5.0'],
 
     entry_points = {
         'console_scripts': [

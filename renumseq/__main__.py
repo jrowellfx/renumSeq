@@ -47,14 +47,20 @@ import time
 from datetime import datetime
 import seqLister
 from enum import Enum
+import subprocess
+import glob
 
 # MAJOR version for incompatible API changes
 # MINOR version for added functionality in a backwards compatible manner
 # PATCH version for backwards compatible bug fixes
 #
-VERSION = "1.3.3"
+VERSION = "1.4.0"
 
 PROG_NAME = "renumseq"
+
+EXIT_NO_ERROR         = 0 # Clean exit.
+EXIT_ERROR            = 1 # Internal error other than argparse - currently not used.
+EXIT_ARGPARSE_ERROR   = 2 # The default code that argparse exits with if bad option.
 
 # List of date formats accepted to set file times with --touch.
 # They are same as the formats used by 'lsseq --onlyShow'.
@@ -96,6 +102,7 @@ def main():
     howToTouch = ""   # Set below.
     specificTime = 0  # Set below.
     currentTime = time.time()
+    seqPath = '' # Used for --rename option, set early, also used later.
 
     # Redefine the exception handling routine so that it does NOT
     # do a trace dump if the user types ^C while renumseq is running.
@@ -146,10 +153,6 @@ def main():
         help="offset SEQ by this number of frames (can be negative). \
         Frame i becomes i + FRAME_OFFSET")
 
-    p.add_argument("--dryRun", action="store_true",
-        dest="dryRun", default=False,
-        help="Don't renumber SEQ, just display how the \
-        files would have been renumbered. Forces --verbose" )
     p.add_argument("--skip", action="store_false",
         dest="clobber", default=False,
         help="if renumbering a file in SEQ would result in overwriting \
@@ -173,6 +176,13 @@ def main():
         lsseq's native format output properly lists the sequence \
         range with appropriate padding and can also report when there are \
         incorrectly padded frame-numbers with --showBadPadding")
+    p.add_argument("--rename", type=str, nargs=1,
+        dest="newSeqName",
+        default=[],
+        metavar="NEW_SEQNAME",
+        help="Rename the DESCRIPTIVE_NAME part of SEQ from its existing name to NEW_SEQNAME. \
+        When using this option then the command will exit with an error unless \
+        exactly one SEQ is being renamed and/or renumbered.")
     p.add_argument("--replaceUnderscore", action="store_true",
         dest="fixUnderscore", default=False,
         help="in the case that SEQ uses an underscore ('_') \
@@ -198,6 +208,10 @@ def main():
         date was not specified then \
         append '--' before the list of SEQs to delineate the end of the options.")
 
+    p.add_argument("--dryRun", "--dryrun", action="store_true",
+        dest="dryRun", default=False,
+        help="Don't renumber SEQ, just display how the \
+        files would have been renumbered. Forces --verbose" )
     p.add_argument("--silent", "--quiet", "-s", action="store_true",
         dest="silent", default=False,
         help="suppress all errors and warnings")
@@ -210,20 +224,128 @@ def main():
 
     args = p.parse_args()
 
-    if args.files == [] :
-        sys.exit(0)
+    # The following regular expression is created to match lsseq native
+    # sequence syntax which means (number below refer to parenthesis
+    # groupings (**a**)):
+    #
+    # 0 - one or more of anything,           followed by
+    # 1 - a dot or underscore,               followed by
+    #     an open square bracket,            followed by
+    # 2 - a frame range,                     followed by
+    #     a close square bracket then a dot, followed by
+    # 3 - one or more letters, optionally one dot,
+    #     then one or more letters, then one or more letters and numbers
+    #     and the end of the line.
+    #
+    lsseqPattern = re.compile(r"(.+)([._])\[(-?[0-9]+-?-?[0-9]+)\]\.([a-zA-Z]+\.?[a-zA-Z]+[a-zA-Z0-9]*$)")
 
-    # The following logic means "do nothing" - so just exit cleanly (**a**)
+    # --rename has nargs set to "1", so parse_args() above will catch
+    # most invalid cases. Now we need to catch four other invalid cases.
+    #
+    # 1) renumseq --rename aaa.[1-10].jpg
+    # 2) renumseq --rename xxx aaa.[1-10].jpg bbb.[1-10].jpg
+    # 3) renumseq --rename aaa.[1-10].jpg bbb.[1-10].jpg
+    # 4) see below
+    #
+    # Case 1) is when the user likely forgot to put the NEW_SEQNAME 
+    #         on the command-line when renaming 'aaa'.
+    # Case 2) is when the user is trying to rename TWO sequences to
+    #         the same name ('xxx') which is obviously undesirable.
+    # Case 3) Hard to say what the user is doing here exactly, but
+    #         they either forgot to add new NEW_SEQNAME *and* to
+    #         remove one or other of the two SEQ from the command-line.
+    #         *OR* they didn't want to actually use --rename at all.
+    #         How to catch this one is if the NEW_SEQNAME
+    #         looks like an SEQ in lsseq native-format.
+    # Case 4) $ lsseq
+    #         aaa.[1-10].jpg
+    #         bbb.[0101-0110].jpg
+    #         $ renumseq --start 20 --rename bbb aaa.[1-10].jpg
+    #
+    #         In this case, regardless of the start frame, or padding differences,
+    #         seq 'aaa' is attempting to be renamed to an SEQ 'bbb' that already exists.
+    #
+    if len(args.newSeqName) == 1 :
+
+        # One other case not mentioned above. --rename is assuming that the "newSeqName" is
+        # just the "descriptiveName" part of the sequence, i.e no path (and no ".<framenum>.ext",
+        # checked below), so check for a possibly embedded path.
+        #
+        if len(args.newSeqName[0].split('/')) > 1 :
+            if not args.silent :
+                print(PROG_NAME, ": error: --rename will rename the sequence in-place, so please omit the path ",
+                    '/'.join(args.newSeqName[0].split('/')[:-1]),
+                    file=sys.stderr, sep='')
+            sys.exit(EXIT_ARGPARSE_ERROR)
+
+        match = lsseqPattern.search(args.newSeqName[0])
+
+        if len(args.files) == 0 and match : # If 'not match', command will just exit cleanly below.
+            if not args.silent :
+                print(PROG_NAME, ": error: NEW_SEQNAME not supplied. Perhaps NEW_SEQNAME was",
+                    file=sys.stderr, sep='')
+                print("                 omitted from '--rename ", args.newSeqName[0], "'", " by mistake?",
+                    file=sys.stderr, sep='')
+            sys.exit(EXIT_ARGPARSE_ERROR)
+
+        elif len(args.files) >= 1 and match : # If len() > 1 then also invalid, but this catches both.
+            if not args.silent :
+                print(PROG_NAME, ": error: --rename NEW_SEQNAME should only supply the descriptive-name",
+                    file=sys.stderr, sep='')
+                print("                 part of the new name. That is, ", args.newSeqName[0],
+                    file=sys.stderr, sep='')
+                print("                 appears to be a full lsseq native-format description of a sequence.",
+                    file=sys.stderr, sep='')
+            sys.exit(EXIT_ARGPARSE_ERROR)
+
+        elif len(args.files) > 1 :
+            if not args.silent :
+                print(PROG_NAME, ": error: can NOT rename more than one SEQ at a time.",
+                    file=sys.stderr, sep='')
+            sys.exit(EXIT_ARGPARSE_ERROR)
+
+        # Now check to see if a sequence with NEW_SEQNAME exists already.
+        # This code relies on lsseq >= v2.5.0 be installed.
+        #
+        elif len(args.files) == 1 :
+            seqPath = '/'.join(args.files[0].split('/')[:-1])
+            if len(seqPath) > 0 :
+                seqPath = seqPath + '/'
+
+            # This next globPattern will put us in the ballpark - lsseq will check more carefully
+            # based on this. If NEW_SEQNAME contains a '*', '?', '[' or ']', then this isn't going
+            # to work so well, so hopefully the user isn't trying to rename to something with
+            # a globbing-wildcard as part of the new name.
+            #
+            globPattern = seqPath + args.newSeqName[0] + '[._]' + '[0-9]*.*'
+
+            globResult = glob.glob(globPattern)
+
+            if len(globResult) > 0 :
+                lsseqCmd = ['lsseq', '--looseNumSeparator', '--onlySequences', '--noErrorLists'] + globResult
+                lsseqResult = subprocess.run(lsseqCmd, capture_output=True, text=True)
+                if len(lsseqResult.stdout) > 0 :
+                    if not args.silent :
+                        print(PROG_NAME, ": error: can NOT rename to an existing sequence ",
+                            lsseqResult.stdout,
+                            file=sys.stderr, sep='', end='')
+                    sys.exit(EXIT_ARGPARSE_ERROR)
+
+    if len(args.files) == 0 :
+        sys.exit(EXIT_NO_ERROR)
+
+    # The following logic means "do nothing" - so just exit cleanly (**b**)
     #
     if args.offsetFrames == 0 \
             and args.pad < 0 \
             and not args.fixUnderscore \
-            and args.startFrame == NEVER_START_FRAME :
+            and args.startFrame == NEVER_START_FRAME \
+            and len(args.newSeqName) == 0 :
         if not args.silent :
             print(PROG_NAME,
-                ": warning: no offset, no padding change etc., nothing to do",
+                ": warning: no offset, no rename, no padding change, etc., nothing to do",
                 file=sys.stderr, sep='')
-        sys.exit(0)
+        sys.exit(EXIT_NO_ERROR)
 
     # args.touch is either a string, presumably containing a date (so need to
     # check its validity), the string "0" (meaning --touch was called with NO argument),
@@ -273,33 +395,19 @@ def main():
                 print(PROG_NAME,
                     ": error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]",
                     file=sys.stderr, sep='')
-            sys.exit(1)
+            sys.exit(EXIT_ARGPARSE_ERROR)
 
         specificTime = int(time.mktime(timeData.timetuple())) # Epoch time
 
     if args.dryRun : # verbose to show how renumbering would occur.
         args.verbose = True
 
-    # The following regular expression is created to match lsseq native sequence syntax
-    # which means (number labels refer to parenthesis groupings **):
-    #
-    # 0 - one or more of anything,           followed by
-    # 1 - a dot or underscore,               followed by
-    #     an open square bracket,            followed by
-    # 2 - a frame range,                     followed by
-    #     a close square bracket then a dot, followed by
-    # 3 - one or more letters, optionally one dot,
-    #     then one or more letters, then one or more letters and numbers
-    #     and the end of the line.
-    #
-    pattern = re.compile(r"(.+)([._])\[(-?[0-9]+-?-?[0-9]+)\]\.([a-zA-Z]+\.?[a-zA-Z]+[a-zA-Z0-9]*$)")
-
     for arg in args.files :
         abortSeq = False
 
         # Check if 'arg' is a sequence in valid lsseq native format
         #
-        match = pattern.search(arg)
+        match = lsseqPattern.search(arg)
         if not match :
             if not args.silent :
                 print(PROG_NAME, ": warning: ", arg,
@@ -310,7 +418,7 @@ def main():
         v = match.groups()
 
         usesUnderscore = (v[1] == '_')
-        seq = [v[0], v[2], v[3]] # base filename, range, file-extension. (see above **)
+        seq = [v[0], v[2], v[3]] # base filename, range, file-extension. (see above (**a**))
 
         # seq might be range with neg numbers. Assume N,M >= 0,
         # then there are only 5 seq cases that we need to be
@@ -384,7 +492,7 @@ def main():
 
             args.offsetFrames = args.startFrame - start
 
-            # This duplicates the test above (**a**) because now
+            # This duplicates the test above (**b**) because now
             # we might have a zero offset for this sequence.
             # Instead of exiting we just skip to the next seq.
             #
@@ -470,8 +578,14 @@ def main():
             origFile = seq[0] + currentSeparator + currentFormatStr.format(i) + '.' + seq[2]
             if os.path.exists(origFile) :
                 origName.append(origFile)
-                newName.append(seq[0] + newSeparator + newFormatStr.format(i+args.offsetFrames) \
-                    + '.' + seq[2])
+                if len(args.newSeqName) == 1 :
+                    newName.append(seqPath + args.newSeqName[0] + newSeparator + \
+                        newFormatStr.format(i+args.offsetFrames) \
+                        + '.' + seq[2])
+                else :
+                    newName.append(seq[0] + newSeparator + \
+                        newFormatStr.format(i+args.offsetFrames) \
+                        + '.' + seq[2])
 
         if origName == [] :
             if not args.silent :

@@ -1,12 +1,12 @@
 ------ Begin Tests ------
 
------ Test 1 -+- dir:. -+- uname -----
+----- Test 1 -+- dir: . -+- uname -----
 Darwin
 
------ Test 2 -+- dir:. -+- lsseq --version -----
-2.7.1
+----- Test 2 -+- dir: . -+- lsseq --version -----
+3.0.0
 
------ Test 3 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m -----
+----- Test 3 -+- dir: . -+- lsseq -RPl --noErrorLists -g -m -----
 ./a01/a.[0100-0140].jpg m:[101,134-139]
 ./a02/a.[0100-0125].jpg m:[105,121-124]
 ./a03/a.[0100-0133].jpg m:[101]
@@ -19,15 +19,20 @@ Darwin
 ./f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
 ./g01/g.[0530-0547].bgeo.gz
 ./h01/h.[001-010].jpg
+./i01/aaa.[1-10].jpg
+./i01/bbb.[1-10].jpg
+./i01/ccc.[01-10].jpg
+./i01/ddd.[01-10].jpg
+./i01/eee.[0001-0010].jpg
 ./x01/x.[-11--03].jpg
 ./y01/y.[-011-0002].jpg
 
------ Test 4 -+- dir:. -+- renumseq -----
+----- Test 4 -+- dir: . -+- renumseq -----
 
------ Test 5 -+- dir:. -+- renumseq --version -----
-1.3.3
+----- Test 5 -+- dir: . -+- renumseq --version -----
+1.4.0
 
------ Test 6 -+- dir:. -+- renumseq --help -----
+----- Test 6 -+- dir: . -+- renumseq --help -----
 usage: renumseq [OPTION]... [SEQ]...
 
 Renumber the frame range of each SEQ listed on the command line.
@@ -60,8 +65,6 @@ optional arguments:
   --offset FRAME_OFFSET, -o FRAME_OFFSET
                         offset SEQ by this number of frames (can be negative).
                         Frame i becomes i + FRAME_OFFSET
-  --dryRun              Don't renumber SEQ, just display how the files would
-                        have been renumbered. Forces --verbose
   --skip                if renumbering a file in SEQ would result in
                         overwriting an existing file (which isn't also being
                         renumbered) then skip renumbering SEQ altogether.
@@ -76,6 +79,10 @@ optional arguments:
                         sequence range with appropriate padding and can also
                         report when there are incorrectly padded frame-numbers
                         with --showBadPadding
+  --rename NEW_SEQNAME  Rename the DESCRIPTIVE_NAME part of SEQ from its
+                        existing name to NEW_SEQNAME. When using this option
+                        then the command will exit with an error unless
+                        exactly one SEQ is being renamed and/or renumbered.
   --replaceUnderscore   in the case that SEQ uses an underscore ('_')
                         separating the filename from the frame number; then
                         when renumbering SEQ, replace the underscore with a
@@ -95,58 +102,60 @@ optional arguments:
                         the optional date was not specified then append '--'
                         before the list of SEQs to delineate the end of the
                         options.
+  --dryRun, --dryrun    Don't renumber SEQ, just display how the files would
+                        have been renumbered. Forces --verbose
   --silent, --quiet, -s
                         suppress all errors and warnings
   --verbose, -v         list the mapping from old file-name to new file-name
 
------ Test 7 -+- dir:. -+- renumseq null/foo.jpg -----
-renumseq: warning: no offset, no padding change etc., nothing to do
+----- Test 7 -+- dir: . -+- renumseq null/foo.jpg -----
+renumseq: warning: no offset, no rename, no padding change, etc., nothing to do
 
------ Test 8 -+- dir:. -+- renumseq -o 1 null/foo.jpg -----
+----- Test 8 -+- dir: . -+- renumseq -o 1 null/foo.jpg -----
 renumseq: warning: null/foo.jpg not a sequence or not in lsseq native format
 
------ Test 9 -+- dir:. -+- renumseq -o 1 null/foo.[bar].jpg -----
+----- Test 9 -+- dir: . -+- renumseq -o 1 null/foo.[bar].jpg -----
 renumseq: warning: null/foo.[bar].jpg not a sequence or not in lsseq native format
 
------ Test 10 -+- dir:. -+- renumseq -o 1 null/foo.[a-b].jpg -----
+----- Test 10 -+- dir: . -+- renumseq -o 1 null/foo.[a-b].jpg -----
 renumseq: warning: null/foo.[a-b].jpg not a sequence or not in lsseq native format
 
------ Test 11 -+- dir:. -+- renumseq -o 1 null/foo.[-a-b].jpg -----
+----- Test 11 -+- dir: . -+- renumseq -o 1 null/foo.[-a-b].jpg -----
 renumseq: warning: null/foo.[-a-b].jpg not a sequence or not in lsseq native format
 
------ Test 12 -+- dir:. -+- renumseq -o 1 null/foo.[-a--b].jpg -----
+----- Test 12 -+- dir: . -+- renumseq -o 1 null/foo.[-a--b].jpg -----
 renumseq: warning: null/foo.[-a--b].jpg not a sequence or not in lsseq native format
 
------ Test 13 -+- dir:. -+- renumseq -o 1 null/foo.[xx-a-b].jpg -----
+----- Test 13 -+- dir: . -+- renumseq -o 1 null/foo.[xx-a-b].jpg -----
 renumseq: warning: null/foo.[xx-a-b].jpg not a sequence or not in lsseq native format
 
------ Test 14 -+- dir:. -+- renumseq -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg -----
+----- Test 14 -+- dir: . -+- renumseq -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg -----
 renumseq: warning: invalid range [011--003] for seq c01/c
 renumseq: warning: invalid range [11-03] for seq c02/c
 
------ Test 15 -+- dir:. -+- renumseq -s -o 1 null/foo.jpg -----
+----- Test 15 -+- dir: . -+- renumseq -s -o 1 null/foo.jpg -----
 
------ Test 16 -+- dir:. -+- renumseq -s -o 1 null/foo.[bar].jpg -----
+----- Test 16 -+- dir: . -+- renumseq -s -o 1 null/foo.[bar].jpg -----
 
------ Test 17 -+- dir:. -+- renumseq -s -o 1 null/foo.[a-b].jpg -----
+----- Test 17 -+- dir: . -+- renumseq -s -o 1 null/foo.[a-b].jpg -----
 
------ Test 18 -+- dir:. -+- renumseq -s -o 1 null/foo.[-a-b].jpg -----
+----- Test 18 -+- dir: . -+- renumseq -s -o 1 null/foo.[-a-b].jpg -----
 
------ Test 19 -+- dir:. -+- renumseq -s -o 1 null/foo.[-a--b].jpg -----
+----- Test 19 -+- dir: . -+- renumseq -s -o 1 null/foo.[-a--b].jpg -----
 
------ Test 20 -+- dir:. -+- renumseq -s -o 1 null/foo.[xx-a-b].jpg -----
+----- Test 20 -+- dir: . -+- renumseq -s -o 1 null/foo.[xx-a-b].jpg -----
 
------ Test 21 -+- dir:. -+- renumseq -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg -----
+----- Test 21 -+- dir: . -+- renumseq -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg -----
 
------ Test 22 -+- dir:a03 -+- lsseq -RPl --noErrorLists -g -m -----
+----- Test 22 -+- dir: a03 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0100-0133].jpg m:[101]
 
------ Test 23 -+- dir:a03 -+- renumseq -o 30 a.[0100-0110].jpg -----
+----- Test 23 -+- dir: a03 -+- renumseq -o 30 a.[0100-0110].jpg -----
 renumseq: warning: skipping a.[0100-0110].jpg: renumbering would have overwritten a file outside the sequence being renumbered. e.g.: a.0133.jpg
 
------ Test 24 -+- dir:a03 -+- renumseq -s -o 30 a.[0100-0110].jpg -----
+----- Test 24 -+- dir: a03 -+- renumseq -s -o 30 a.[0100-0110].jpg -----
 
------ Test 25 -+- dir:a03 -+- ls -o -----
+----- Test 25 -+- dir: a03 -+- ls -o -----
 total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0100.jpg
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0102.jpg
@@ -182,10 +191,10 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0132.jpg
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0133.jpg
 
------ Test 26 -+- dir:a03 -+- lsseq -RPl --noErrorLists -g -m -----
+----- Test 26 -+- dir: a03 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0100-0133].jpg m:[101]
 
------ Test 27 -+- dir:a03 -+- renumseq -v -o 30 --force --touch 20010601-1230 a.[0100-0110].jpg -----
+----- Test 27 -+- dir: a03 -+- renumseq -v -o 30 --force --touch 20010601-1230 a.[0100-0110].jpg -----
 a.0110.jpg -> a.0140.jpg
 a.0109.jpg -> a.0139.jpg
 a.0108.jpg -> a.0138.jpg
@@ -197,10 +206,10 @@ a.0103.jpg -> a.0133.jpg
 a.0102.jpg -> a.0132.jpg
 a.0100.jpg -> a.0130.jpg
 
------ Test 28 -+- dir:a03 -+- lsseq -RPl --noErrorLists -g -m -----
+----- Test 28 -+- dir: a03 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0111-0140].jpg
 
------ Test 29 -+- dir:a03 -+- ls -o -----
+----- Test 29 -+- dir: a03 -+- ls -o -----
 total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0111.jpg
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0112.jpg
@@ -233,7 +242,7 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jun  1  2001 a.0139.jpg
 -rw-rw-rw-  1 testUser  0 Jun  1  2001 a.0140.jpg
 
------ Test 30 -+- dir:a02 -+- ls -o -----
+----- Test 30 -+- dir: a02 -+- ls -o -----
 total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0100.jpg
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0101.jpg
@@ -257,10 +266,10 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0120.jpg
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0125.jpg
 
------ Test 31 -+- dir:a02 -+- lsseq -RPl --noErrorLists -g -m -----
+----- Test 31 -+- dir: a02 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0100-0125].jpg m:[105,121-124]
 
------ Test 32 -+- dir:a02 -+- renumseq -v -o 20 --touch 20010601-1300 a.[0100-0120].jpg -----
+----- Test 32 -+- dir: a02 -+- renumseq -v -o 20 --touch 20010601-1300 a.[0100-0120].jpg -----
 a.0120.jpg -> a.0140.jpg
 a.0119.jpg -> a.0139.jpg
 a.0118.jpg -> a.0138.jpg
@@ -282,10 +291,10 @@ a.0102.jpg -> a.0122.jpg
 a.0101.jpg -> a.0121.jpg
 a.0100.jpg -> a.0120.jpg
 
------ Test 33 -+- dir:a02 -+- lsseq -RPl --noErrorLists -g -m -----
+----- Test 33 -+- dir: a02 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0120-0140].jpg
 
------ Test 34 -+- dir:a02 -+- ls -o -----
+----- Test 34 -+- dir: a02 -+- ls -o -----
 total 0
 -rw-rw-rw-  1 testUser  0 Jun  1  2001 a.0120.jpg
 -rw-rw-rw-  1 testUser  0 Jun  1  2001 a.0121.jpg
@@ -309,7 +318,7 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jun  1  2001 a.0139.jpg
 -rw-rw-rw-  1 testUser  0 Jun  1  2001 a.0140.jpg
 
------ Test 35 -+- dir:a01 -+- ls -o -----
+----- Test 35 -+- dir: a01 -+- ls -o -----
 total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0100.jpg
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0102.jpg
@@ -346,15 +355,15 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0133.jpg
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0140.jpg
 
------ Test 36 -+- dir:a01 -+- lsseq -RPl --noErrorLists -g -m -----
+----- Test 36 -+- dir: a01 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0100-0140].jpg m:[101,134-139]
 
------ Test 37 -+- dir:a01 -+- renumseq -o 100 --touch 20010602 a.[0100-0133].jpg -----
+----- Test 37 -+- dir: a01 -+- renumseq -o 100 --touch 20010602 a.[0100-0133].jpg -----
 
------ Test 38 -+- dir:a01 -+- lsseq -RPl --noErrorLists -g -m -----
+----- Test 38 -+- dir: a01 -+- lsseq -RPl --noErrorLists -g -m -----
 ./a.[0140-0233].jpg m:[141-199,201]
 
------ Test 39 -+- dir:a01 -+- ls -o -----
+----- Test 39 -+- dir: a01 -+- ls -o -----
 total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0140.jpg
 -rw-rw-rw-  1 testUser  0 Jun  2  2001 a.0200.jpg
@@ -391,12 +400,12 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jun  2  2001 a.0232.jpg
 -rw-rw-rw-  1 testUser  0 Jun  2  2001 a.0233.jpg
 
------ Test 40 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m b01 x01 y01 -----
+----- Test 40 -+- dir: . -+- lsseq -RPl --noErrorLists -g -m b01 x01 y01 -----
 b01/b.[555].jpg
 x01/x.[-11--03].jpg
 y01/y.[-011-0002].jpg
 
------ Test 41 -+- dir:. -+- renumseq -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg -----
+----- Test 41 -+- dir: . -+- renumseq -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg -----
 b01/b.555.jpg -> b01/b.655.jpg
 x01/x.-03.jpg -> x01/x.097.jpg
 x01/x.-04.jpg -> x01/x.096.jpg
@@ -422,15 +431,15 @@ y01/y.-009.jpg -> y01/y.0091.jpg
 y01/y.-010.jpg -> y01/y.0090.jpg
 y01/y.-011.jpg -> y01/y.0089.jpg
 
------ Test 42 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m b01 x01 y01 -----
+----- Test 42 -+- dir: . -+- lsseq -RPl --noErrorLists -g -m b01 x01 y01 -----
 b01/b.[655].jpg
 x01/x.[089-097].jpg
 y01/y.[0089-0102].jpg
 
------ Test 43 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m a02 -----
+----- Test 43 -+- dir: . -+- lsseq -RPl --noErrorLists -g -m a02 -----
 a02/a.[0120-0140].jpg
 
------ Test 44 -+- dir:. -+- renumseq -v -o 10 a02/a.[0120-0140].jpg -----
+----- Test 44 -+- dir: . -+- renumseq -v -o 10 a02/a.[0120-0140].jpg -----
 a02/a.0140.jpg -> a02/a.0150.jpg
 a02/a.0139.jpg -> a02/a.0149.jpg
 a02/a.0138.jpg -> a02/a.0148.jpg
@@ -453,10 +462,10 @@ a02/a.0122.jpg -> a02/a.0132.jpg
 a02/a.0121.jpg -> a02/a.0131.jpg
 a02/a.0120.jpg -> a02/a.0130.jpg
 
------ Test 45 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m a02 -----
+----- Test 45 -+- dir: . -+- lsseq -RPl --noErrorLists -g -m a02 -----
 a02/a.[0130-0150].jpg
 
------ Test 46 -+- dir:. -+- renumseq -v -o -10 a02/a.[0130-0150].jpg -----
+----- Test 46 -+- dir: . -+- renumseq -v -o -10 a02/a.[0130-0150].jpg -----
 a02/a.0130.jpg -> a02/a.0120.jpg
 a02/a.0131.jpg -> a02/a.0121.jpg
 a02/a.0132.jpg -> a02/a.0122.jpg
@@ -479,10 +488,10 @@ a02/a.0148.jpg -> a02/a.0138.jpg
 a02/a.0149.jpg -> a02/a.0139.jpg
 a02/a.0150.jpg -> a02/a.0140.jpg
 
------ Test 47 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m a02 -----
+----- Test 47 -+- dir: . -+- lsseq -RPl --noErrorLists -g -m a02 -----
 a02/a.[0120-0140].jpg
 
------ Test 48 -+- dir:. -+- renumseq --verbose -o -1 --pad 3 a02/a.[0120-0140].jpg -----
+----- Test 48 -+- dir: . -+- renumseq --verbose -o -1 --pad 3 a02/a.[0120-0140].jpg -----
 a02/a.0120.jpg -> a02/a.119.jpg
 a02/a.0121.jpg -> a02/a.120.jpg
 a02/a.0122.jpg -> a02/a.121.jpg
@@ -505,33 +514,33 @@ a02/a.0138.jpg -> a02/a.137.jpg
 a02/a.0139.jpg -> a02/a.138.jpg
 a02/a.0140.jpg -> a02/a.139.jpg
 
------ Test 49 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m a02 -----
+----- Test 49 -+- dir: . -+- lsseq -RPl --noErrorLists -g -m a02 -----
 a02/a.[119-139].jpg
 
------ Test 50 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m d01 -----
+----- Test 50 -+- dir: . -+- lsseq -RPl --noErrorLists -g -m d01 -----
 d01/d_[0100-0125].jpg m:[105,121-124]
 
------ Test 51 -+- dir:. -+- renumseq -v -o 20 /d01/d_[0100-0120].jpg -----
+----- Test 51 -+- dir: . -+- renumseq -v -o 20 /d01/d_[0100-0120].jpg -----
 renumseq: warning: /d01/d_[0100-0120].jpg is nonexistent
 
------ Test 52 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m d01 -----
+----- Test 52 -+- dir: . -+- lsseq -RPl --noErrorLists -g -m d01 -----
 d01/d_[0100-0125].jpg m:[105,121-124]
 
------ Test 53 -+- dir:. -+- renumseq -v d01/d_[0120-0140].jpg -----
-renumseq: warning: no offset, no padding change etc., nothing to do
+----- Test 53 -+- dir: . -+- renumseq -v d01/d_[0120-0140].jpg -----
+renumseq: warning: no offset, no rename, no padding change, etc., nothing to do
 
------ Test 54 -+- dir:. -+- renumseq -v --replaceUnderscore d01/d_[0120-0140].jpg -----
+----- Test 54 -+- dir: . -+- renumseq -v --replaceUnderscore d01/d_[0120-0140].jpg -----
 d01/d_0120.jpg -> d01/d.0120.jpg
 d01/d_0125.jpg -> d01/d.0125.jpg
 
------ Test 55 -+- dir:. -+- lsseq -RPl --noErrorLists -g -m d01 -----
+----- Test 55 -+- dir: . -+- lsseq -RPl --noErrorLists -g -m d01 -----
 d01/d.[0120-0125].jpg m:[121-124]
 d01/d_[0100-0119].jpg m:[105]
 
------ Test 56 -+- dir:e01 -+- lsseq -RPl --noErrorLists -g -m -----
+----- Test 56 -+- dir: e01 -+- lsseq -RPl --noErrorLists -g -m -----
 ./e_[5-9999].jpg m:[16-94,106-994,1006-9994]
 
------ Test 57 -+- dir:e01 -+- renumseq -v --replaceUnderscore e_[5-9999].jpg -----
+----- Test 57 -+- dir: e01 -+- renumseq -v --replaceUnderscore e_[5-9999].jpg -----
 e_5.jpg -> e.5.jpg
 e_6.jpg -> e.6.jpg
 e_7.jpg -> e.7.jpg
@@ -571,10 +580,10 @@ e_9997.jpg -> e.9997.jpg
 e_9998.jpg -> e.9998.jpg
 e_9999.jpg -> e.9999.jpg
 
------ Test 58 -+- dir:e01 -+- lsseq -RPl --noErrorLists -g -m -----
+----- Test 58 -+- dir: e01 -+- lsseq -RPl --noErrorLists -g -m -----
 ./e.[5-9999].jpg m:[16-94,106-994,1006-9994]
 
------ Test 59 -+- dir:. -+- renumseq -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg -----
+----- Test 59 -+- dir: . -+- renumseq -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg -----
 e02/e_5.jpg -> e02/e.0005.jpg
 e02/e_6.jpg -> e02/e.0006.jpg
 e02/e_7.jpg -> e02/e.0007.jpg
@@ -614,7 +623,7 @@ e02/e_9997.jpg -> e02/e.9997.jpg
 e02/e_9998.jpg -> e02/e.9998.jpg
 e02/e_9999.jpg -> e02/e.9999.jpg
 
------ Test 60 -+- dir:. -+- renumseq -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg -----
+----- Test 60 -+- dir: . -+- renumseq -v --replaceUnderscore --pad 4 e03/e_[5-10005].jpg -----
 e03/e_5.jpg -> e03/e.0005.jpg
 e03/e_6.jpg -> e03/e.0006.jpg
 e03/e_7.jpg -> e03/e.0007.jpg
@@ -660,33 +669,33 @@ e03/e_10003.jpg -> e03/e.10003.jpg
 e03/e_10004.jpg -> e03/e.10004.jpg
 e03/e_10005.jpg -> e03/e.10005.jpg
 
------ Test 61 -+- dir:. -+- lsseq -ZRPl d01 -----
+----- Test 61 -+- dir: . -+- lsseq -ZRPl d01 -----
 d01/d.[0120-0125].jpg m:[121-124]
 d01/d_[0100-0119].jpg m:[105]
 
------ Test 62 -+- dir:. -+- lsseq -ZRPl d02 -----
+----- Test 62 -+- dir: . -+- lsseq -ZRPl d02 -----
 d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
 
------ Test 63 -+- dir:. -+- renumseq -o 20 d02/d.[hi]_[0100-0120].jpg -----
+----- Test 63 -+- dir: . -+- renumseq -o 20 d02/d.[hi]_[0100-0120].jpg -----
 
------ Test 64 -+- dir:. -+- lsseq -ZRPl d02 -----
+----- Test 64 -+- dir: . -+- lsseq -ZRPl d02 -----
 d02/d.[hi]_[0120-0140].jpg
 
------ Test 65 -+- dir:. -+- renumseq --replaceUnderscore d02/d.[hi]_[0120-0140].jpg -----
+----- Test 65 -+- dir: . -+- renumseq --replaceUnderscore d02/d.[hi]_[0120-0140].jpg -----
 
------ Test 66 -+- dir:. -+- lsseq -ZRPl d02 -----
+----- Test 66 -+- dir: . -+- lsseq -ZRPl d02 -----
 d02/d.[hi].[0120-0140].jpg
 
------ Test 67 -+- dir:. -+- lsseq -ZRPl f01 -----
+----- Test 67 -+- dir: . -+- lsseq -ZRPl f01 -----
 f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
 
------ Test 68 -+- dir:. -+- renumseq -v --pad 4 f01/f_[05-1005].jpg -----
+----- Test 68 -+- dir: . -+- renumseq -v --pad 4 f01/f_[05-1005].jpg -----
 renumseq: warning: f01/f_[05-1005].jpg is nonexistent
 
------ Test 69 -+- dir:g01 -+- lsseq -n -----
+----- Test 69 -+- dir: g01 -+- lsseq -n -----
 g.[0530-0547].bgeo.gz
 
------ Test 70 -+- dir:g01 -+- renumseq -v -o -400 g.[0530-0547].bgeo.gz -----
+----- Test 70 -+- dir: g01 -+- renumseq -v -o -400 g.[0530-0547].bgeo.gz -----
 g.0530.bgeo.gz -> g.0130.bgeo.gz
 g.0531.bgeo.gz -> g.0131.bgeo.gz
 g.0532.bgeo.gz -> g.0132.bgeo.gz
@@ -706,10 +715,10 @@ g.0545.bgeo.gz -> g.0145.bgeo.gz
 g.0546.bgeo.gz -> g.0146.bgeo.gz
 g.0547.bgeo.gz -> g.0147.bgeo.gz
 
------ Test 71 -+- dir:g01 -+- lsseq -n -----
+----- Test 71 -+- dir: g01 -+- lsseq -n -----
 g.[0130-0147].bgeo.gz
 
------ Test 72 -+- dir:h01 -+- ls -o -----
+----- Test 72 -+- dir: h01 -+- ls -o -----
 total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 h.001.jpg
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 h.002.jpg
@@ -722,18 +731,21 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 h.009.jpg
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 h.010.jpg
 
------ Test 73 -+- dir:h01 -+- renumseq --start 101 --touch xxxx h.[001-010].jpg -----
+----- Test 73 -+- dir: h01 -+- renumseq --start 101 --touch xxxx h.[001-010].jpg -----
 renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
+--+--  renumseq returned non-zero error code: 2  --+--
 
------ Test 74 -+- dir:h01 -+- renumseq --start 101 --touch 2010 h.[001-010].jpg -----
+----- Test 74 -+- dir: h01 -+- renumseq --start 101 --touch 2010 h.[001-010].jpg -----
 renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
+--+--  renumseq returned non-zero error code: 2  --+--
 
------ Test 75 -+- dir:h01 -+- renumseq --start 101 --touch 0101 h.[001-010].jpg -----
+----- Test 75 -+- dir: h01 -+- renumseq --start 101 --touch 0101 h.[001-010].jpg -----
 renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
+--+--  renumseq returned non-zero error code: 2  --+--
 
------ Test 76 -+- dir:h01 -+- renumseq --start 101 --touch 20100101 h.[001-010].jpg -----
+----- Test 76 -+- dir: h01 -+- renumseq --start 101 --touch 20100101 h.[001-010].jpg -----
 
------ Test 77 -+- dir:h01 -+- ls -o -----
+----- Test 77 -+- dir: h01 -+- ls -o -----
 total 0
 -rw-rw-rw-  1 testUser  0 Jan  1  2010 h.101.jpg
 -rw-rw-rw-  1 testUser  0 Jan  1  2010 h.102.jpg
@@ -746,37 +758,39 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jan  1  2010 h.109.jpg
 -rw-rw-rw-  1 testUser  0 Jan  1  2010 h.110.jpg
 
------ Test 78 -+- dir:h01 -+- renumseq --start 1 --touch -- h.[101-110].jpg -----
+----- Test 78 -+- dir: h01 -+- renumseq --start 1 --touch -- h.[101-110].jpg -----
 
------ Test 79 -+- dir:h01 -+- ls -o -----
+----- Test 79 -+- dir: h01 -+- ls -o -----
 total 0
--rw-rw-rw-  1 testUser  0 Sep 12 19:23 h.001.jpg
--rw-rw-rw-  1 testUser  0 Sep 12 19:23 h.002.jpg
--rw-rw-rw-  1 testUser  0 Sep 12 19:23 h.003.jpg
--rw-rw-rw-  1 testUser  0 Sep 12 19:23 h.004.jpg
--rw-rw-rw-  1 testUser  0 Sep 12 19:23 h.005.jpg
--rw-rw-rw-  1 testUser  0 Sep 12 19:23 h.006.jpg
--rw-rw-rw-  1 testUser  0 Sep 12 19:23 h.007.jpg
--rw-rw-rw-  1 testUser  0 Sep 12 19:23 h.008.jpg
--rw-rw-rw-  1 testUser  0 Sep 12 19:23 h.009.jpg
--rw-rw-rw-  1 testUser  0 Sep 12 19:23 h.010.jpg
+-rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.001.jpg
+-rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.002.jpg
+-rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.003.jpg
+-rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.004.jpg
+-rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.005.jpg
+-rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.006.jpg
+-rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.007.jpg
+-rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.008.jpg
+-rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.009.jpg
+-rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.010.jpg
 
------ Test 80 -+- dir:h01 -+- date -----
-Tue Sep 12 19:23:50 CDT 2023
+----- Test 80 -+- dir: h01 -+- date -----
+Tue Sep 26 16:21:32 CDT 2023
 
------ Test 81 -+- dir:h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
+----- Test 81 -+- dir: h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
 The dates of the files in the last ls -o should match the prior date command.
 
------ Test 82 -+- dir:h01 -+- renumseq --foobar h.[001-010].jpg -----
+----- Test 82 -+- dir: h01 -+- renumseq --foobar h.[001-010].jpg -----
 usage: renumseq [OPTION]... [SEQ]...
 renumseq: error: unrecognized arguments: --foobar
+--+--  renumseq returned non-zero error code: 2  --+--
 
------ Test 83 -+- dir:h01 -+- renumseq --start 101 --touch 20200631 h.[001-010].jpg -----
+----- Test 83 -+- dir: h01 -+- renumseq --start 101 --touch 20200631 h.[001-010].jpg -----
 renumseq: error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]
+--+--  renumseq returned non-zero error code: 2  --+--
 
------ Test 84 -+- dir:h01 -+- renumseq --start 101 --touch 20200630 h.[001-010].jpg -----
+----- Test 84 -+- dir: h01 -+- renumseq --start 101 --touch 20200630 h.[001-010].jpg -----
 
------ Test 85 -+- dir:h01 -+- ls -o -----
+----- Test 85 -+- dir: h01 -+- ls -o -----
 total 0
 -rw-rw-rw-  1 testUser  0 Jun 30  2020 h.101.jpg
 -rw-rw-rw-  1 testUser  0 Jun 30  2020 h.102.jpg
@@ -789,9 +803,9 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jun 30  2020 h.109.jpg
 -rw-rw-rw-  1 testUser  0 Jun 30  2020 h.110.jpg
 
------ Test 86 -+- dir:h01 -+- renumseq --start 1 --touch 200730 h.[101-110].jpg -----
+----- Test 86 -+- dir: h01 -+- renumseq --start 1 --touch 200730 h.[101-110].jpg -----
 
------ Test 87 -+- dir:h01 -+- ls -o -----
+----- Test 87 -+- dir: h01 -+- ls -o -----
 total 0
 -rw-rw-rw-  1 testUser  0 Jul 30  2020 h.001.jpg
 -rw-rw-rw-  1 testUser  0 Jul 30  2020 h.002.jpg
@@ -803,3 +817,108 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jul 30  2020 h.008.jpg
 -rw-rw-rw-  1 testUser  0 Jul 30  2020 h.009.jpg
 -rw-rw-rw-  1 testUser  0 Jul 30  2020 h.010.jpg
+
+----- Test 88 -+- dir: i01 -+- lsseq --noErrorLists -----
+aaa.[1-10].jpg
+bbb.[1-10].jpg
+ccc.[01-10].jpg
+ddd.[01-10].jpg
+eee.[0001-0010].jpg
+
+----- Test 89 -+- dir: i01 -+- renumseq --dryrun --start 100 --rename -- aaa.[1-10].jpg -----
+usage: renumseq [OPTION]... [SEQ]...
+renumseq: error: argument --rename: expected 1 argument
+--+--  renumseq returned non-zero error code: 2  --+--
+
+----- Test 90 -+- dir: i01 -+- renumseq --dryrun --start 100 --rename aaa.[1-10].jpg -----
+renumseq: error: NEW_SEQNAME not supplied. Perhaps NEW_SEQNAME was
+                 omitted from '--rename aaa.[1-10].jpg' by mistake?
+--+--  renumseq returned non-zero error code: 2  --+--
+
+----- Test 91 -+- dir: i01 -+- renumseq --dryrun --start 100 --rename aaa.[1-10].jpg bbb.[1-10].jpg -----
+renumseq: error: --rename NEW_SEQNAME should only supply the descriptive-name
+                 part of the new name. That is, aaa.[1-10].jpg
+                 appears to be a full lsseq native-format description of a sequence.
+--+--  renumseq returned non-zero error code: 2  --+--
+
+----- Test 92 -+- dir: i01 -+- renumseq --dryrun --start 100 --rename xxx aaa.[1-10].jpg bbb.[1-10].jpg -----
+renumseq: error: can NOT rename more than one SEQ at a time.
+--+--  renumseq returned non-zero error code: 2  --+--
+
+----- Test 93 -+- dir: i01 -+- renumseq --pad 4 --dryrun --start 100 --rename xxx aaa.[1-10].jpg -----
+aaa.10.jpg -> xxx.0109.jpg
+aaa.9.jpg -> xxx.0108.jpg
+aaa.8.jpg -> xxx.0107.jpg
+aaa.7.jpg -> xxx.0106.jpg
+aaa.6.jpg -> xxx.0105.jpg
+aaa.5.jpg -> xxx.0104.jpg
+aaa.4.jpg -> xxx.0103.jpg
+aaa.3.jpg -> xxx.0102.jpg
+aaa.2.jpg -> xxx.0101.jpg
+aaa.1.jpg -> xxx.0100.jpg
+
+----- Test 94 -+- dir: i01 -+- renumseq --pad 4 --start 100 --rename xxx aaa.[1-10].jpg -----
+
+----- Test 95 -+- dir: i01 -+- renumseq --pad 3 --dryrun --start 20 --rename xxx ccc.[01-10].jpg -----
+renumseq: error: can NOT rename to an existing sequence xxx.[0100-0109].jpg
+--+--  renumseq returned non-zero error code: 2  --+--
+
+----- Test 96 -+- dir: . -+- renumseq -v --start 5 --rename g01/yyy i01/eee.[0001-0010].jpg -----
+renumseq: error: --rename will rename the sequence in-place, so please omit the path g01
+--+--  renumseq returned non-zero error code: 2  --+--
+
+----- Test 97 -+- dir: . -+- renumseq -v --start 5 --rename yyy i01/eee.[0001-0010].jpg -----
+i01/eee.0010.jpg -> i01/yyy.0014.jpg
+i01/eee.0009.jpg -> i01/yyy.0013.jpg
+i01/eee.0008.jpg -> i01/yyy.0012.jpg
+i01/eee.0007.jpg -> i01/yyy.0011.jpg
+i01/eee.0006.jpg -> i01/yyy.0010.jpg
+i01/eee.0005.jpg -> i01/yyy.0009.jpg
+i01/eee.0004.jpg -> i01/yyy.0008.jpg
+i01/eee.0003.jpg -> i01/yyy.0007.jpg
+i01/eee.0002.jpg -> i01/yyy.0006.jpg
+i01/eee.0001.jpg -> i01/yyy.0005.jpg
+
+----- Test 98 -+- dir: . -+- renumseq --pad 3 -v --start 5 --rename zzz i01/ccc.[01-10].jpg -----
+i01/ccc.10.jpg -> i01/zzz.014.jpg
+i01/ccc.09.jpg -> i01/zzz.013.jpg
+i01/ccc.08.jpg -> i01/zzz.012.jpg
+i01/ccc.07.jpg -> i01/zzz.011.jpg
+i01/ccc.06.jpg -> i01/zzz.010.jpg
+i01/ccc.05.jpg -> i01/zzz.009.jpg
+i01/ccc.04.jpg -> i01/zzz.008.jpg
+i01/ccc.03.jpg -> i01/zzz.007.jpg
+i01/ccc.02.jpg -> i01/zzz.006.jpg
+i01/ccc.01.jpg -> i01/zzz.005.jpg
+
+----- Test 99 -+- dir: i01 -+- renumseq --pad 3 -v --start 5 --rename nono noSuchSeq.[01-10].jpg -----
+renumseq: warning: noSuchSeq.[01-10].jpg is nonexistent
+
+----- Test 100 -+- dir: . -+- renumseq --pad 3 -v --start 5 --rename nono i01/noSuchSeq.[01-10].jpg -----
+renumseq: warning: i01/noSuchSeq.[01-10].jpg is nonexistent
+
+----- Test 101 -+- dir: i01 -+- lsseq --noErrorLists --onlySequences -----
+bbb.[1-10].jpg
+ddd.[01-10].jpg
+xxx.[0100-0109].jpg
+yyy.[0005-0014].jpg
+zzz.[005-014].jpg
+
+----- Test 102 -+- dir: i01 -+- renumseq --pad 3 -v --start 50 --rename n.11.m_v001_ bbb.[1-10].jpg -----
+bbb.10.jpg -> n.11.m_v001_.059.jpg
+bbb.9.jpg -> n.11.m_v001_.058.jpg
+bbb.8.jpg -> n.11.m_v001_.057.jpg
+bbb.7.jpg -> n.11.m_v001_.056.jpg
+bbb.6.jpg -> n.11.m_v001_.055.jpg
+bbb.5.jpg -> n.11.m_v001_.054.jpg
+bbb.4.jpg -> n.11.m_v001_.053.jpg
+bbb.3.jpg -> n.11.m_v001_.052.jpg
+bbb.2.jpg -> n.11.m_v001_.051.jpg
+bbb.1.jpg -> n.11.m_v001_.050.jpg
+
+----- Test 103 -+- dir: i01 -+- lsseq --noErrorLists --onlySequences -----
+ddd.[01-10].jpg
+n.11.m_v001_.[050-059].jpg
+xxx.[0100-0109].jpg
+yyy.[0005-0014].jpg
+zzz.[005-014].jpg
