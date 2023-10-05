@@ -10,7 +10,7 @@ It also allows you adjust the padding of the frame numbers.
 `renumseq` uses the syntax of the native output of
 [`lsseq`](https://github.com/jrowellfx/lsseq) to specify
 the sequence to be renumbered. Therefore it is recommended to
-also install `lsseq` as it makes using `renumseq` easier.
+use `lsseq` as it makes using `renumseq` easier.
 
 For example, use `lsseq` to list a sequence, then
 cut and paste its
