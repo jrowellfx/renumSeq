@@ -15,7 +15,7 @@ use `lsseq` as it makes using `renumseq` easier.
 For example, use `lsseq` to list a sequence, then
 cut and paste its
 output as the arguments to `renumseq` with the appropriate 
-arguments for setting the offset.
+arguments for setting the offset or new start-frame.
 
 `renumseq` was written to be safe in that it won't
 unintentionally overwrite any existing files
