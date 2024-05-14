@@ -54,7 +54,7 @@ import glob
 # MINOR version for added functionality in a backwards compatible manner
 # PATCH version for backwards compatible bug fixes
 #
-VERSION = "1.4.0"
+VERSION = "1.4.1"
 
 PROG_NAME = "renumseq"
 
@@ -122,14 +122,8 @@ def main():
             Renumber the frame range of each SEQ listed on the command line.
             SEQ should be specified using lsseq's native format.
             
-            Protip: Turning off globbing, or enclosing SEQ in quotes, or placing
-            backslashes ahead of '[' and ']' will likely be necessary to turn off the special
+            Protip: Enclosing SEQ in quotes will turn off the special
             treatment of '[' and ']' by the shell.
-
-            Caution: The files in the sequence MUST BE correctly padded.
-            Pay attention to lsseq's --showBadPadding for reports of badly padded frame
-            numbers and fix them before renumbering a sequence with this utility.
-            (This is a rare issue that can be fixed with the command 'fixSeqPadding'.)
 
             Example usage:
                 $ lsseq
@@ -174,8 +168,7 @@ def main():
         help="set the padding of the frame numbers to be PAD digits. \
         The default action is to leave the padding unchanged. Note, \
         lsseq's native format output properly lists the sequence \
-        range with appropriate padding and can also report when there are \
-        incorrectly padded frame-numbers with --showBadPadding")
+        range with appropriate padding.")
     p.add_argument("--rename", type=str, nargs=1,
         dest="newSeqName",
         default=[],
@@ -198,15 +191,12 @@ def main():
         metavar="[CC]YYMMDD[-hh[mm[ss]]]",
         help="If no date is provided then update the access time of \
         the files being renumbered to the current time. \
-        Otherwise, use the date provided to update the \
-        file's access time. (Default: renumbering a sequence leaves \
-        the access time unchanged.) \
-        When specifying the date, the optional CC (century) defaults to the current century. \
-        The optional '-hh' (hours), 'mm' (minutes) or 'ss' (seconds) \
-        default to zero if not specified. \
-        Note: if this is the last argument on the command line and the optional \
-        date was not specified then \
-        append '--' before the list of SEQs to delineate the end of the options.")
+        Otherwise, use the date provided to update the file's access time. \
+        The optional CC (century) defaults to the current century and \
+        '-hh' (hours), 'mm' (minutes) or 'ss' (seconds) \
+        default to zero if not specified.\
+        Note: the default action is to leave \
+        the access time of the SEQ unchanged. ")
 
     p.add_argument("--dryRun", "--dryrun", action="store_true",
         dest="dryRun", default=False,

@@ -11,7 +11,7 @@
 # that is, v1.3.2 will be installed.
 #
 # However if python3 links to python3.6, BUT say python3.7 (or higher)
-# is installed then in the following "First STEPS", by explicitly 
+# is installed then in the "First STEPS" (below), by explicitly 
 # using (say) "python3.9" when installing "venv" then subsequent steps
 # will install the latest renumseq in venv. For example,
 #
