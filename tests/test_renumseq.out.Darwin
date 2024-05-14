@@ -4,33 +4,33 @@
 Darwin
 
 ----- Test 2 -+- dir: . -+- lsseq --version -----
-3.0.0
+3.0.2
 
 ----- Test 3 -+- dir: . -+- lsseq -RPl --noErrorLists -g -m -----
-./a01/a.[0100-0140].jpg m:[101,134-139]
-./a02/a.[0100-0125].jpg m:[105,121-124]
-./a03/a.[0100-0133].jpg m:[101]
-./b01/b.[555].jpg
-./d01/d_[0100-0125].jpg m:[105,121-124]
-./d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
-./e01/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
-./e02/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
-./e03/e_[5-10005].jpg m:[16-94,106-994,1006-9994]
-./f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
-./g01/g.[0530-0547].bgeo.gz
-./h01/h.[001-010].jpg
-./i01/aaa.[1-10].jpg
-./i01/bbb.[1-10].jpg
-./i01/ccc.[01-10].jpg
-./i01/ddd.[01-10].jpg
-./i01/eee.[0001-0010].jpg
-./x01/x.[-11--03].jpg
-./y01/y.[-011-0002].jpg
+a01/a.[0100-0140].jpg m:[101,134-139]
+a02/a.[0100-0125].jpg m:[105,121-124]
+a03/a.[0100-0133].jpg m:[101]
+b01/b.[555].jpg
+d01/d_[0100-0125].jpg m:[105,121-124]
+d02/d.[hi]_[0100-0125].jpg m:[105,121-124]
+e01/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+e02/e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+e03/e_[5-10005].jpg m:[16-94,106-994,1006-9994]
+f01/f.[05-1005].jpg m:[16-529,548-1000], p:[530-547,1001-1005]
+g01/g.[0530-0547].bgeo.gz
+h01/h.[001-010].jpg
+i01/aaa.[1-10].jpg
+i01/bbb.[1-10].jpg
+i01/ccc.[01-10].jpg
+i01/ddd.[01-10].jpg
+i01/eee.[0001-0010].jpg
+x01/x.[-11--03].jpg
+y01/y.[-011-0002].jpg
 
 ----- Test 4 -+- dir: . -+- renumseq -----
 
 ----- Test 5 -+- dir: . -+- renumseq --version -----
-1.4.0
+1.4.1
 
 ----- Test 6 -+- dir: . -+- renumseq --help -----
 usage: renumseq [OPTION]... [SEQ]...
@@ -38,14 +38,8 @@ usage: renumseq [OPTION]... [SEQ]...
 Renumber the frame range of each SEQ listed on the command line.
 SEQ should be specified using lsseq's native format.
 
-Protip: Turning off globbing, or enclosing SEQ in quotes, or placing
-backslashes ahead of '[' and ']' will likely be necessary to turn off the special
+Protip: Enclosing SEQ in quotes will turn off the special
 treatment of '[' and ']' by the shell.
-
-Caution: The files in the sequence MUST BE correctly padded.
-Pay attention to lsseq's --showBadPadding for reports of badly padded frame
-numbers and fix them before renumbering a sequence with this utility.
-(This is a rare issue that can be fixed with the command 'fixSeqPadding'.)
 
 Example usage:
     $ lsseq
@@ -76,9 +70,7 @@ optional arguments:
   --pad PAD             set the padding of the frame numbers to be PAD digits.
                         The default action is to leave the padding unchanged.
                         Note, lsseq's native format output properly lists the
-                        sequence range with appropriate padding and can also
-                        report when there are incorrectly padded frame-numbers
-                        with --showBadPadding
+                        sequence range with appropriate padding.
   --rename NEW_SEQNAME  Rename the DESCRIPTIVE_NAME part of SEQ from its
                         existing name to NEW_SEQNAME. When using this option
                         then the command will exit with an error unless
@@ -93,15 +85,11 @@ optional arguments:
                         If no date is provided then update the access time of
                         the files being renumbered to the current time.
                         Otherwise, use the date provided to update the file's
-                        access time. (Default: renumbering a sequence leaves
-                        the access time unchanged.) When specifying the date,
-                        the optional CC (century) defaults to the current
-                        century. The optional '-hh' (hours), 'mm' (minutes) or
+                        access time. The optional CC (century) defaults to the
+                        current century and '-hh' (hours), 'mm' (minutes) or
                         'ss' (seconds) default to zero if not specified. Note:
-                        if this is the last argument on the command line and
-                        the optional date was not specified then append '--'
-                        before the list of SEQs to delineate the end of the
-                        options.
+                        the default action is to leave the access time of the
+                        SEQ unchanged.
   --dryRun, --dryrun    Don't renumber SEQ, just display how the files would
                         have been renumbered. Forces --verbose
   --silent, --quiet, -s
@@ -148,7 +136,7 @@ renumseq: warning: invalid range [11-03] for seq c02/c
 ----- Test 21 -+- dir: . -+- renumseq -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg -----
 
 ----- Test 22 -+- dir: a03 -+- lsseq -RPl --noErrorLists -g -m -----
-./a.[0100-0133].jpg m:[101]
+a.[0100-0133].jpg m:[101]
 
 ----- Test 23 -+- dir: a03 -+- renumseq -o 30 a.[0100-0110].jpg -----
 renumseq: warning: skipping a.[0100-0110].jpg: renumbering would have overwritten a file outside the sequence being renumbered. e.g.: a.0133.jpg
@@ -192,7 +180,7 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0133.jpg
 
 ----- Test 26 -+- dir: a03 -+- lsseq -RPl --noErrorLists -g -m -----
-./a.[0100-0133].jpg m:[101]
+a.[0100-0133].jpg m:[101]
 
 ----- Test 27 -+- dir: a03 -+- renumseq -v -o 30 --force --touch 20010601-1230 a.[0100-0110].jpg -----
 a.0110.jpg -> a.0140.jpg
@@ -207,7 +195,7 @@ a.0102.jpg -> a.0132.jpg
 a.0100.jpg -> a.0130.jpg
 
 ----- Test 28 -+- dir: a03 -+- lsseq -RPl --noErrorLists -g -m -----
-./a.[0111-0140].jpg
+a.[0111-0140].jpg
 
 ----- Test 29 -+- dir: a03 -+- ls -o -----
 total 0
@@ -267,7 +255,7 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0125.jpg
 
 ----- Test 31 -+- dir: a02 -+- lsseq -RPl --noErrorLists -g -m -----
-./a.[0100-0125].jpg m:[105,121-124]
+a.[0100-0125].jpg m:[105,121-124]
 
 ----- Test 32 -+- dir: a02 -+- renumseq -v -o 20 --touch 20010601-1300 a.[0100-0120].jpg -----
 a.0120.jpg -> a.0140.jpg
@@ -292,7 +280,7 @@ a.0101.jpg -> a.0121.jpg
 a.0100.jpg -> a.0120.jpg
 
 ----- Test 33 -+- dir: a02 -+- lsseq -RPl --noErrorLists -g -m -----
-./a.[0120-0140].jpg
+a.[0120-0140].jpg
 
 ----- Test 34 -+- dir: a02 -+- ls -o -----
 total 0
@@ -356,12 +344,12 @@ total 0
 -rw-rw-rw-  1 testUser  0 Jan 12  1992 a.0140.jpg
 
 ----- Test 36 -+- dir: a01 -+- lsseq -RPl --noErrorLists -g -m -----
-./a.[0100-0140].jpg m:[101,134-139]
+a.[0100-0140].jpg m:[101,134-139]
 
 ----- Test 37 -+- dir: a01 -+- renumseq -o 100 --touch 20010602 a.[0100-0133].jpg -----
 
 ----- Test 38 -+- dir: a01 -+- lsseq -RPl --noErrorLists -g -m -----
-./a.[0140-0233].jpg m:[141-199,201]
+a.[0140-0233].jpg m:[141-199,201]
 
 ----- Test 39 -+- dir: a01 -+- ls -o -----
 total 0
@@ -538,7 +526,7 @@ d01/d.[0120-0125].jpg m:[121-124]
 d01/d_[0100-0119].jpg m:[105]
 
 ----- Test 56 -+- dir: e01 -+- lsseq -RPl --noErrorLists -g -m -----
-./e_[5-9999].jpg m:[16-94,106-994,1006-9994]
+e_[5-9999].jpg m:[16-94,106-994,1006-9994]
 
 ----- Test 57 -+- dir: e01 -+- renumseq -v --replaceUnderscore e_[5-9999].jpg -----
 e_5.jpg -> e.5.jpg
@@ -581,7 +569,7 @@ e_9998.jpg -> e.9998.jpg
 e_9999.jpg -> e.9999.jpg
 
 ----- Test 58 -+- dir: e01 -+- lsseq -RPl --noErrorLists -g -m -----
-./e.[5-9999].jpg m:[16-94,106-994,1006-9994]
+e.[5-9999].jpg m:[16-94,106-994,1006-9994]
 
 ----- Test 59 -+- dir: . -+- renumseq -v --replaceUnderscore --pad 4 e02/e_[5-9999].jpg -----
 e02/e_5.jpg -> e02/e.0005.jpg
@@ -762,19 +750,19 @@ total 0
 
 ----- Test 79 -+- dir: h01 -+- ls -o -----
 total 0
--rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.001.jpg
--rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.002.jpg
--rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.003.jpg
--rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.004.jpg
--rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.005.jpg
--rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.006.jpg
--rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.007.jpg
--rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.008.jpg
--rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.009.jpg
--rw-rw-rw-  1 testUser  0 Sep 26 16:21 h.010.jpg
+-rw-rw-rw-  1 testUser  0 May 14 11:14 h.001.jpg
+-rw-rw-rw-  1 testUser  0 May 14 11:14 h.002.jpg
+-rw-rw-rw-  1 testUser  0 May 14 11:14 h.003.jpg
+-rw-rw-rw-  1 testUser  0 May 14 11:14 h.004.jpg
+-rw-rw-rw-  1 testUser  0 May 14 11:14 h.005.jpg
+-rw-rw-rw-  1 testUser  0 May 14 11:14 h.006.jpg
+-rw-rw-rw-  1 testUser  0 May 14 11:14 h.007.jpg
+-rw-rw-rw-  1 testUser  0 May 14 11:14 h.008.jpg
+-rw-rw-rw-  1 testUser  0 May 14 11:14 h.009.jpg
+-rw-rw-rw-  1 testUser  0 May 14 11:14 h.010.jpg
 
 ----- Test 80 -+- dir: h01 -+- date -----
-Tue Sep 26 16:21:32 CDT 2023
+Tue May 14 11:14:47 CDT 2024
 
 ----- Test 81 -+- dir: h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
 The dates of the files in the last ls -o should match the prior date command.
