@@ -63,7 +63,7 @@ EXIT_ERROR            = 1 # Internal error other than argparse - currently not u
 EXIT_ARGPARSE_ERROR   = 2 # The default code that argparse exits with if bad option.
 
 # List of date formats accepted to set file times with --touch.
-# They are same as the formats used by 'lsseq --onlyShow'.
+# They are same as the formats used by 'lsseq --only-show'.
 #
 # Note: We MUST list %y before %Y in each case below to make sure 
 # that, for example, "200731" get's interpreted as July 31, 2020
@@ -313,7 +313,7 @@ def main():
 
             if len(globResult) > 0 :
 
-                lsseqCmd = ['lsseq', '--looseNumSeparator', '--onlySequences', '--noErrorLists'] + globResult
+                lsseqCmd = ['lsseq', '--loose-num-separator', '--only-sequences', '--no-error-lists'] + globResult
                 lsseqResult = subprocess.run(lsseqCmd, capture_output=True, text=True)
                 if len(lsseqResult.stdout) > 0 :
                     if not args.silent :
@@ -556,7 +556,7 @@ def main():
         #
         # THIS IS an UNLIKELY OCCURANCE!
         #
-        # However users should pay attention to the --showBadPadding option of 'lsseq'
+        # However users should pay attention to the --show-bad-padding option of 'lsseq'
         # and if need be, first fix SEQ with 'fixseqpadding' before using this
         # util to get correct results in all circumstances.
         #
