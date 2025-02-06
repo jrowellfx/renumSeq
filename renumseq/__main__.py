@@ -2,7 +2,7 @@
 
 # 3-Clause BSD License
 # 
-# Copyright (c) 2008-2022, James Philip Rowell,
+# Copyright (c) 2008-2025, James Philip Rowell,
 # Alpha Eleven Incorporated
 # www.alpha-eleven.com
 # All rights reserved.
@@ -54,7 +54,7 @@ import glob
 # MINOR version for added functionality in a backwards compatible manner
 # PATCH version for backwards compatible bug fixes
 #
-VERSION = "1.4.2"
+VERSION = "2.0.0"
 
 PROG_NAME = "renumseq"
 
@@ -63,7 +63,7 @@ EXIT_ERROR            = 1 # Internal error other than argparse - currently not u
 EXIT_ARGPARSE_ERROR   = 2 # The default code that argparse exits with if bad option.
 
 # List of date formats accepted to set file times with --touch.
-# They are same as the formats used by 'lsseq --onlyShow'.
+# They are same as the formats used by 'lsseq --only-show'.
 #
 # Note: We MUST list %y before %Y in each case below to make sure 
 # that, for example, "200731" get's interpreted as July 31, 2020
@@ -176,7 +176,7 @@ def main():
         help="Rename the DESCRIPTIVE_NAME part of SEQ from its existing name to NEW_SEQNAME. \
         When using this option then the command will exit with an error unless \
         exactly one SEQ is being renamed and/or renumbered.")
-    p.add_argument("--replaceUnderscore", action="store_true",
+    p.add_argument("--replace-underscore", action="store_true",
         dest="fixUnderscore", default=False,
         help="in the case that SEQ uses an underscore ('_') \
         separating the filename from the frame number; then when renumbering \
@@ -198,7 +198,7 @@ def main():
         Note: the default action is to leave \
         the access time of the SEQ unchanged. ")
 
-    p.add_argument("--dryRun", "--dryrun", action="store_true",
+    p.add_argument("--dry-run", action="store_true",
         dest="dryRun", default=False,
         help="Don't renumber SEQ, just display how the \
         files would have been renumbered. Forces --verbose" )
@@ -312,7 +312,8 @@ def main():
             globResult = glob.glob(globPattern)
 
             if len(globResult) > 0 :
-                lsseqCmd = ['lsseq', '--looseNumSeparator', '--onlySequences', '--noErrorLists'] + globResult
+
+                lsseqCmd = ['lsseq', '--loose-num-separator', '--only-sequences', '--no-error-lists'] + globResult
                 lsseqResult = subprocess.run(lsseqCmd, capture_output=True, text=True)
                 if len(lsseqResult.stdout) > 0 :
                     if not args.silent :
@@ -555,7 +556,7 @@ def main():
         #
         # THIS IS an UNLIKELY OCCURANCE!
         #
-        # However users should pay attention to the --showBadPadding option of 'lsseq'
+        # However users should pay attention to the --show-bad-padding option of 'lsseq'
         # and if need be, first fix SEQ with 'fixseqpadding' before using this
         # util to get correct results in all circumstances.
         #
