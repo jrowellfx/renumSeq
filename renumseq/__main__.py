@@ -54,7 +54,7 @@ import glob
 # MINOR version for added functionality in a backwards compatible manner
 # PATCH version for backwards compatible bug fixes
 #
-VERSION = "1.4.1"
+VERSION = "1.4.2"
 
 PROG_NAME = "renumseq"
 
