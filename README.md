@@ -29,14 +29,14 @@ there is an option to force `renumseq` to overwrite those files if desired.
 `renumseq` doesn't need to make temporary copies of files during the renumbering
 (it does a move of the file), so it's fast.
 
-`renumseq` also has a useful option, called `--replaceUnderscore`
+`renumseq` also has a useful option, called `--replace-underscore`
 that changes any underscore-separators (separating the filename from the
 frame-number) with dot-separators, like this:  
 
 `filename_[n-m].extension` -> `filename.[n-m].extension`
 
 `Protip`: If all you want to do is switch the separator from an underscore to a dot, then
-use a zero offset, plus the `--replaceUnderscore` argument.
+use a zero offset, plus the `--replace-underscore` argument.
 
 ## Installing renumseq
 
