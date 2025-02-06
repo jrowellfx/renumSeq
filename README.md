@@ -41,7 +41,7 @@ use a zero offset, plus the `--replaceUnderscore` argument.
 ## Installing renumseq
 
 ```
-python3 -m pip install renumSeq
+python3 -m pip install renumSeq --upgrade
 ```
 
 ## Testing renumseq
