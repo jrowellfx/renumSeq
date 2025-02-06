@@ -75,11 +75,6 @@ source setUpToTest.sourceMe
 
 python3 -m build
 
-[NOTE: As of 2024/05/14, when building v1.4.1, for some reason the .tar.gz file was
-created with all lowercase (i.e., renumseq-1.4.1.tar.gz instead of renumSeq-1.4.1.tar.gz)
-which broke my twine upload to pypi. So, until I figure out why this happened, manually
-rename the file to be proper camelCase.]
-
 # Change next line to whatever latest version is. Then use
 # __token__ and password for PyPi account.
 # ...or not needed if .pypirc is installed in $HOME
@@ -88,8 +83,9 @@ rename the file to be proper camelCase.]
 #
 #   python3 -m twine upload --repository testpypi dist/renumseq-x.x.x*
 #
-# or FOR REAL
-python3 -m twine upload --repository pypi dist/renumSeq-x.x.x*
+# or FOR REAL (Double check the output of the backquoted line below before running).
+#
+python3 -m twine upload --repository pypi `ls dist | sort | tail -2`
 
 # NOTE! Sometimes you have to wait 5 minutes or so for
 # the update to take effect on the pipy server before the install
