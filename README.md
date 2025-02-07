@@ -146,7 +146,7 @@ The second one contains only changes needed for the updates to `renumseq`.
 ## Example `sed.script` usage.
 
 Download one or both of the sed scripts named above. Make sure you have runsed installed
-on your system. (Example applied to usage of lsseq but it's the same idea for renumseq.)
+on your system. (Example applied to usage of `lsseq` but it's the same idea for `renumseq`.)
 
 ```
 $ cd ~/bin
