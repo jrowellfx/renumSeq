@@ -2,7 +2,7 @@
 
 `renumseq` is a Unix/Linux command-line-utility for renumbering image-sequences
 which are most
-typically used in CG post-production.
+typically used in VFX post-production or CG animation production.
 
 `renumseq` allows you to renumber sequences with an offset or give them a new `start` frame.
 It also allows you adjust the padding of the frame numbers.
