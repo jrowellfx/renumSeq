@@ -133,7 +133,7 @@ of the utilities.
 In this case, in order to assist in switching to the
 current `MAJOR` point release some `sed` scripts have been provided that should make
 the transition quite painless. Especially if you make use
-of [`runsed`](https://github.com/jrowellfx/runsed) which if you haven't used it before,
+of [`runsed`](https://github.com/jrowellfx/vfxTdUtils) which if you haven't used it before,
 now is the time, it's extremely helpful.
 
 There are two files provided at the root-level of the repo, namely:
@@ -145,7 +145,7 @@ The second one contains only changes needed for the updates to `renumseq`.
 
 ## Example `sed.script` usage.
 
-Download one or both of the sed scripts named above. Make sure you have runsed installed
+Download one or both of the sed scripts named above. Make sure you have `runsed` installed
 on your system. (Example applied to usage of `lsseq` but it's the same idea for `renumseq`.)
 
 ```
