@@ -2,7 +2,7 @@
 
 # 3-Clause BSD License
 #
-# Copyright (c) 2008-2023, James Philip Rowell,
+# Copyright (c) 2008-2025, James Philip Rowell,
 # Alpha Eleven Incorporated
 # www.alpha-eleven.com
 # All rights reserved.
@@ -39,7 +39,7 @@
 # test_renumseq - Run the renumseq regression tests.
 
 usage_exit() {
-    echo "Usage: ${0##*/} [-h | --help] [--testSystem-renumseq]"
+    echo "Usage: ${0##*/} [-h | --help] [--test-system-renumseq]"
     if [ "$1" = help ]; then
 	cat - <<@eof
 
@@ -49,7 +49,7 @@ ${0##*/} Run regression tests on renumseq. Must be run in the
 Options:
 
  -h, --help         show this help and exit
- --testSystem-renumseq run the regression tests on the version of
+ --test-system-renumseq run the regression tests on the version of
                     renumseq installed on the system. Output test
                     results to appropriatly named file.
 
@@ -70,7 +70,7 @@ do
         -h|--help) usage_exit help
         ;;
 
-        --testSystem-renumseq) TEST_SYSTEM_RENUMSEQ=yes
+        --test-system-renumseq) TEST_SYSTEM_RENUMSEQ=yes
              shift
         ;;
 
