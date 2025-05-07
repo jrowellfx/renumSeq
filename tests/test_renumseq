@@ -281,7 +281,7 @@ i01 renumseq --pad 3 -v --start 5 --rename nono    noSuchSeq.[01-10].jpg
 i01 lsseq --no-error-lists --only-sequences
 i01 renumseq --pad 3 -v --start 50 --rename n.11.m_v001_   bbb.[1-10].jpg
 i01 lsseq --no-error-lists --only-sequences
-.   lsseq --prepend-path-rel --no-error-lists z01 \'z 1\' \'z 2\'
+.   lsseq --prepend-path-rel --no-error-lists z01 'z 1' 'z 2'
 EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`
