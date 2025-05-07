@@ -142,13 +142,25 @@ rm -rf $TEST_DIR/testdir/*
 # Create list of test directories needed.
 # Then touch the file names to make testfiles.
 # Note: pwd should still be $TEST_DIR
+# Note: This can create files and/or dirs with spaces in filenames
 #
-cat createTestData/create.?Test.files | sed -e '1,$ s/\/[^\/]*$//' | sort -u > $tmpfile
-mkdir -p `cat $tmpfile`
-touch `cat createTestData/create.?Test.files`
-chmod 666 `cat createTestData/create.?Test.files`
+cat createTestData/create.?Test.files \
+    | sed -e '/^[[:space:]]*$/d' \
+    | sed -e '1,$ s/\/[^\/]*$//' \
+    | sort -u \
+    | tr '\n' '\0' \
+    > $tmpfile
+cat $tmpfile | xargs -0 mkdir -p
+#
+cat createTestData/create.?Test.files \
+    | sed -e '/^[[:space:]]*$/d' \
+    | tr '\n' '\0' \
+    > $tmpfile
+cat $tmpfile | xargs -0 touch
+cat $tmpfile | xargs -0 chmod 666
 
-## cleanup
+#exit
+#cleanup
 
 # Timestamp the files to be older so that when we renumber
 # them we can use --touch to visually check the results more easily (ls -lt)
@@ -269,6 +281,7 @@ i01 renumseq --pad 3 -v --start 5 --rename nono    noSuchSeq.[01-10].jpg
 i01 lsseq --no-error-lists --only-sequences
 i01 renumseq --pad 3 -v --start 50 --rename n.11.m_v001_   bbb.[1-10].jpg
 i01 lsseq --no-error-lists --only-sequences
+.   lsseq --prepend-path-rel --no-error-lists z01 \'z 1\' \'z 2\'
 EOF
 
 export NUM_TESTS=`wc -l < $tmpArgs`
@@ -289,6 +302,7 @@ while true; do
     echo --- Test $i of $NUM_TESTS ---
     echo ----- Test $i -+- dir: $workingDir -+- $cmd ${args[@]} ----- >> $TEST_DIR/$TEST_OUT_FILENAME
     cd $TEST_DIR/testdir/$workingDir
+    **** jpr left off here, need xargs next line? 
     $cmd ${args[@]} >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
     retVal=$?
     if [ $retVal -ne 0 ]; then
