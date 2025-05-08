@@ -100,11 +100,15 @@ unalias renumseq > /dev/null 2>&1
 unalias rm > /dev/null 2>&1
 
 tmpArgs=/tmp/tmpARGS_RENUM.$$
-tmpfile=/tmp/tmpTEST_RENUM.$$
+tmpTestCmdFile=/tmp/tmpTESTCMDFILE_RENUM.$$
+tmpFile=/tmp/tmpTEST_RENUM.$$
+tmpLine=/tmp/tmpLINE_RENUM.$$
 
 cleanup() {
     /bin/rm $tmpArgs > /dev/null 2>&1
-    /bin/rm $tmpfile > /dev/null 2>&1
+    /bin/rm $tmpTestCmdFile > /dev/null 2>&1
+    /bin/rm $tmpFile > /dev/null 2>&1
+    /bin/rm $tmpLine > /dev/null 2>&1
     exit 0
 }
 
@@ -149,15 +153,15 @@ cat createTestData/create.?Test.files \
     | sed -e '1,$ s/\/[^\/]*$//' \
     | sort -u \
     | tr '\n' '\0' \
-    > $tmpfile
-cat $tmpfile | xargs -0 mkdir -p
+    > $tmpFile
+cat $tmpFile | xargs -0 mkdir -p
 #
 cat createTestData/create.?Test.files \
     | sed -e '/^[[:space:]]*$/d' \
     | tr '\n' '\0' \
-    > $tmpfile
-cat $tmpfile | xargs -0 touch
-cat $tmpfile | xargs -0 chmod 666
+    > $tmpFile
+cat $tmpFile | xargs -0 touch
+cat $tmpFile | xargs -0 chmod 666
 
 #exit
 #cleanup
@@ -177,133 +181,163 @@ find testdir -type f -exec touch -t 199201121330 \{\} \;
 # The second is the command to run.
 # The rest are args to the command.
 #
-cat << EOF > $tmpArgs
-.   uname
-.   lsseq --version                         # Double check which version being used for this test.
-.   lsseq -RPl --no-error-lists --show-bad-padding -m         # List all sequences in the testdir
-.   renumseq                                # Run with no args - should do nothing
-.   renumseq --version                      # MUST increment with each update/bug fix, corresp w/ release.
-.   renumseq --help                         # To keep track of changes with help, plus check if correct
-.   renumseq      null/foo.jpg              # No args - warning issued -> nothing to do.
-.   renumseq -o 1 null/foo.jpg              # Not a sequence
-.   renumseq -o 1 null/foo.[bar].jpg        # Not a sequence
-.   renumseq -o 1 null/foo.[a-b].jpg        # Not a sequence
-.   renumseq -o 1 null/foo.[-a-b].jpg       # Not a sequence
-.   renumseq -o 1 null/foo.[-a--b].jpg      # Not a sequence
-.   renumseq -o 1 null/foo.[xx-a-b].jpg     # Not a sequence
-.   renumseq -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg  # Invalid range, [A-B] but A > B
-.   renumseq -s -o 1 null/foo.jpg           # Repeat all those tests but silent
-.   renumseq -s -o 1 null/foo.[bar].jpg     #    ditto
-.   renumseq -s -o 1 null/foo.[a-b].jpg     #    ditto
-.   renumseq -s -o 1 null/foo.[-a-b].jpg    #    ditto
-.   renumseq -s -o 1 null/foo.[-a--b].jpg   #    ditto
-.   renumseq -s -o 1 null/foo.[xx-a-b].jpg  #    ditto
-.   renumseq -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg # ditto
-a03 lsseq -RPl --no-error-lists --show-bad-padding -m       # Record sequence before renumbering
-a03 renumseq -o 30 a.[0100-0110].jpg        # This should error out
-a03 renumseq -s -o 30 a.[0100-0110].jpg     # Same with this, but silent.
-a03 ls -o                                   # regular ls to see dates of files
-a03 lsseq -RPl --no-error-lists --show-bad-padding -m       # Seq should be the same as above.
-a03 renumseq -v -o 30 --force --touch 20010601-1230 a.[0100-0110].jpg # Now they should renumber.
-a03 lsseq -RPl --no-error-lists --show-bad-padding -m       # Note new range.
-a03 ls -o                                                   # Note that one files was not overwritten due to missing file in renumed seq
-a02 ls -o                                                   # This next test was carefully laid out so that the highest x120 goes to x140
-a02 lsseq -RPl --no-error-lists --show-bad-padding -m       # and the lowest x100 goes into the vacated x120 slot. Furthermore x105 is
-a02 renumseq -v -o 20 --touch 20010601-1300 a.[0100-0120].jpg # missing leaving x0125 untouched after the renum.
-a02 lsseq -RPl --no-error-lists --show-bad-padding -m       # Show new seq range.
-a02 ls -o                                                   # Note all were renumbered EXCEPT x125
-a01 ls -o                                                   # A list 100-140, 101 missing, 134-139 missing.
-a01 lsseq -RPl --no-error-lists --show-bad-padding -m       # Move them all 100, so should leave 140 unmoved,
-a01 renumseq -o 100 --touch 20010602 a.[0100-0133].jpg      # and 201 should be missing
-a01 lsseq -RPl --no-error-lists --show-bad-padding -m       # and range should go up to 233. missing 141-199 also.
-a01 ls -o
-.   lsseq -RPl --no-error-lists --show-bad-padding -m b01 x01 y01
-.   renumseq -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg
-.   lsseq -RPl --no-error-lists --show-bad-padding -m b01 x01 y01
-.   lsseq -RPl --no-error-lists --show-bad-padding -m a02
-.   renumseq -v -o 10 a02/a.[0120-0140].jpg 
-.   lsseq -RPl --no-error-lists --show-bad-padding -m a02
-.   renumseq -v -o -10 a02/a.[0130-0150].jpg 
-.   lsseq -RPl --no-error-lists --show-bad-padding -m a02
-.   renumseq --verbose -o -1 --pad 3 a02/a.[0120-0140].jpg 
-.   lsseq -RPl --no-error-lists --show-bad-padding -m a02
-.   lsseq -RPl --no-error-lists --show-bad-padding -m d01
-.   renumseq -v -o 20 /d01/d_[0100-0120].jpg
-.   lsseq -RPl --no-error-lists --show-bad-padding -m d01
-.   renumseq -v d01/d_[0120-0140].jpg
-.   renumseq -v --replace-underscore d01/d_[0120-0140].jpg
-.   lsseq -RPl --no-error-lists --show-bad-padding -m d01
-e01 lsseq -RPl --no-error-lists --show-bad-padding -m
-e01 renumseq -v --replace-underscore e_[5-9999].jpg
-e01 lsseq -RPl --no-error-lists --show-bad-padding -m
-.   renumseq -v --replace-underscore --pad 4 e02/e_[5-9999].jpg
-.   renumseq -v --replace-underscore --pad 4 e03/e_[5-10005].jpg
-.   lsseq -ZRPl d01
-.   lsseq -ZRPl d02
-.   renumseq -o 20 d02/d.[hi]_[0100-0120].jpg
-.   lsseq -ZRPl d02
-.   renumseq --replace-underscore d02/d.[hi]_[0120-0140].jpg
-.   lsseq -ZRPl d02
-.   lsseq -ZRPl f01
-.   renumseq -v --pad 4 f01/f_[05-1005].jpg
-g01 lsseq -n
-g01 renumseq -v -o -400 g.[0530-0547].bgeo.gz
-g01 lsseq -n
-h01 ls -o
-h01 renumseq --start 101 --touch xxxx h.[001-010].jpg
-h01 renumseq --start 101 --touch 2010 h.[001-010].jpg
-h01 renumseq --start 101 --touch 0101 h.[001-010].jpg
-h01 renumseq --start 101 --touch 20100101 h.[001-010].jpg
-h01 ls -o
-h01 renumseq --start 1 --touch -- h.[101-110].jpg
-h01 ls -o
-h01 date
-h01 echo The dates of the files in the last ls -o should match the prior date command.
-h01 renumseq --foobar h.[001-010].jpg
-h01 renumseq --start 101 --touch 20200631 h.[001-010].jpg
-h01 renumseq --start 101 --touch 20200630 h.[001-010].jpg
-h01 ls -o
-h01 renumseq --start 1 --touch 200730 h.[101-110].jpg
-h01 ls -o
-i01 lsseq --no-error-lists
-i01 renumseq --dry-run --start 100 --rename -- aaa.[1-10].jpg
-i01 renumseq --dry-run --start 100 --rename aaa.[1-10].jpg
-i01 renumseq --dry-run --start 100 --rename aaa.[1-10].jpg bbb.[1-10].jpg
-i01 renumseq --dry-run --start 100 --rename xxx aaa.[1-10].jpg bbb.[1-10].jpg
-i01 renumseq --pad 4 --dry-run --start 100 --rename xxx aaa.[1-10].jpg
-i01 renumseq --pad 4          --start 100 --rename xxx aaa.[1-10].jpg
-i01 renumseq --pad 3 --dry-run --start  20 --rename xxx ccc.[01-10].jpg
-.   renumseq         -v --start 5 --rename g01/yyy i01/eee.[0001-0010].jpg
-.   renumseq         -v --start 5 --rename yyy     i01/eee.[0001-0010].jpg
-.   renumseq --pad 3 -v --start 5 --rename zzz     i01/ccc.[01-10].jpg
-i01 renumseq --pad 3 -v --start 5 --rename nono    noSuchSeq.[01-10].jpg
-.   renumseq --pad 3 -v --start 5 --rename nono    i01/noSuchSeq.[01-10].jpg
-i01 lsseq --no-error-lists --only-sequences
-i01 renumseq --pad 3 -v --start 50 --rename n.11.m_v001_   bbb.[1-10].jpg
-i01 lsseq --no-error-lists --only-sequences
-.   lsseq --prepend-path-rel --no-error-lists z01 'z 1' 'z 2'
+#
+#cat << EOF > $tmpTestCmdFile
+#.   uname
+#.   lsseq --version                         # Double check which version being used for this test.
+#.   lsseq -RPl --no-error-lists --show-bad-padding -m         # List all sequences in the testdir
+#.   renumseq                                # Run with no args - should do nothing
+#.   renumseq --version                      # MUST increment with each update/bug fix, corresp w/ release.
+#.   renumseq --help                         # To keep track of changes with help, plus check if correct
+#.   renumseq      null/foo.jpg              # No args - warning issued -> nothing to do.
+#.   renumseq -o 1 null/foo.jpg              # Not a sequence
+#.   renumseq -o 1 null/foo.[bar].jpg        # Not a sequence
+#.   renumseq -o 1 null/foo.[a-b].jpg        # Not a sequence
+#.   renumseq -o 1 null/foo.[-a-b].jpg       # Not a sequence
+#.   renumseq -o 1 null/foo.[-a--b].jpg      # Not a sequence
+#.   renumseq -o 1 null/foo.[xx-a-b].jpg     # Not a sequence
+#.   renumseq -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg  # Invalid range, [A-B] but A > B
+#.   renumseq -s -o 1 null/foo.jpg           # Repeat all those tests but silent
+#.   renumseq -s -o 1 null/foo.[bar].jpg     #    ditto
+#.   renumseq -s -o 1 null/foo.[a-b].jpg     #    ditto
+#.   renumseq -s -o 1 null/foo.[-a-b].jpg    #    ditto
+#.   renumseq -s -o 1 null/foo.[-a--b].jpg   #    ditto
+#.   renumseq -s -o 1 null/foo.[xx-a-b].jpg  #    ditto
+#.   renumseq -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg # ditto
+#a03 lsseq -RPl --no-error-lists --show-bad-padding -m       # Record sequence before renumbering
+#a03 renumseq -o 30 a.[0100-0110].jpg        # This should error out
+#a03 renumseq -s -o 30 a.[0100-0110].jpg     # Same with this, but silent.
+#a03 ls -o                                   # regular ls to see dates of files
+#a03 lsseq -RPl --no-error-lists --show-bad-padding -m       # Seq should be the same as above.
+#a03 renumseq -v -o 30 --force --touch 20010601-1230 a.[0100-0110].jpg # Now they should renumber.
+#a03 lsseq -RPl --no-error-lists --show-bad-padding -m       # Note new range.
+#a03 ls -o                                                   # Note that one files was not overwritten due to missing file in renumed seq
+#a02 ls -o                                                   # This next test was carefully laid out so that the highest x120 goes to x140
+#a02 lsseq -RPl --no-error-lists --show-bad-padding -m       # and the lowest x100 goes into the vacated x120 slot. Furthermore x105 is
+#a02 renumseq -v -o 20 --touch 20010601-1300 a.[0100-0120].jpg # missing leaving x0125 untouched after the renum.
+#a02 lsseq -RPl --no-error-lists --show-bad-padding -m       # Show new seq range.
+#a02 ls -o                                                   # Note all were renumbered EXCEPT x125
+#a01 ls -o                                                   # A list 100-140, 101 missing, 134-139 missing.
+#a01 lsseq -RPl --no-error-lists --show-bad-padding -m       # Move them all 100, so should leave 140 unmoved,
+#a01 renumseq -o 100 --touch 20010602 a.[0100-0133].jpg      # and 201 should be missing
+#a01 lsseq -RPl --no-error-lists --show-bad-padding -m       # and range should go up to 233. missing 141-199 also.
+#a01 ls -o
+#.   lsseq -RPl --no-error-lists --show-bad-padding -m b01 x01 y01
+#.   renumseq -v -o 100 b01/b.[555].jpg x01/x.[-11--03].jpg y01/y.[-011-0002].jpg
+#.   lsseq -RPl --no-error-lists --show-bad-padding -m b01 x01 y01
+#.   lsseq -RPl --no-error-lists --show-bad-padding -m a02
+#.   renumseq -v -o 10 a02/a.[0120-0140].jpg 
+#.   lsseq -RPl --no-error-lists --show-bad-padding -m a02
+#.   renumseq -v -o -10 a02/a.[0130-0150].jpg 
+#.   lsseq -RPl --no-error-lists --show-bad-padding -m a02
+#.   renumseq --verbose -o -1 --pad 3 a02/a.[0120-0140].jpg 
+#.   lsseq -RPl --no-error-lists --show-bad-padding -m a02
+#.   lsseq -RPl --no-error-lists --show-bad-padding -m d01
+#.   renumseq -v -o 20 /d01/d_[0100-0120].jpg
+#.   lsseq -RPl --no-error-lists --show-bad-padding -m d01
+#.   renumseq -v d01/d_[0120-0140].jpg
+#.   renumseq -v --replace-underscore d01/d_[0120-0140].jpg
+#.   lsseq -RPl --no-error-lists --show-bad-padding -m d01
+#e01 lsseq -RPl --no-error-lists --show-bad-padding -m
+#e01 renumseq -v --replace-underscore e_[5-9999].jpg
+#e01 lsseq -RPl --no-error-lists --show-bad-padding -m
+#.   renumseq -v --replace-underscore --pad 4 e02/e_[5-9999].jpg
+#.   renumseq -v --replace-underscore --pad 4 e03/e_[5-10005].jpg
+#.   lsseq -ZRPl d01
+#.   lsseq -ZRPl d02
+#.   renumseq -o 20 d02/d.[hi]_[0100-0120].jpg
+#.   lsseq -ZRPl d02
+#.   renumseq --replace-underscore d02/d.[hi]_[0120-0140].jpg
+#.   lsseq -ZRPl d02
+#.   lsseq -ZRPl f01
+#.   renumseq -v --pad 4 f01/f_[05-1005].jpg
+#g01 lsseq -n
+#g01 renumseq -v -o -400 g.[0530-0547].bgeo.gz
+#g01 lsseq -n
+#h01 ls -o
+#h01 renumseq --start 101 --touch xxxx h.[001-010].jpg
+#h01 renumseq --start 101 --touch 2010 h.[001-010].jpg
+#h01 renumseq --start 101 --touch 0101 h.[001-010].jpg
+#h01 renumseq --start 101 --touch 20100101 h.[001-010].jpg
+#h01 ls -o
+#h01 renumseq --start 1 --touch -- h.[101-110].jpg
+#h01 ls -o
+#h01 date
+#h01 echo The dates of the files in the last ls -o should match the prior date command.
+#h01 renumseq --foobar h.[001-010].jpg
+#h01 renumseq --start 101 --touch 20200631 h.[001-010].jpg
+#h01 renumseq --start 101 --touch 20200630 h.[001-010].jpg
+#h01 ls -o
+#h01 renumseq --start 1 --touch 200730 h.[101-110].jpg
+#h01 ls -o
+#i01 lsseq --no-error-lists
+#i01 renumseq --dry-run --start 100 --rename -- aaa.[1-10].jpg
+#i01 renumseq --dry-run --start 100 --rename aaa.[1-10].jpg
+#i01 renumseq --dry-run --start 100 --rename aaa.[1-10].jpg bbb.[1-10].jpg
+#i01 renumseq --dry-run --start 100 --rename xxx aaa.[1-10].jpg bbb.[1-10].jpg
+#i01 renumseq --pad 4 --dry-run --start 100 --rename xxx aaa.[1-10].jpg
+#i01 renumseq --pad 4          --start 100 --rename xxx aaa.[1-10].jpg
+#i01 renumseq --pad 3 --dry-run --start  20 --rename xxx ccc.[01-10].jpg
+#.   renumseq         -v --start 5 --rename g01/yyy i01/eee.[0001-0010].jpg
+#.   renumseq         -v --start 5 --rename yyy     i01/eee.[0001-0010].jpg
+#.   renumseq --pad 3 -v --start 5 --rename zzz     i01/ccc.[01-10].jpg
+#i01 renumseq --pad 3 -v --start 5 --rename nono    noSuchSeq.[01-10].jpg
+#.   renumseq --pad 3 -v --start 5 --rename nono    i01/noSuchSeq.[01-10].jpg
+#i01 lsseq --no-error-lists --only-sequences
+#i01 renumseq --pad 3 -v --start 50 --rename n.11.m_v001_   bbb.[1-10].jpg
+#i01 lsseq --no-error-lists --only-sequences
+#.   lsseq --prepend-path-rel --no-error-lists z01 'z 1' 'z 2'
+#EOF
+
+cat << EOF > $tmpTestCmdFile
+.   lsseq --prepend-path-rel --no-error-lists z01 "z 1" "z 2" # Test comment
 EOF
 
-export NUM_TESTS=`wc -l < $tmpArgs`
+export NUM_TESTS=`wc -l < $tmpTestCmdFile`
 
 echo ------ Begin Tests ------ > $TEST_DIR/$TEST_OUT_FILENAME
 
 set -f # Turn off globbing
 i=1
 while true; do
-    declare -a args=(`sed -n -e "$i p" $tmpArgs | sed -e 's/#.*//' `)
-    if [ ${#args[@]} -eq 0 ]; then
+    ### declare -a args=(`sed -n -e "$i p" $tmpTestCmdFile | sed -e 's/#.*//' `)
+    ### line=(`sed -n -e "$i p" $tmpTestCmdFile | sed -e 's/#.*//' `)
+    ### sed -n -e "$i p" $tmpTestCmdFile | sed -e 's/#.*//' | sed -e 's/^\S*\s*\S*\s*//' > $tmpLine
+    sed -n -e "$i p" $tmpTestCmdFile | sed -e 's/#.*//' > $tmpLine
+  echo -n tmpLine is " "
+  cat $tmpLine
+    declare -a cmdLine=(`cat $tmpLine`)
+
+    ###if [ ${#line[@]} -eq 0 ]; then
+    ###if [ ${#args[@]} -eq 0 ]; then
+
+    if [ ${#cmdLine[@]} -eq 0 ]; then
         break;
     fi
-    workingDir=${args[0]}
-    cmd=${args[1]}
-    args=(${args[@]:2})
+    workingDir=${cmdLine[0]}
+    cmd=${cmdLine[1]}
+
+    ### workingDir=${args[0]}
+    ### cmd=${args[1]}
+    ### args=(${args[@]:2})
+    ### workingDir=${line[0]}
+    ### cmd=${line[1]}
+    #args=(eval "echo ${line[@]:2}")
+    #args=(${line[@]:2})
+
+    sed -e 's/^\S*\s*\S*\s*//' < $tmpLine > $tmpArgs
+
+    testArgs=( `cat $tmpArgs` )
+    echo ${testArgs[@]}
+    for aaa in ${testArgs[@]}
+    do
+        echo "    " $aaa
+    done
     echo "" >> $TEST_DIR/$TEST_OUT_FILENAME
     echo --- Test $i of $NUM_TESTS ---
-    echo ----- Test $i -+- dir: $workingDir -+- $cmd ${args[@]} ----- >> $TEST_DIR/$TEST_OUT_FILENAME
+    echo ----- Test $i -+- dir: $workingDir -+- $cmd ${testArgs[@]} ----- >> $TEST_DIR/$TEST_OUT_FILENAME
     cd $TEST_DIR/testdir/$workingDir
-    **** jpr left off here, need xargs next line? 
-    $cmd ${args[@]} >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
+    $cmd ${testArgs[@]} >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
     retVal=$?
     if [ $retVal -ne 0 ]; then
         echo "--+--  $cmd returned non-zero error code: $retVal  --+--" >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
@@ -312,8 +346,10 @@ while true; do
 done
 set +f # Turn globbing back on
 
+exit
+
 sed -e "1,$ s-$TEST_DIR-/...absPathToRepo.../tests-g" < $TEST_DIR/$TEST_OUT_FILENAME | \
-    sed -e "1,$ s/$USER/testUser/g" > $tmpfile
-expand < $tmpfile | sed -e '1,$ s/ *$//' > $TEST_DIR/$TEST_OUT_FILENAME
+    sed -e "1,$ s/$USER/testUser/g" > $tmpFile
+expand < $tmpFile | sed -e '1,$ s/ *$//' > $TEST_DIR/$TEST_OUT_FILENAME
 
 cleanup
