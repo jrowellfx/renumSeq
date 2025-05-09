@@ -291,10 +291,8 @@ i01 lsseq --no-error-lists --only-sequences
 EOF
 
 # Following is simple case for testing new approach to handling spaces in test args.
-#.   lsseq --prepend-path-rel --no-error-lists z01 'z 1' 'z 2' # Use single quotes.
-### g01 lsseq -n ### Fails to grab '-n' for some reason. JPR
 #cat << EOF > $tmpTestCmdFile
-#g01 lsseq -c -n
+#.   lsseq --prepend-path-rel --no-error-lists z01 'z 1' 'z 2' # Use single quotes.
 #EOF
 
 export NUM_TESTS=`wc -l < $tmpTestCmdFile`
@@ -336,7 +334,7 @@ while true; do
     NUM_ELEMENTS=${#testArgs[@]}
     for (( elemIndex=0;elemIndex<$NUM_ELEMENTS;elemIndex++ )); do
         # DO NOT USE 'echo' NEXT LINE! doesn't handle a '-n' being passed to it.
-        printf '%s\n' ${testArgs[${elemIndex}]} >> $tmpArgs
+        printf '%s\n' "${testArgs[${elemIndex}]}" >> $tmpArgs
     done
 
     # Use xargs to allow us to pass args with spaces in the names to the test $cmd being run.
