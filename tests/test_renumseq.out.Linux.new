@@ -1,0 +1,6 @@
+------ Begin Tests ------
+
+----- Test 1 -+- dir: . -+- lsseq --prepend-path-rel --no-error-lists z01 'z 1' 'z 2' -----
+z 1/zzz.[001-011].jpg
+z 2/z z.[001-011].jpg
+z01/z z.[001-011].jpg
