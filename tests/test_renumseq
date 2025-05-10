@@ -42,7 +42,7 @@ tmpArgs=/tmp/tmpARGS_RENUM.$$
 tmpTestCmdFile=/tmp/tmpTESTCMDFILE_RENUM.$$
 tmpFile=/tmp/tmpTEST_RENUM.$$
 tmpLine=/tmp/tmpLINE_RENUM.$$
-tmpJobLog=/tmp/tmpJOBLOG_RENUM.$$
+### tmpJobLog=/tmp/tmpJOBLOG_RENUM.$$
 #
 cleanupExit() {
     /bin/rm $tmpArgs > /dev/null 2>&1
@@ -301,9 +301,9 @@ EOF
 
 # Following is simple case for testing new approach to handling spaces in test args.
 #.   lsseq --prepend-path-rel --no-error-lists z01 'z 1' 'z 2' # Use single quotes.
-cat << EOF2 > $tmpTestCmdFile
-h01 renumseq --start 101 --touch xxxx h.[001-010].jpg
-EOF2
+#cat << EOF2 > $tmpTestCmdFile
+#h01 renumseq --start 101 --touch xxxx h.[001-010].jpg
+#EOF2
 
 export NUM_TESTS=`wc -l < $tmpTestCmdFile`
 
@@ -350,7 +350,12 @@ while true; do
     # Use xargs to allow us to pass args with spaces in the names to the test $cmd being run.
     #
     # tr '\n' '\0' < $tmpArgs | xargs -0 $cmd >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
-    tr '\n' '\0' < $tmpArgs | parallel --joblog $tmpJobLog -0 $cmd {} >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
+    # tr '\n' '\0' < $tmpArgs | parallel --joblog $tmpJobLog --null --xargs $cmd  >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
+
+    # Use mapfile to allow us to pass args with spaces in the names to the test $cmd being run.
+    #
+    mapfile -t < "$tmpArgs"
+    $cmd "${MAPFILE[@]}" >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
     retVal=$?
     if [ $retVal -ne 0 ]; then
         echo "--+--  $cmd returned non-zero error code: $retVal  --+--" >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
