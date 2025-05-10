@@ -38,6 +38,30 @@
 
 # test_renumseq - Run the renumseq regression tests.
 
+tmpArgs=/tmp/tmpARGS_RENUM.$$
+tmpTestCmdFile=/tmp/tmpTESTCMDFILE_RENUM.$$
+tmpFile=/tmp/tmpTEST_RENUM.$$
+tmpLine=/tmp/tmpLINE_RENUM.$$
+tmpJobLog=/tmp/tmpJOBLOG_RENUM.$$
+#
+cleanupExit() {
+    /bin/rm $tmpArgs > /dev/null 2>&1
+    /bin/rm $tmpTestCmdFile > /dev/null 2>&1
+    /bin/rm $tmpFile > /dev/null 2>&1
+    /bin/rm $tmpLine > /dev/null 2>&1
+    exit $1
+}
+#
+trap cleanupExit INT
+
+unalias parallel > /dev/null 2>&1
+which parallel   > /dev/null 2>&1
+exitStatus=$?
+if [ $exitStatus -ne 0 ]; then # Exit status is number of failed arguments to 'which'.
+    echo "Error: ${0##*/} requires the command 'parallel' to be installed on the system."
+    cleanupExit 1
+fi
+
 usage_exit() {
     echo "Usage: ${0##*/} [-h | --help] [--test-system-renumseq]"
     if [ "$1" = help ]; then
@@ -61,7 +85,7 @@ Options:
 TEST_SYSTEM_RENUMSEQ=no
 
 #
-# Parse options.  Stop when you get to the file list.
+# Parse options.
 #
 shopt -s extglob
 while :
@@ -90,7 +114,7 @@ export TEST_DIR=`pwd`
 
 if [[ `basename $TEST_DIR` != 'tests' ]]; then
     echo $0: error: not running from tests directory, aborted.
-    exit 1
+    cleanupExit 1
 fi
 
 export REPO_DIR=`dirname $TEST_DIR`
@@ -98,21 +122,6 @@ export REPO_DIR=`dirname $TEST_DIR`
 unalias lsseq > /dev/null 2>&1
 unalias renumseq > /dev/null 2>&1
 unalias rm > /dev/null 2>&1
-
-tmpArgs=/tmp/tmpARGS_RENUM.$$
-tmpTestCmdFile=/tmp/tmpTESTCMDFILE_RENUM.$$
-tmpFile=/tmp/tmpTEST_RENUM.$$
-tmpLine=/tmp/tmpLINE_RENUM.$$
-
-cleanup() {
-    /bin/rm $tmpArgs > /dev/null 2>&1
-    /bin/rm $tmpTestCmdFile > /dev/null 2>&1
-    /bin/rm $tmpFile > /dev/null 2>&1
-    /bin/rm $tmpLine > /dev/null 2>&1
-    exit 0
-}
-
-trap cleanup INT
 
 TEST_OUT_FILENAME=test_renumseq.out.`uname`.new
 
@@ -133,13 +142,13 @@ echo "Test is using " `which renumseq`
 #
 if [ -z "$REPO_DIR" ]; then
     echo $0: error: REPO_DIR was empty, dangerous recursive rm avoided.
-    exit 1
+    cleanupExit 1
 elif [[ "$REPO_DIR" == "/" ]]; then
     echo $0: error: REPO_DIR set to root, dangerous recursive rm avoided.
-    exit 1
+    cleanupExit 1
 elif [[ `basename $REPO_DIR` != 'renumSeq' ]]; then
     echo $0: error: REPO_DIR might not be set to renumSeq repo, dangerous recursive rm avoided.
-    exit 1
+    cleanupExit 1
 fi
 rm -rf $TEST_DIR/testdir/*
 
@@ -163,8 +172,8 @@ cat createTestData/create.?Test.files \
 cat $tmpFile | xargs -0 touch
 cat $tmpFile | xargs -0 chmod 666
 
-#exit
-#cleanup
+#cleanupExit
+#cleanupExit
 
 # Timestamp all the test files to be a fixed date so that their file times are 
 # not dependent upon the date set when running the test. This gives us
@@ -174,7 +183,7 @@ cat $tmpFile | xargs -0 chmod 666
 #
 find testdir -type f -exec touch -t 199201121330 \{\} \;
 
-# exit 0
+# cleanupExit 0
 
 # The following are tests. One test per line.
 # The first item on a line is the directory relative to
@@ -291,9 +300,10 @@ i01 lsseq --no-error-lists --only-sequences
 EOF
 
 # Following is simple case for testing new approach to handling spaces in test args.
-#cat << EOF > $tmpTestCmdFile
 #.   lsseq --prepend-path-rel --no-error-lists z01 'z 1' 'z 2' # Use single quotes.
-#EOF
+cat << EOF2 > $tmpTestCmdFile
+h01 renumseq --start 101 --touch xxxx h.[001-010].jpg
+EOF2
 
 export NUM_TESTS=`wc -l < $tmpTestCmdFile`
 
@@ -339,8 +349,9 @@ while true; do
 
     # Use xargs to allow us to pass args with spaces in the names to the test $cmd being run.
     #
-    tr '\n' '\0' < $tmpArgs | xargs -0 $cmd >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
-    retVal=$? ### NOTE: Need to rewrite the above with "parallel" to get "$cmd"s exit status properly.
+    # tr '\n' '\0' < $tmpArgs | xargs -0 $cmd >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
+    tr '\n' '\0' < $tmpArgs | parallel --joblog $tmpJobLog -0 $cmd {} >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
+    retVal=$?
     if [ $retVal -ne 0 ]; then
         echo "--+--  $cmd returned non-zero error code: $retVal  --+--" >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
     fi
@@ -352,4 +363,4 @@ sed -e "1,$ s-$TEST_DIR-/...absPathToRepo.../tests-g" < $TEST_DIR/$TEST_OUT_FILE
     sed -e "1,$ s/$USER/testUser/g" > $tmpFile
 expand < $tmpFile | sed -e '1,$ s/ *$//' > $TEST_DIR/$TEST_OUT_FILENAME
 
-cleanup
+cleanupExit
