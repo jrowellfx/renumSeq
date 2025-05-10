@@ -42,7 +42,6 @@ tmpArgs=/tmp/tmpARGS_RENUM.$$
 tmpTestCmdFile=/tmp/tmpTESTCMDFILE_RENUM.$$
 tmpFile=/tmp/tmpTEST_RENUM.$$
 tmpLine=/tmp/tmpLINE_RENUM.$$
-### tmpJobLog=/tmp/tmpJOBLOG_RENUM.$$
 #
 cleanupExit() {
     /bin/rm $tmpArgs > /dev/null 2>&1
@@ -53,14 +52,6 @@ cleanupExit() {
 }
 #
 trap cleanupExit INT
-
-unalias parallel > /dev/null 2>&1
-which parallel   > /dev/null 2>&1
-exitStatus=$?
-if [ $exitStatus -ne 0 ]; then # Exit status is number of failed arguments to 'which'.
-    echo "Error: ${0##*/} requires the command 'parallel' to be installed on the system."
-    cleanupExit 1
-fi
 
 usage_exit() {
     echo "Usage: ${0##*/} [-h | --help] [--test-system-renumseq]"
@@ -172,9 +163,6 @@ cat createTestData/create.?Test.files \
 cat $tmpFile | xargs -0 touch
 cat $tmpFile | xargs -0 chmod 666
 
-#cleanupExit
-#cleanupExit
-
 # Timestamp all the test files to be a fixed date so that their file times are 
 # not dependent upon the date set when running the test. This gives us
 # consistent test data output.
@@ -182,8 +170,6 @@ cat $tmpFile | xargs -0 chmod 666
 # Note: We use HAL's birthday from 2001: A Space Odyssey.
 #
 find testdir -type f -exec touch -t 199201121330 \{\} \;
-
-# cleanupExit 0
 
 # The following are tests. One test per line.
 # The first item on a line is the directory relative to
@@ -299,12 +285,6 @@ i01 lsseq --no-error-lists --only-sequences
 .   lsseq --prepend-path-rel --no-error-lists z01 'z 1' 'z 2'
 EOF
 
-# Following is simple case for testing new approach to handling spaces in test args.
-#.   lsseq --prepend-path-rel --no-error-lists z01 'z 1' 'z 2' # Use single quotes.
-#cat << EOF2 > $tmpTestCmdFile
-#h01 renumseq --start 101 --touch xxxx h.[001-010].jpg
-#EOF2
-
 export NUM_TESTS=`wc -l < $tmpTestCmdFile`
 
 echo ------ Begin Tests ------ > $TEST_DIR/$TEST_OUT_FILENAME
@@ -346,11 +326,6 @@ while true; do
         # DO NOT USE 'echo' NEXT LINE! doesn't handle a '-n' being passed to it.
         printf '%s\n' "${testArgs[${elemIndex}]}" >> $tmpArgs
     done
-
-    # Use xargs to allow us to pass args with spaces in the names to the test $cmd being run.
-    #
-    # tr '\n' '\0' < $tmpArgs | xargs -0 $cmd >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
-    # tr '\n' '\0' < $tmpArgs | parallel --joblog $tmpJobLog --null --xargs $cmd  >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
 
     # Use mapfile to allow us to pass args with spaces in the names to the test $cmd being run.
     #
