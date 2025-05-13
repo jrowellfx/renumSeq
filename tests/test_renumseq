@@ -40,7 +40,7 @@
 
 tmpArgs=/tmp/tmpARGS_RENUM.$$
 tmpTestCmdFile=/tmp/tmpTESTCMDFILE_RENUM.$$
-tmpFile=/tmp/tmpTEST_RENUM.$$
+tmpFile=/tmp/tmpFILE_RENUM.$$
 tmpLine=/tmp/tmpLINE_RENUM.$$
 #
 cleanupExit() {
@@ -69,6 +69,7 @@ Options:
                     results to appropriatly named file.
 
 @eof
+        exit 0
     fi
     exit 1
 }
@@ -176,7 +177,7 @@ find testdir -type f -exec touch -t 199201121330 \{\} \;
 #     $TEST_DIR/testdir to run the test in.
 # The second is the command to run.
 # The rest are args to the command.
-#
+# Note: use single quotes (') around args with spaces in the name
 #
 cat << EOF > $tmpTestCmdFile
 .   uname
@@ -289,8 +290,18 @@ export NUM_TESTS=`wc -l < $tmpTestCmdFile`
 
 echo ------ Begin Tests ------ > $TEST_DIR/$TEST_OUT_FILENAME
 
-set -f # Turn off globbing
 i=1
+#
+# NOTE: We do not want globbing at all in renumseq tests since the tests
+# use a lot of square brackets. No need to test other glob wildcards
+# for renumseq as, say '*', is unlikely to be needed by the user
+# since they need to fully specify the sequence being worked on
+# so wildcards don't help.
+#
+# See test_lsseq in lsseq repo for how to allow globbing in test arguments.
+# for test-code such as this.
+#
+set -f # Turn off globbing.
 while true; do
 
     sed -n -e "$i p" $tmpTestCmdFile | sed -e 's/#.*//' > $tmpLine
