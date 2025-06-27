@@ -45,12 +45,12 @@ tmpLine=/tmp/tmpLINE_RENUM.$$
 #
 cleanupExit() {
     /bin/rm $tmpArgs > /dev/null 2>&1
-    /bin/rm $tmpTestCmdFile > /dev/null 2>&1
+    /bin/rm $tmpTestCmdFileA > /dev/null 2>&1
     /bin/rm $tmpFile > /dev/null 2>&1
     /bin/rm $tmpLine > /dev/null 2>&1
     exit $1
 }
-#
+
 trap cleanupExit INT
 
 usage_exit() {
@@ -290,8 +290,6 @@ export NUM_TESTS=`wc -l < $tmpTestCmdFile`
 
 echo ------ Begin Tests ------ > $TEST_DIR/$TEST_OUT_FILENAME
 
-i=1
-#
 # NOTE: We do not want globbing at all in renumseq tests since the tests
 # use a lot of square brackets. No need to test other glob wildcards
 # for renumseq as, say '*', is unlikely to be needed by the user
@@ -302,6 +300,7 @@ i=1
 # for test-code such as this.
 #
 set -f # Turn off globbing.
+i=1
 while true; do
 
     sed -n -e "$i p" $tmpTestCmdFile | sed -e 's/#.*//' > $tmpLine
@@ -317,16 +316,20 @@ while true; do
     #
     workingDir=${cmdLine[0]}
     cmd=${cmdLine[1]}
+    displayArgs=(${cmdLine[@]:2})
 
     # Strip out the first two words from $tmpLine to get the test args.
     #
-    sed -e 's/^\S*\s*\S*\s*//' < $tmpLine > $tmpArgs
+    # \s  Matches a space character.  This is equivalent to `[[:space:]]'.
+    # \S  Matches a non-space character.  This is equivalent to `[^[:space:]]'.
+    #
+    sed -E 's/^[^[:space:]]+[[:space:]]+[^[:space:]]+[[:space:]]*//' < $tmpLine > $tmpArgs # -E for extended regular expressions
 
     declare -a testArgs="($(< "$tmpArgs"))"
 
     echo "" >> $TEST_DIR/$TEST_OUT_FILENAME
     echo --- Test $i of $NUM_TESTS ---
-    echo ----- Test $i -+- dir: $workingDir -+- $cmd `cat $tmpArgs` ----- >> $TEST_DIR/$TEST_OUT_FILENAME
+    echo ----- Test $i -+- dir: $workingDir -+- $cmd ${displayArgs[@]} ----- >> $TEST_DIR/$TEST_OUT_FILENAME
     cd $TEST_DIR/testdir/$workingDir
 
     # Rewrite $tmpArgs with one arg per line.
@@ -334,13 +337,21 @@ while true; do
     cat /dev/null > $tmpArgs
     NUM_ELEMENTS=${#testArgs[@]}
     for (( elemIndex=0;elemIndex<$NUM_ELEMENTS;elemIndex++ )); do
-        # DO NOT USE 'echo' NEXT LINE! doesn't handle a '-n' being passed to it.
         printf '%s\n' "${testArgs[${elemIndex}]}" >> $tmpArgs
     done
 
-    # Use mapfile to allow us to pass args with spaces in the names to the test $cmd being run.
+    # On Linux, use 'mapfile' to allow us to pass args with spaces in the names
+    # to the test $cmd being run. Otherwise, on MacOS with only bash v3.x
+    # (and no 'mapfile' command) use older technique.
     #
-    mapfile -t < "$tmpArgs"
+    if [ `uname` = Darwin ]; then
+        MAPFILE=()
+        while IFS= read -r line; do
+            MAPFILE+=("$line")
+        done < "$tmpArgs"
+    else
+        mapfile -t < "$tmpArgs"
+    fi
     $cmd "${MAPFILE[@]}" >> $TEST_DIR/$TEST_OUT_FILENAME 2>&1
     retVal=$?
     if [ $retVal -ne 0 ]; then
@@ -354,4 +365,4 @@ sed -e "1,$ s-$TEST_DIR-/...absPathToRepo.../tests-g" < $TEST_DIR/$TEST_OUT_FILE
     sed -e "1,$ s/$USER/testUser/g" > $tmpFile
 expand < $tmpFile | sed -e '1,$ s/ *$//' > $TEST_DIR/$TEST_OUT_FILENAME
 
-cleanupExit
+cleanupExit 0

@@ -4,7 +4,7 @@
 Linux
 
 ----- Test 2 -+- dir: . -+- lsseq --version -----
-4.0.0
+4.0.1
 
 ----- Test 3 -+- dir: . -+- lsseq -RPl --no-error-lists --show-bad-padding -m -----
 a01/a.[0100-0140].jpg m:[101,134-139]
@@ -753,19 +753,19 @@ total 0
 
 ----- Test 79 -+- dir: h01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 testUser 0 May 10 12:01 h.001.jpg
--rw-rw-rw-. 1 testUser 0 May 10 12:01 h.002.jpg
--rw-rw-rw-. 1 testUser 0 May 10 12:01 h.003.jpg
--rw-rw-rw-. 1 testUser 0 May 10 12:01 h.004.jpg
--rw-rw-rw-. 1 testUser 0 May 10 12:01 h.005.jpg
--rw-rw-rw-. 1 testUser 0 May 10 12:01 h.006.jpg
--rw-rw-rw-. 1 testUser 0 May 10 12:01 h.007.jpg
--rw-rw-rw-. 1 testUser 0 May 10 12:01 h.008.jpg
--rw-rw-rw-. 1 testUser 0 May 10 12:01 h.009.jpg
--rw-rw-rw-. 1 testUser 0 May 10 12:01 h.010.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 27 13:47 h.001.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 27 13:47 h.002.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 27 13:47 h.003.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 27 13:47 h.004.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 27 13:47 h.005.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 27 13:47 h.006.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 27 13:47 h.007.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 27 13:47 h.008.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 27 13:47 h.009.jpg
+-rw-rw-rw-. 1 testUser 0 Jun 27 13:47 h.010.jpg
 
 ----- Test 80 -+- dir: h01 -+- date -----
-Sat May 10 12:01:56 CDT 2025
+Fri Jun 27 13:47:06 CDT 2025
 
 ----- Test 81 -+- dir: h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
 The dates of the files in the last ls -o should match the prior date command.
