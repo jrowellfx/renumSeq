@@ -4,7 +4,7 @@
 Darwin
 
 ----- Test 2 -+- dir: . -+- lsseq --version -----
-4.0.0
+4.0.1
 
 ----- Test 3 -+- dir: . -+- lsseq -RPl --no-error-lists --show-bad-padding -m -----
 a01/a.[0100-0140].jpg m:[101,134-139]
@@ -26,6 +26,9 @@ i01/ddd.[01-10].jpg
 i01/eee.[0001-0010].jpg
 x01/x.[-11--03].jpg
 y01/y.[-011-0002].jpg
+z 1/zzz.[001-011].jpg
+z 2/z z.[001-011].jpg
+z01/z z.[001-011].jpg
 
 ----- Test 4 -+- dir: . -+- renumseq -----
 
@@ -750,19 +753,19 @@ total 0
 
 ----- Test 79 -+- dir: h01 -+- ls -o -----
 total 0
--rw-rw-rw-  1 testUser  0 Feb  3 14:50 h.001.jpg
--rw-rw-rw-  1 testUser  0 Feb  3 14:50 h.002.jpg
--rw-rw-rw-  1 testUser  0 Feb  3 14:50 h.003.jpg
--rw-rw-rw-  1 testUser  0 Feb  3 14:50 h.004.jpg
--rw-rw-rw-  1 testUser  0 Feb  3 14:50 h.005.jpg
--rw-rw-rw-  1 testUser  0 Feb  3 14:50 h.006.jpg
--rw-rw-rw-  1 testUser  0 Feb  3 14:50 h.007.jpg
--rw-rw-rw-  1 testUser  0 Feb  3 14:50 h.008.jpg
--rw-rw-rw-  1 testUser  0 Feb  3 14:50 h.009.jpg
--rw-rw-rw-  1 testUser  0 Feb  3 14:50 h.010.jpg
+-rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.001.jpg
+-rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.002.jpg
+-rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.003.jpg
+-rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.004.jpg
+-rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.005.jpg
+-rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.006.jpg
+-rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.007.jpg
+-rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.008.jpg
+-rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.009.jpg
+-rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.010.jpg
 
 ----- Test 80 -+- dir: h01 -+- date -----
-Mon Feb  3 14:50:56 CST 2025
+Fri Jun 27 13:51:25 CDT 2025
 
 ----- Test 81 -+- dir: h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
 The dates of the files in the last ls -o should match the prior date command.
@@ -910,3 +913,8 @@ n.11.m_v001_.[050-059].jpg
 xxx.[0100-0109].jpg
 yyy.[0005-0014].jpg
 zzz.[005-014].jpg
+
+----- Test 104 -+- dir: . -+- lsseq --prepend-path-rel --no-error-lists z01 'z 1' 'z 2' -----
+z 1/zzz.[001-011].jpg
+z 2/z z.[001-011].jpg
+z01/z z.[001-011].jpg
