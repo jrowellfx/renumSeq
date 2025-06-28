@@ -142,7 +142,7 @@ elif [[ `basename $REPO_DIR` != 'renumSeq' ]]; then
     echo $0: error: REPO_DIR might not be set to renumSeq repo, dangerous recursive rm avoided.
     cleanupExit 1
 fi
-rm -rf $TEST_DIR/testdir/*
+rm -rf $REPO_DIR/tests/testdir/*
 
 # Create list of test directories needed.
 # Then touch the file names to make testfiles.
