@@ -151,7 +151,7 @@ rm -rf $REPO_DIR/tests/testdir/*
 #
 cat createTestData/create.?Test.files \
     | sed -e '/^[[:space:]]*$/d' \
-    | sed -e '1,$ s/\/[^\/]*$//' \
+    | sed -e '1,$ s/\/[^/]*$//' \
     | sort -u \
     | tr '\n' '\0' \
     > $tmpFile
