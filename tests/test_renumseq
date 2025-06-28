@@ -45,7 +45,7 @@ tmpLine=/tmp/tmpLINE_RENUM.$$
 #
 cleanupExit() {
     /bin/rm $tmpArgs > /dev/null 2>&1
-    /bin/rm $tmpTestCmdFileA > /dev/null 2>&1
+    /bin/rm $tmpTestCmdFile > /dev/null 2>&1
     /bin/rm $tmpFile > /dev/null 2>&1
     /bin/rm $tmpLine > /dev/null 2>&1
     exit $1
