@@ -319,11 +319,9 @@ while true; do
     displayArgs=(${cmdLine[@]:2})
 
     # Strip out the first two words from $tmpLine to get the test args.
+    # -E for extended regular expressions
     #
-    # \s  Matches a space character.  This is equivalent to `[[:space:]]'.
-    # \S  Matches a non-space character.  This is equivalent to `[^[:space:]]'.
-    #
-    sed -E 's/^[^[:space:]]+[[:space:]]+[^[:space:]]+[[:space:]]*//' < $tmpLine > $tmpArgs # -E for extended regular expressions
+    sed -E 's/^[^[:space:]]+[[:space:]]+[^[:space:]]+[[:space:]]*//' < $tmpLine > $tmpArgs
 
     declare -a testArgs="($(< "$tmpArgs"))"
 
