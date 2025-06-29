@@ -14,17 +14,18 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name            = 'renumSeq',
-    version         = '2.0.0',
+    version         = '2.1.0',
     description='Tool to renumber image sequences.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url             = 'https://github.com/jrowellfx/renumSeq',
     author          = 'James Philip Rowell',
     author_email    = 'james@alpha-eleven.com',
+    license         = "BSD-3-Clause",
+    license_files = ["LICENSE"],
 
     classifiers=[
         'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: BSD License',
         'Operating System :: POSIX',
         'Operating System :: Unix',
         'Operating System :: MacOS',
