@@ -58,9 +58,17 @@ VERSION = "2.0.0"
 
 PROG_NAME = "renumseq"
 
-EXIT_NO_ERROR         = 0 # Clean exit.
-EXIT_ERROR            = 1 # Internal error other than argparse - currently not used.
-EXIT_ARGPARSE_ERROR   = 2 # The default code that argparse exits with if bad option.
+EXIT_NO_ERROR                 =   0 # Clean exit.
+EXIT_PREEXISTINGSEQ_ERROR     =   1 # Attempting to rename seq to one that already exists.
+EXIT_ARGPARSE_ERROR           =   2 # Parsing an argument revealed an error.
+EXIT_NULLACTION_WARNING       =   4 # Exited with nothing to do.
+EXIT_INVALIDRANGE_WARNING     =   8 # Invalid frame-range specified for a sequence
+EXIT_NOTASEQ_WARNING          =  16 # Expecting a sequence, but doesn't appear to be one.
+EXIT_NONEXISTENTSEQ_WARNING   =  32 # Specified sequence does not exist.
+EXIT_OVERWRITEFRAME_WARNING   =  64 # Renumbering a sequence would
+#                                   # have over-written some frames outside the range specifed.
+#
+gExitStatus = EXIT_NO_ERROR
 
 # List of date formats accepted to set file times with --touch.
 # They are same as the formats used by 'lsseq --only-show'.
@@ -91,12 +99,16 @@ class Touch(Enum):
     SPECIFIC_TIME = 3
 
 def warnSeqSyntax(silent, basename, seq) :
+    global gExitStatus
     if not silent :
         print( PROG_NAME,
             ": warning: invalid range [", seq, "] for seq ", basename,
             file=sys.stderr, sep='')
+    gExitStatus = gExitStatus | EXIT_INVALIDRANGE_WARNING
 
 def main():
+
+    global gExitStatus
 
     NEVER_START_FRAME = -999999999999 # Seems safe enough.
     howToTouch = ""   # Set below.
@@ -266,7 +278,7 @@ def main():
                 print(PROG_NAME, ": error: --rename will rename the sequence in-place, so please omit the path ",
                     '/'.join(args.newSeqName[0].split('/')[:-1]),
                     file=sys.stderr, sep='')
-            sys.exit(EXIT_ARGPARSE_ERROR)
+            sys.exit(gExitStatus | EXIT_ARGPARSE_ERROR)
 
         match = lsseqPattern.search(args.newSeqName[0])
 
@@ -276,7 +288,7 @@ def main():
                     file=sys.stderr, sep='')
                 print("                 omitted from '--rename ", args.newSeqName[0], "'", " by mistake?",
                     file=sys.stderr, sep='')
-            sys.exit(EXIT_ARGPARSE_ERROR)
+            sys.exit(gExitStatus | EXIT_ARGPARSE_ERROR)
 
         elif len(args.files) >= 1 and match : # If len() > 1 then also invalid, but this catches both.
             if not args.silent :
@@ -286,13 +298,13 @@ def main():
                     file=sys.stderr, sep='')
                 print("                 appears to be a full lsseq native-format description of a sequence.",
                     file=sys.stderr, sep='')
-            sys.exit(EXIT_ARGPARSE_ERROR)
+            sys.exit(gExitStatus | EXIT_ARGPARSE_ERROR)
 
         elif len(args.files) > 1 :
             if not args.silent :
                 print(PROG_NAME, ": error: can NOT rename more than one SEQ at a time.",
                     file=sys.stderr, sep='')
-            sys.exit(EXIT_ARGPARSE_ERROR)
+            sys.exit(gExitStatus | EXIT_ARGPARSE_ERROR)
 
         # Now check to see if a sequence with NEW_SEQNAME exists already.
         # This code relies on lsseq >= v2.5.0 be installed.
@@ -320,10 +332,10 @@ def main():
                         print(PROG_NAME, ": error: can NOT rename to an existing sequence ",
                             lsseqResult.stdout,
                             file=sys.stderr, sep='', end='')
-                    sys.exit(EXIT_ARGPARSE_ERROR)
+                    sys.exit(gExitStatus | EXIT_PREEXISTINGSEQ_ERROR)
 
     if len(args.files) == 0 :
-        sys.exit(EXIT_NO_ERROR)
+        sys.exit(gExitStatus)
 
     # The following logic means "do nothing" - so just exit cleanly (**b**)
     #
@@ -336,7 +348,7 @@ def main():
             print(PROG_NAME,
                 ": warning: no offset, no rename, no padding change, etc., nothing to do",
                 file=sys.stderr, sep='')
-        sys.exit(EXIT_NO_ERROR)
+        sys.exit(gExitStatus | EXIT_NULLACTION_WARNING)
 
     # args.touch is either a string, presumably containing a date (so need to
     # check its validity), the string "0" (meaning --touch was called with NO argument),
@@ -386,7 +398,7 @@ def main():
                 print(PROG_NAME,
                     ": error: argument --touch: the time must be of the form [CC]YYMMDD[-hh[mm[ss]]]",
                     file=sys.stderr, sep='')
-            sys.exit(EXIT_ARGPARSE_ERROR)
+            sys.exit(gExitStatus | EXIT_ARGPARSE_ERROR)
 
         specificTime = int(time.mktime(timeData.timetuple())) # Epoch time
 
@@ -404,6 +416,7 @@ def main():
                 print(PROG_NAME, ": warning: ", arg,
                     " not a sequence or not in lsseq native format",
                     file=sys.stderr, sep='')
+            gExitStatus = gExitStatus | EXIT_NOTASEQ_WARNING
             continue
 
         v = match.groups()
@@ -494,6 +507,7 @@ def main():
                     print(PROG_NAME,
                         ": warning: no offset, no padding/underscore change, skipping sequence: ",
                         arg, file=sys.stderr, sep='')
+                # No change to exit codes since other seq's might have been changed.
                 continue
 
         startPad = len(startStr)
@@ -582,6 +596,7 @@ def main():
             if not args.silent :
                 print(PROG_NAME, ": warning: ", arg,
                     " is nonexistent", file=sys.stderr, sep='')
+            gExitStatus = gExitStatus | EXIT_NONEXISTENTSEQ_WARNING
             continue
 
         if not args.clobber :
@@ -599,6 +614,7 @@ def main():
                         ": renumbering would have overwritten a file outside the sequence being renumbered. e.g.: ",
                         f, file=sys.stderr, sep='')
                 continue
+                gExitStatus = gExitStatus | EXIT_OVERWRITEFRAME_WARNING
 
         i = 0
         numFiles = len(origName)
@@ -630,6 +646,7 @@ def main():
             print(PROG_NAME,
                 ": warning: no changes were made to ", arg, ": skipping",
                 file=sys.stderr, sep='')
+        # gExitStatus not changed as other sequences specified may have been changed.
 
 if __name__ == '__main__':
     main()
