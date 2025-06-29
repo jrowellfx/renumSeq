@@ -33,7 +33,7 @@ z01/z z.[001-011].jpg
 ----- Test 4 -+- dir: . -+- renumseq -----
 
 ----- Test 5 -+- dir: . -+- renumseq --version -----
-2.0.0
+2.1.0
 
 ----- Test 6 -+- dir: . -+- renumseq --help -----
 usage: renumseq [OPTION]... [SEQ]...
@@ -101,6 +101,7 @@ optional arguments:
 
 ----- Test 7 -+- dir: . -+- renumseq null/foo.jpg -----
 renumseq: warning: no offset, no rename, no padding change, etc., nothing to do
+--+--  renumseq returned non-zero error code: 4  --+--
 
 ----- Test 8 -+- dir: . -+- renumseq -o 1 null/foo.jpg -----
 renumseq: warning: null/foo.jpg not a sequence or not in lsseq native format
@@ -519,6 +520,7 @@ d01/d_[0100-0125].jpg m:[105,121-124]
 
 ----- Test 53 -+- dir: . -+- renumseq -v d01/d_[0120-0140].jpg -----
 renumseq: warning: no offset, no rename, no padding change, etc., nothing to do
+--+--  renumseq returned non-zero error code: 4  --+--
 
 ----- Test 54 -+- dir: . -+- renumseq -v --replace-underscore d01/d_[0120-0140].jpg -----
 d01/d_0120.jpg -> d01/d.0120.jpg
@@ -753,19 +755,19 @@ total 0
 
 ----- Test 79 -+- dir: h01 -+- ls -o -----
 total 0
--rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.001.jpg
--rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.002.jpg
--rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.003.jpg
--rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.004.jpg
--rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.005.jpg
--rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.006.jpg
--rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.007.jpg
--rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.008.jpg
--rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.009.jpg
--rw-rw-rw-  1 testUser  0 Jun 27 13:51 h.010.jpg
+-rw-rw-rw-  1 testUser  0 Jun 29 14:37 h.001.jpg
+-rw-rw-rw-  1 testUser  0 Jun 29 14:37 h.002.jpg
+-rw-rw-rw-  1 testUser  0 Jun 29 14:37 h.003.jpg
+-rw-rw-rw-  1 testUser  0 Jun 29 14:37 h.004.jpg
+-rw-rw-rw-  1 testUser  0 Jun 29 14:37 h.005.jpg
+-rw-rw-rw-  1 testUser  0 Jun 29 14:37 h.006.jpg
+-rw-rw-rw-  1 testUser  0 Jun 29 14:37 h.007.jpg
+-rw-rw-rw-  1 testUser  0 Jun 29 14:37 h.008.jpg
+-rw-rw-rw-  1 testUser  0 Jun 29 14:37 h.009.jpg
+-rw-rw-rw-  1 testUser  0 Jun 29 14:37 h.010.jpg
 
 ----- Test 80 -+- dir: h01 -+- date -----
-Fri Jun 27 13:51:25 CDT 2025
+Sun Jun 29 14:37:53 CDT 2025
 
 ----- Test 81 -+- dir: h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
 The dates of the files in the last ls -o should match the prior date command.
@@ -852,7 +854,7 @@ aaa.1.jpg -> xxx.0100.jpg
 
 ----- Test 95 -+- dir: i01 -+- renumseq --pad 3 --dry-run --start 20 --rename xxx ccc.[01-10].jpg -----
 renumseq: error: can NOT rename to an existing sequence xxx.[0100-0109].jpg
---+--  renumseq returned non-zero error code: 2  --+--
+--+--  renumseq returned non-zero error code: 1  --+--
 
 ----- Test 96 -+- dir: . -+- renumseq -v --start 5 --rename g01/yyy i01/eee.[0001-0010].jpg -----
 renumseq: error: --rename will rename the sequence in-place, so please omit the path g01
