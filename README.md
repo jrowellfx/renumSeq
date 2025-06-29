@@ -38,6 +38,24 @@ frame-number) with dot-separators, like this:
 `Protip`: If all you want to do is switch the separator from an underscore to a dot, then
 use a zero offset, plus the `--replace-underscore` argument.
 
+## Error and warning codes returned from `renumseq`
+
+As copied from the source code,
+the following EXIT codes will be combined bitwise to return
+possibly more than one different warning and/or error.
+
+```
+EXIT_NO_ERROR                 =   0 # Clean exit.
+EXIT_PREEXISTINGSEQ_ERROR     =   1 # Attempting to rename seq to one that already exists.
+EXIT_ARGPARSE_ERROR           =   2 # Parsing an argument revealed an error.
+EXIT_NULLACTION_WARNING       =   4 # Exited with nothing to do.
+EXIT_INVALIDRANGE_WARNING     =   8 # Invalid frame-range specified for a sequence
+EXIT_NOTASEQ_WARNING          =  16 # Expecting a sequence, but doesn't appear to be one.
+EXIT_NONEXISTENTSEQ_WARNING   =  32 # Specified sequence does not exist.
+EXIT_OVERWRITEFRAME_WARNING   =  64 # Renumbering a sequence would
+                                    # have over-written some frames outside the range specifed.
+```
+
 ## Installing renumseq
 
 ```
