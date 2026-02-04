@@ -54,7 +54,7 @@ import glob
 # MINOR version for added functionality in a backwards compatible manner
 # PATCH version for backwards compatible bug fixes
 #
-VERSION = "2.1.0"
+VERSION = "2.1.1"
 
 PROG_NAME = "renumseq"
 
@@ -144,7 +144,7 @@ def main():
                 $ lsseq
                 aaa.[011-015].tif
             '''),
-        usage="%(prog)s [OPTION]... [SEQ]...")
+        usage="%(prog)s [-h | --help] [OPTION]... [SEQ]...")
 
     p.add_argument("--version", action="version", version=VERSION)
 

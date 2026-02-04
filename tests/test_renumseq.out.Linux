@@ -4,7 +4,7 @@
 Linux
 
 ----- Test 2 -+- dir: . -+- lsseq --version -----
-4.0.1
+4.1.0
 
 ----- Test 3 -+- dir: . -+- lsseq -RPl --no-error-lists --show-bad-padding -m -----
 a01/a.[0100-0140].jpg m:[101,134-139]
@@ -33,10 +33,10 @@ z01/z z.[001-011].jpg
 ----- Test 4 -+- dir: . -+- renumseq -----
 
 ----- Test 5 -+- dir: . -+- renumseq --version -----
-2.1.0
+2.1.1
 
 ----- Test 6 -+- dir: . -+- renumseq --help -----
-usage: renumseq [OPTION]... [SEQ]...
+usage: renumseq [-h | --help] [OPTION]... [SEQ]...
 
 Renumber the frame range of each SEQ listed on the command line.
 SEQ should be specified using lsseq's native format.
@@ -755,25 +755,25 @@ total 0
 
 ----- Test 79 -+- dir: h01 -+- ls -o -----
 total 0
--rw-rw-rw-. 1 testUser 0 Jun 29 14:27 h.001.jpg
--rw-rw-rw-. 1 testUser 0 Jun 29 14:27 h.002.jpg
--rw-rw-rw-. 1 testUser 0 Jun 29 14:27 h.003.jpg
--rw-rw-rw-. 1 testUser 0 Jun 29 14:27 h.004.jpg
--rw-rw-rw-. 1 testUser 0 Jun 29 14:27 h.005.jpg
--rw-rw-rw-. 1 testUser 0 Jun 29 14:27 h.006.jpg
--rw-rw-rw-. 1 testUser 0 Jun 29 14:27 h.007.jpg
--rw-rw-rw-. 1 testUser 0 Jun 29 14:27 h.008.jpg
--rw-rw-rw-. 1 testUser 0 Jun 29 14:27 h.009.jpg
--rw-rw-rw-. 1 testUser 0 Jun 29 14:27 h.010.jpg
+-rw-rw-rw-. 1 testUser 0 Feb  4 17:22 h.001.jpg
+-rw-rw-rw-. 1 testUser 0 Feb  4 17:22 h.002.jpg
+-rw-rw-rw-. 1 testUser 0 Feb  4 17:22 h.003.jpg
+-rw-rw-rw-. 1 testUser 0 Feb  4 17:22 h.004.jpg
+-rw-rw-rw-. 1 testUser 0 Feb  4 17:22 h.005.jpg
+-rw-rw-rw-. 1 testUser 0 Feb  4 17:22 h.006.jpg
+-rw-rw-rw-. 1 testUser 0 Feb  4 17:22 h.007.jpg
+-rw-rw-rw-. 1 testUser 0 Feb  4 17:22 h.008.jpg
+-rw-rw-rw-. 1 testUser 0 Feb  4 17:22 h.009.jpg
+-rw-rw-rw-. 1 testUser 0 Feb  4 17:22 h.010.jpg
 
 ----- Test 80 -+- dir: h01 -+- date -----
-Sun Jun 29 14:27:21 CDT 2025
+Wed Feb  4 17:22:17 CST 2026
 
 ----- Test 81 -+- dir: h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
 The dates of the files in the last ls -o should match the prior date command.
 
 ----- Test 82 -+- dir: h01 -+- renumseq --foobar h.[001-010].jpg -----
-usage: renumseq [OPTION]... [SEQ]...
+usage: renumseq [-h | --help] [OPTION]... [SEQ]...
 renumseq: error: unrecognized arguments: --foobar
 --+--  renumseq returned non-zero error code: 2  --+--
 
@@ -819,7 +819,7 @@ ddd.[01-10].jpg
 eee.[0001-0010].jpg
 
 ----- Test 89 -+- dir: i01 -+- renumseq --dry-run --start 100 --rename -- aaa.[1-10].jpg -----
-usage: renumseq [OPTION]... [SEQ]...
+usage: renumseq [-h | --help] [OPTION]... [SEQ]...
 renumseq: error: argument --rename: expected 1 argument
 --+--  renumseq returned non-zero error code: 2  --+--
 
