@@ -1,29 +1,29 @@
 #!/usr/bin/env python3
 
 # 3-Clause BSD License
-# 
+#
 # Copyright (c) 2008-2026, James Philip Rowell,
 # Alpha Eleven Incorporated
 # www.alpha-eleven.com
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
-# 
+#
 #  1. Redistributions of source code must retain the above copyright
 #     notice, this list of conditions and the following disclaimer.
-# 
+#
 #  2. Redistributions in binary form must reproduce the above copyright
 #     notice, this list of conditions and the following disclaimer in
 #     the documentation and/or other materials provided with the
 #     distribution.
-# 
+#
 #  3. Neither the name of the copyright holder, "Alpha Eleven, Inc.",
 #     nor the names of its contributors may be used to endorse or
 #     promote products derived from this software without specific prior
 #     written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -65,15 +65,14 @@ EXIT_NULLACTION_WARNING       =   4 # Exited with nothing to do.
 EXIT_INVALIDRANGE_WARNING     =   8 # Invalid frame-range specified for a sequence
 EXIT_NOTASEQ_WARNING          =  16 # Expecting a sequence, but doesn't appear to be one.
 EXIT_NONEXISTENTSEQ_WARNING   =  32 # Specified sequence does not exist.
-EXIT_OVERWRITEFRAME_WARNING   =  64 # Renumbering a sequence would
-#                                   # have over-written some frames outside the range specifed.
-#
+EXIT_OVERWRITEFRAME_WARNING   =  64 # Renumbering a sequence would have
+                                    # over-written some frames outside the range specified.
 gExitStatus = EXIT_NO_ERROR
 
 # List of date formats accepted to set file times with --touch.
 # They are same as the formats used by 'lsseq --only-show'.
 #
-# Note: We MUST list %y before %Y in each case below to make sure 
+# Note: We MUST list %y before %Y in each case below to make sure
 # that, for example, "200731" get's interpreted as July 31, 2020
 # and not Mar 1, 2007, as it will if %Y is listed first because
 # strptime() does not enforce zero padding for month, day, etc.
@@ -93,7 +92,7 @@ DATE_FORMAT_LIST = [
     ('%Y%m%d-%H%M%S', 15)
 ]
 
-class Touch(Enum):
+class Touch(Enum) :
     CURRENT_TIME = 1
     ORIGINAL_TIME = 2
     SPECIFIC_TIME = 3
@@ -101,12 +100,12 @@ class Touch(Enum):
 def warnSeqSyntax(silent, basename, seq) :
     global gExitStatus
     if not silent :
-        print( PROG_NAME,
+        print(PROG_NAME,
             ": warning: invalid range [", seq, "] for seq ", basename,
             file=sys.stderr, sep='')
     gExitStatus = gExitStatus | EXIT_INVALIDRANGE_WARNING
 
-def main():
+def main() :
 
     global gExitStatus
 
@@ -120,20 +119,20 @@ def main():
     # do a trace dump if the user types ^C while renumseq is running.
     #
     old_excepthook = sys.excepthook
-    def new_hook(exceptionType, value, traceback):
-        if exceptionType != KeyboardInterrupt and exceptionType != IOError:
+    def new_hook(exceptionType, value, traceback) :
+        if exceptionType != KeyboardInterrupt and exceptionType != IOError :
             old_excepthook(exceptionType, value, traceback)
-        else:
+        else :
             pass
     sys.excepthook = new_hook
 
     p = argparse.ArgumentParser(
         prog=PROG_NAME,
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        description=textwrap.dedent('''
+        description=textwrap.dedent('''\
             Renumber the frame range of each SEQ listed on the command line.
             SEQ should be specified using lsseq's native format.
-            
+
             Protip: Enclosing SEQ in quotes will turn off the special
             treatment of '[' and ']' by the shell.
 
@@ -148,6 +147,9 @@ def main():
 
     p.add_argument("--version", action="version", version=VERSION)
 
+    # Renumbering: shift SEQ by an offset, or retarget it to an explicit
+    # start frame (--start takes precedence over --offset when both are given).
+    #
     p.add_argument("--start", action="store", type=int,
         dest="startFrame", default=NEVER_START_FRAME,
         metavar="START_FRAME",
@@ -159,6 +161,9 @@ def main():
         help="offset SEQ by this number of frames (can be negative). \
         Frame i becomes i + FRAME_OFFSET")
 
+    # Overwrite protection: what to do if renumbering SEQ would clobber
+    # an existing file outside the range being renumbered.
+    #
     p.add_argument("--skip", action="store_false",
         dest="clobber", default=False,
         help="if renumbering a file in SEQ would result in overwriting \
@@ -171,8 +176,9 @@ def main():
         an existing file (which isn't also being renumbered) \
         then overwrite the file. The opposite of --skip")
 
-    # Note: the following default for "pad" of "-1" means to leave
-    # the padding on any given frame sequence unchanged.
+    # Padding, renaming, and separator changes. Note: the following
+    # default for "pad" of "-1" means to leave the padding on any given
+    # frame sequence unchanged.
     #
     p.add_argument("--pad", action="store", type=int,
         dest="pad", default=-1,
@@ -196,6 +202,8 @@ def main():
         you can use an offset \
         of zero (default) to replace the underscore with a dot leaving all else the same")
 
+    # Touch: update file timestamps as part of the renumbering.
+    #
     p.add_argument("--touch", nargs='?',
         dest="touch",
         default=None, # Value if --touch NOT present on cmd line.
@@ -210,6 +218,8 @@ def main():
         Note: the default action is to leave \
         the access time of the SEQ unchanged. ")
 
+    # Run-mode: how the renumbering is carried out and reported.
+    #
     p.add_argument("--dry-run", action="store_true",
         dest="dryRun", default=False,
         help="Don't renumber SEQ, just display how the \
@@ -249,7 +259,7 @@ def main():
     # 3) renumseq --rename aaa.[1-10].jpg bbb.[1-10].jpg
     # 4) see below
     #
-    # Case 1) is when the user likely forgot to put the NEW_SEQNAME 
+    # Case 1) is when the user likely forgot to put the NEW_SEQNAME
     #         on the command-line when renaming 'aaa'.
     # Case 2) is when the user is trying to rename TWO sequences to
     #         the same name ('xxx') which is obviously undesirable.
@@ -353,7 +363,7 @@ def main():
     # args.touch is either a string, presumably containing a date (so need to
     # check its validity), the string "0" (meaning --touch was called with NO argument),
     # or None, meaning --touch was not invoked on the command line.
-    # 
+    #
     if args.touch == None : # --touch NOT called
         howToTouch = Touch.ORIGINAL_TIME
 
@@ -367,14 +377,14 @@ def main():
         #
         matchedDate = False
         for dateFormat in DATE_FORMAT_LIST :
-            try: 
+            try :
                 timeData = datetime.strptime(args.touch, dateFormat[0])
 
                 # Make sure the prior strptime() call matched against a string
                 # with zero padding for month, day, etc. If the length of the matched
                 # string doesn't add up to what it should be if zero padded
                 # then reject the match and keep looping.
-                # 
+                #
                 # This test is needed since strptime() does not ENFORCE zero
                 # padding of months, days, minutes etc. leading to possible
                 # ambiguity and thus is an undesireable feature of strptime().
@@ -385,7 +395,7 @@ def main():
                     matchedDate = True
                     break
 
-            except ValueError as ve:
+            except ValueError as ve :
                 # Note, we could probably make clever use of the ValueError
                 # reported here, but since we have a list of possible formats
                 # sorting it out if everthing fails seems like more trouble
@@ -489,7 +499,7 @@ def main():
             warnSeqSyntax(args.silent, seq[0], seq[1])
             continue
 
-        # If args.startFrame is used, it will override 
+        # If args.startFrame is used, it will override
         # args.offsetFrames.
         #
         if args.startFrame != NEVER_START_FRAME :
@@ -575,7 +585,7 @@ def main():
         # util to get correct results in all circumstances.
         #
         #  (*) Another example of badly padded frame numbers:
-        #      02, 03, 04, ..., 0998, 0999, 1000, 1001, 
+        #      02, 03, 04, ..., 0998, 0999, 1000, 1001,
         #      This example should be two padded, not four padded,
         #      so 0998 and 0999 are badly padded frame numbers.
         #
@@ -613,8 +623,8 @@ def main():
                     print(PROG_NAME, ": warning: skipping ", arg,
                         ": renumbering would have overwritten a file outside the sequence being renumbered. e.g.: ",
                         f, file=sys.stderr, sep='')
-                continue
                 gExitStatus = gExitStatus | EXIT_OVERWRITEFRAME_WARNING
+                continue
 
         i = 0
         numFiles = len(origName)
@@ -648,5 +658,5 @@ def main():
                 file=sys.stderr, sep='')
         # gExitStatus not changed as other sequences specified may have been changed.
 
-if __name__ == '__main__':
+if __name__ == '__main__' :
     main()
