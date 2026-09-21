@@ -194,16 +194,16 @@ cat << EOF > $tmpTestCmdFile
 .   renumseq -o 1 null/foo.[-a--b].jpg      # Not a sequence
 .   renumseq -o 1 null/foo.[xx-a-b].jpg     # Not a sequence
 .   renumseq -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg  # Invalid range, [A-B] but A > B
-.   renumseq -s -o 1 null/foo.jpg           # Repeat all those tests but silent
-.   renumseq -s -o 1 null/foo.[bar].jpg     #    ditto
-.   renumseq -s -o 1 null/foo.[a-b].jpg     #    ditto
-.   renumseq -s -o 1 null/foo.[-a-b].jpg    #    ditto
-.   renumseq -s -o 1 null/foo.[-a--b].jpg   #    ditto
-.   renumseq -s -o 1 null/foo.[xx-a-b].jpg  #    ditto
-.   renumseq -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg # ditto
+.   renumseq --silent -o 1 null/foo.jpg           # Repeat all those tests but silent
+.   renumseq --silent -o 1 null/foo.[bar].jpg     #    ditto
+.   renumseq --silent -o 1 null/foo.[a-b].jpg     #    ditto
+.   renumseq --silent -o 1 null/foo.[-a-b].jpg    #    ditto
+.   renumseq --silent -o 1 null/foo.[-a--b].jpg   #    ditto
+.   renumseq --silent -o 1 null/foo.[xx-a-b].jpg  #    ditto
+.   renumseq --silent -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg # ditto
 a03 lsseq -RPl --no-error-lists --show-bad-padding -m       # Record sequence before renumbering
 a03 renumseq -o 30 a.[0100-0110].jpg        # This should error out
-a03 renumseq -s -o 30 a.[0100-0110].jpg     # Same with this, but silent.
+a03 renumseq --silent -o 30 a.[0100-0110].jpg     # Same with this, but silent.
 a03 ls -o                                   # regular ls to see dates of files
 a03 lsseq -RPl --no-error-lists --show-bad-padding -m       # Seq should be the same as above.
 a03 renumseq -v -o 30 --force --touch 20010601-1230 a.[0100-0110].jpg # Now they should renumber.
