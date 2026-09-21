@@ -54,7 +54,7 @@ import glob
 # MINOR version for added functionality in a backwards compatible manner
 # PATCH version for backwards compatible bug fixes
 #
-VERSION = "2.1.1"
+VERSION = "3.0.0"
 
 PROG_NAME = "renumseq"
 
@@ -131,7 +131,9 @@ def main() :
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent('''\
             Renumber the frame range of each SEQ listed on the command line.
-            SEQ should be specified using lsseq's native format.
+            SEQ must be specified using lsseq's native format.
+
+            This command also provides the ability to rename a sequence.
 
             Protip: Enclosing SEQ in quotes will turn off the special
             treatment of '[' and ']' by the shell.
@@ -142,59 +144,57 @@ def main() :
                 $ renumseq -o 10 'aaa.[001-005].tif'
                 $ lsseq
                 aaa.[011-015].tif
+                $ renumseq --rename bbb 'aaa.[011-015].tif'
+                $ lsseq
+                bbb.[011-015].tif
             '''),
-        usage="%(prog)s [-h | --help] [OPTION]... [SEQ]...")
+        usage="%(prog)s [-h | --help] [OPTION]... [SEQ]...",
+        add_help=False)
 
-    p.add_argument("--version", action="version", version=VERSION)
+    group = p.add_argument_group('miscellaneous options')
+    group.add_argument('--help', '-h', action='help', help='show this help message and exit')
+    group.add_argument("--version", action="version", version=VERSION)
+    group.add_argument("--silent", "--quiet", action="store_true",
+        dest="silent", default=False,
+        help="suppress all errors and warnings")
+    group.add_argument('--', dest='end_of_options', action='store_true',
+        help='end of options, all subsequent arguments are positional arguments.')
 
-    # Renumbering: shift SEQ by an offset, or retarget it to an explicit
-    # start frame (--start takes precedence over --offset when both are given).
+    # Renumbering options.
     #
-    p.add_argument("--start", action="store", type=int,
+    group = p.add_argument_group('renumbering sequences')
+    group.add_argument("--start", action="store", type=int,
         dest="startFrame", default=NEVER_START_FRAME,
         metavar="START_FRAME",
         help="Use START_FRAME as the first frame number of each SEQ. \
         This takes precedence over --offset")
-    p.add_argument("--offset", "-o", action="store", type=int,
+    group.add_argument("--offset", "-o", action="store", type=int,
         dest="offsetFrames", default=0,
         metavar="FRAME_OFFSET",
         help="offset SEQ by this number of frames (can be negative). \
         Frame i becomes i + FRAME_OFFSET")
-
-    # Overwrite protection: what to do if renumbering SEQ would clobber
-    # an existing file outside the range being renumbered.
-    #
-    p.add_argument("--skip", action="store_false",
-        dest="clobber", default=False,
-        help="if renumbering a file in SEQ would result in overwriting \
-        an existing file (which isn't also being renumbered) \
-        then skip renumbering SEQ altogether. [default] \
-        The opposite of --force.")
-    p.add_argument("--force", action="store_true",
-        dest="clobber",
-        help="if renumbering a file in SEQ would result in overwriting \
-        an existing file (which isn't also being renumbered) \
-        then overwrite the file. The opposite of --skip")
-
-    # Padding, renaming, and separator changes. Note: the following
-    # default for "pad" of "-1" means to leave the padding on any given
-    # frame sequence unchanged.
-    #
-    p.add_argument("--pad", action="store", type=int,
+    group.add_argument("--pad", action="store", type=int,
         dest="pad", default=-1,
         metavar="PAD",
         help="set the padding of the frame numbers to be PAD digits. \
         The default action is to leave the padding unchanged. Note, \
         lsseq's native format output properly lists the sequence \
         range with appropriate padding.")
-    p.add_argument("--rename", type=str, nargs=1,
+
+    # Padding, renaming, and separator changes. Note: the following
+    # default for "pad" of "-1" means to leave the padding on any given
+    # frame sequence unchanged.
+    #
+    group = p.add_argument_group('renaming sequences')
+    group.add_argument("--rename", type=str, nargs=1,
         dest="newSeqName",
         default=[],
         metavar="NEW_SEQNAME",
         help="Rename the DESCRIPTIVE_NAME part of SEQ from its existing name to NEW_SEQNAME. \
         When using this option then the command will exit with an error unless \
-        exactly one SEQ is being renamed and/or renumbered.")
-    p.add_argument("--replace-underscore", action="store_true",
+        exactly one SEQ is being renamed and/or renumbered. Furthermore, \
+        a sequence will never be renamed to an already existing sequence.")
+    group.add_argument("--replace-underscore", action="store_true",
         dest="fixUnderscore", default=False,
         help="in the case that SEQ uses an underscore ('_') \
         separating the filename from the frame number; then when renumbering \
@@ -202,34 +202,46 @@ def main() :
         you can use an offset \
         of zero (default) to replace the underscore with a dot leaving all else the same")
 
-    # Touch: update file timestamps as part of the renumbering.
+    # Overwrite protection: what to do if renumbering SEQ would clobber
+    # an existing file outside the range being renumbered.
     #
-    p.add_argument("--touch", nargs='?',
+    group = p.add_argument_group('overwrite protection')
+    group.add_argument("--skip", action="store_false",
+        dest="clobber", default=False,
+        help="if renumbering a file in SEQ would result in overwriting \
+        an existing file (which isn't also being renumbered) \
+        then skip renumbering SEQ altogether. [default] \
+        The opposite of --force.")
+    group.add_argument("--force", action="store_true",
+        dest="clobber",
+        help="if renumbering a file in SEQ would result in overwriting \
+        an existing file (which isn't also being renumbered) \
+        then overwrite the file. The opposite of --skip")
+
+    # Other misc options.
+    #
+    group = p.add_argument_group('other miscellaneous options')
+    group.add_argument("--verbose", "-v", action="store_true",
+        dest="verbose", default=False,
+        help="list the mapping from old file-name to new file-name")
+    group.add_argument("--dry-run", action="store_true",
+        dest="dryRun", default=False,
+        help="Don't renumber SEQ, just display how the \
+        files would have been renumbered. Forces --verbose" )
+    group.add_argument("--touch", nargs='?',
         dest="touch",
         default=None, # Value if --touch NOT present on cmd line.
         const="0",    # Value if --touch present but NO argument passed to it.
         metavar="[CC]YYMMDD[-hh[mm[ss]]]",
-        help="If no date is provided then update the access time of \
+        help="If no date is provided then update the timestamp of \
         the files being renumbered to the current time. \
-        Otherwise, use the date provided to update the file's access time. \
+        Otherwise, use the date provided to update the file's timestamp. \
         The optional CC (century) defaults to the current century and \
         '-hh' (hours), 'mm' (minutes) or 'ss' (seconds) \
         default to zero if not specified.\
         Note: the default action is to leave \
-        the access time of the SEQ unchanged. ")
+        the timestamp of the SEQ unchanged in the way that /bin/mv works. ")
 
-    # Run-mode: how the renumbering is carried out and reported.
-    #
-    p.add_argument("--dry-run", action="store_true",
-        dest="dryRun", default=False,
-        help="Don't renumber SEQ, just display how the \
-        files would have been renumbered. Forces --verbose" )
-    p.add_argument("--silent", "--quiet", "-s", action="store_true",
-        dest="silent", default=False,
-        help="suppress all errors and warnings")
-    p.add_argument("--verbose", "-v", action="store_true",
-        dest="verbose", default=False,
-        help="list the mapping from old file-name to new file-name")
 
     p.add_argument("files", metavar="SEQ", nargs="*",
         help="image sequence in lsseq native format")
