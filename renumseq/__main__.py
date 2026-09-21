@@ -157,6 +157,7 @@ def main() :
     group.add_argument("--silent", "--quiet", action="store_true",
         dest="silent", default=False,
         help="suppress all errors and warnings")
+    # Next line is registered purely so '--' shows up in --help
     group.add_argument('--', dest='end_of_options', action='store_true',
         help='end of options, all subsequent arguments are positional arguments.')
 
@@ -181,10 +182,22 @@ def main() :
         lsseq's native format output properly lists the sequence \
         range with appropriate padding.")
 
-    # Padding, renaming, and separator changes. Note: the following
-    # default for "pad" of "-1" means to leave the padding on any given
-    # frame sequence unchanged.
+    # Overwrite protection: what to do if renumbering SEQ would clobber
+    # an existing file outside the range being renumbered.
     #
+    group = p.add_argument_group('overwrite protection')
+    group.add_argument("--skip", action="store_false",
+        dest="clobber", default=False,
+        help="if renumbering a file in SEQ would result in overwriting \
+        an existing file (which isn't also being renumbered) \
+        then skip renumbering SEQ altogether. [default] \
+        The opposite of --force.")
+    group.add_argument("--force", action="store_true",
+        dest="clobber",
+        help="if renumbering a file in SEQ would result in overwriting \
+        an existing file (which isn't also being renumbered) \
+        then overwrite the file. The opposite of --skip")
+
     group = p.add_argument_group('renaming sequences')
     group.add_argument("--rename", type=str, nargs=1,
         dest="newSeqName",
@@ -202,25 +215,9 @@ def main() :
         you can use an offset \
         of zero (default) to replace the underscore with a dot leaving all else the same")
 
-    # Overwrite protection: what to do if renumbering SEQ would clobber
-    # an existing file outside the range being renumbered.
-    #
-    group = p.add_argument_group('overwrite protection')
-    group.add_argument("--skip", action="store_false",
-        dest="clobber", default=False,
-        help="if renumbering a file in SEQ would result in overwriting \
-        an existing file (which isn't also being renumbered) \
-        then skip renumbering SEQ altogether. [default] \
-        The opposite of --force.")
-    group.add_argument("--force", action="store_true",
-        dest="clobber",
-        help="if renumbering a file in SEQ would result in overwriting \
-        an existing file (which isn't also being renumbered) \
-        then overwrite the file. The opposite of --skip")
-
     # Other misc options.
     #
-    group = p.add_argument_group('other miscellaneous options')
+    group = p.add_argument_group('additional run-time behavior')
     group.add_argument("--verbose", "-v", action="store_true",
         dest="verbose", default=False,
         help="list the mapping from old file-name to new file-name")
@@ -241,7 +238,6 @@ def main() :
         default to zero if not specified.\
         Note: the default action is to leave \
         the timestamp of the SEQ unchanged in the way that /bin/mv works. ")
-
 
     p.add_argument("files", metavar="SEQ", nargs="*",
         help="image sequence in lsseq native format")
