@@ -32,18 +32,16 @@ changing them.
 - [Installing renumseq](#installing-renumseq)
   - [Testing installation](#testing-installation)
 - [Usage examples](#usage-examples)
-- [`renumseq --help`](#renumseq---help)
-- [Error and warning codes returned by renumseq](#error-and-warning-codes-returned-by-renumseq)
 - [Addendum - more on installing command-line tools and man pages](#addendum---more-on-installing-command-line-tools-and-man-pages)
   - [Installing the command-line tools](#installing-the-command-line-tools)
     - [Helpful hint: Upgraded the system-wide default version of python3?](#helpful-hint-upgraded-the-system-wide-default-version-of-python3)
   - [Installing the renumseq(1) man page](#installing-the-renumseq1-man-page)
     - [Customizing the man page install location](#customizing-the-man-page-install-location)
     - [Troubleshooting: `man renumseq` says "No manual entry"](#troubleshooting-man-renumseq-says-no-manual-entry)
+- [Error and warning codes returned by renumseq](#error-and-warning-codes-returned-by-renumseq)
 - [Changelog](#changelog)
   - [v3.0.0 - removed `-s` short option from `--silent` (MAJOR, breaking)](#v300---removed--s-short-option-from---silent-major-breaking)
   - [v2.0.0 - long options renamed to kebab-case (MAJOR, breaking)](#v200---long-options-renamed-to-kebab-case-major-breaking)
-    - [Example `sed.script` usage](#example-sedscript-usage)
 - [Contact](#contact)
 
 ## Installing renumseq
@@ -80,22 +78,23 @@ After installing try the following:
     aaa.[011-015].tif
 ```
 
-Note that you may get an error from your shell when you try to run the
+Note that you **might** get an error from your shell when you try to run the
 `renumseq` command above, without the quotes around the sequence, that
-_might_ look something like this:
+could resemble something like this (*exact wording depends on your shell - this
+is how the `tcsh` would respond*):
 
 ```
-    $ renumseq -o 10 aaa.[001-005].tif
+    % renumseq -o 10 aaa.[001-005].tif
     renumseq: No match.
 ```
 
 In which case you need to "escape" the square brackets as they are usually
 treated as special
-characters as far as the shell is concerned. Escape them like this:
+'globbing' characters as far as the shell is concerned. Escape them like this:
 
 ```
     # Note: shortform-options for --verbose and --offset below
-    $ renumseq -v -o 10 aaa.\[001-005\].tif
+    % renumseq -v -o 10 aaa.\[001-005\].tif
     aaa.005.tif -> aaa.015.tif
     aaa.004.tif -> aaa.014.tif
     aaa.003.tif -> aaa.013.tif
@@ -108,7 +107,7 @@ Alternatively you can just enclose the argument in quotes
 ## Usage examples
 
 Beyond a simple offset, `renumseq` can retarget a sequence to an explicit
-start frame. We can also change its padding if we like, all in one pass:
+start frame. `renumseq` can also change its padding if we like, all in one pass:
 
 ```
     $ lsseq
@@ -131,24 +130,24 @@ combined with any of the other options above:
 
 The option `--replace-underscore` changes an underscore-separator
 to a dot-separator, so `filename_[n-m].extension` would
-become `filename.[n-m].extension`.
+become `filename.[n-m].extension` along with any other frame-range, or name-changes
+that you might be making.
 
 `Protip`: If all you want to do is switch the separator from an underscore
-to a dot, use a zero offset plus `--replace-underscore`, like this:
+to a dot, just use `--replace-underscore` with no other arguments like this:
 
 ```
 $ lsseq
-ccc_10.jpg  ccc_12.jpg	ccc_14.jpg  ccc_5.jpg  ccc_7.jpg  ccc_9.jpg
-ccc_11.jpg  ccc_13.jpg	ccc_15.jpg  ccc_6.jpg  ccc_8.jpg
+ccc_10.jpg  ccc_12.jpg  ccc_14.jpg  ccc_5.jpg  ccc_7.jpg  ccc_9.jpg
+ccc_11.jpg  ccc_13.jpg  ccc_15.jpg  ccc_6.jpg  ccc_8.jpg
 $ lsseq --loose-num-separator
 ccc_[5-15].jpg
-$ renumseq --offset 0 --replace-underscore 'ccc_[5-15].jpg'
+$ renumseq --replace-underscore 'ccc_[5-15].jpg'
 $ lsseq
 ccc.[5-15].jpg
-
 ```
 
-Before running anything for real, `--dry-run` (implies `--verbose`) which
+Before running anything for real, `--dry-run` (which implies `--verbose`)
 shows exactly what would happen without touching any files:
 
 ```
@@ -320,7 +319,7 @@ EXIT_INVALIDRANGE_WARNING     =   8 # Invalid frame-range specified for a sequen
 EXIT_NOTASEQ_WARNING          =  16 # Expecting a sequence, but doesn't appear to be one.
 EXIT_NONEXISTENTSEQ_WARNING   =  32 # Specified sequence does not exist.
 EXIT_OVERWRITEFRAME_WARNING   =  64 # Renumbering a sequence would have
-                                     # over-written some frames outside the range specified.
+                                    # over-written some frames outside the range specified.
 ```
 
 ## Changelog

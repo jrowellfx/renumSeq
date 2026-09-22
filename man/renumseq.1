@@ -127,7 +127,7 @@ uses an underscore
 separating the descriptive name from the frame number, replace it with a
 dot
 .RB ( . )
-when renumbering. Use an offset of zero (the default) to change only the
+when renumbering. An offset of zero (which is the the default) only changes the
 separator, leaving the frame numbers themselves unchanged.
 .SS Additional run-time behavior
 .TP
@@ -192,31 +192,31 @@ $ renumseq \-o 10 'aaa.[001\-005].tif'
 .fi
 .RE
 .TP
-Renumber a sequence to start at frame 1001, and repad to 4 digits:
+Retarget a sequence to start at frame 995, and repad to 4 digits:
 .RS
 .nf
-$ renumseq \-\-start 1001 \-\-pad 4 'aaa.[1\-10].jpg'
+$ renumseq \-\-start 995 \-\-pad 4 'aaa.[1\-10].jpg'
 .fi
 .RE
 .TP
-Rename a sequence's descriptive name in place:
+Do the same while also renaming the sequence:
 .RS
 .nf
-$ renumseq \-\-rename bbb 'aaa.[011\-015].tif'
+$ renumseq \-\-start 995 \-\-pad 4 \-\-rename bbb 'aaa.[005\-015].tif'
 .fi
 .RE
 .TP
 Replace an underscore separator with a dot, without changing frame numbers:
 .RS
 .nf
-$ renumseq \-\-replace\-underscore \-o 0 'aaa_[001\-010].tif'
+$ renumseq \-\-replace\-underscore 'ccc_[5\-15].jpg'
 .fi
 .RE
 .TP
 Preview a rename/renumber without touching any files:
 .RS
 .nf
-$ renumseq \-\-dry\-run \-\-start 100 \-\-rename xxx 'aaa.[1\-10].jpg'
+$ renumseq \-\-dry\-run \-\-offset 50 \-\-rename xxx 'aaa.[001\-010].jpg'
 .fi
 .RE
 .TP
