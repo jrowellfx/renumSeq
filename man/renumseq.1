@@ -1,0 +1,270 @@
+.TH RENUMSEQ 1 "2026" "renumseq 3.0.0" "User Commands"
+.SH NAME
+renumseq \- renumber and rename image-sequence frame ranges
+.SH SYNOPSIS
+.B renumseq
+[\fB\-h\fR | \fB\-\-help\fR]
+[\fIOPTION\fR]...
+[\fISEQ\fR]...
+.SH DESCRIPTION
+.B renumseq
+renumbers the frame range of each
+.I SEQ
+listed on the command line, and can also rename a sequence's descriptive
+name.
+.I SEQ
+must be specified using
+.BR lsseq (1)\|'s
+native format:
+.PP
+.RS
+.I descriptiveName\fR.[\fIframeRange\fR].\fIimgExtension
+.RE
+.PP
+Enclosing
+.I SEQ
+in quotes turns off the shell's special treatment of
+.RB \(aq [ \(aq
+and
+.RB \(aq ] \(aq .
+.PP
+.RS
+.nf
+$ lsseq
+aaa.[001\-005].tif
+$ renumseq \-o 10 'aaa.[001\-005].tif'
+$ lsseq
+aaa.[011\-015].tif
+$ renumseq \-\-rename bbb 'aaa.[011\-015].tif'
+$ lsseq
+bbb.[011\-015].tif
+.fi
+.RE
+.PP
+.B renumseq
+was written to be safe: if renumbering a sequence would overwrite an
+existing file outside the range being renumbered, that sequence is skipped
+(with a warning) rather than clobbered; see
+.B \-\-force
+below to override this. Renumbering is done with a single
+.BR rename (2)
+call per file (no temporary copies are made), so it is fast, and, by
+default, leaves file timestamps untouched \(em see
+.B \-\-touch
+below.
+.SH OPTIONS
+.SS Miscellaneous options
+.TP
+.BR \-\-help ", " \-h
+Show the help message and exit.
+.TP
+.B \-\-version
+Show the program's version number and exit.
+.TP
+.BR \-\-silent ", " \-\-quiet
+Suppress all errors and warnings.
+.TP
+.B \-\-
+End of options; all subsequent arguments are treated as positional
+.I SEQ
+arguments, even if they begin with a dash.
+.SS Renumbering sequences
+.TP
+.BI \-\-start " START_FRAME"
+Use
+.I START_FRAME
+as the first frame number of each
+.IR SEQ .
+Takes precedence over
+.BR \-\-offset .
+.TP
+.BI \-\-offset " FRAME_OFFSET\fR, \fB\-o " FRAME_OFFSET
+Offset
+.I SEQ
+by this number of frames (can be negative). Frame
+.I i
+becomes
+.IR i " + " FRAME_OFFSET .
+.TP
+.BI \-\-pad " PAD"
+Set the padding of the frame numbers to
+.I PAD
+digits. (Default: leave the padding unchanged.)
+.SS Overwrite protection
+.TP
+.B \-\-skip
+If renumbering a file in
+.I SEQ
+would overwrite an existing file that isn't also being renumbered, skip
+renumbering that
+.I SEQ
+altogether. (Default.) The opposite of
+.BR \-\-force .
+.TP
+.B \-\-force
+If renumbering a file in
+.I SEQ
+would overwrite an existing file that isn't also being renumbered,
+overwrite it anyway. The opposite of
+.BR \-\-skip .
+.SS Renaming sequences
+.TP
+.BI \-\-rename " NEW_SEQNAME"
+Rename the descriptive-name part of
+.I SEQ
+from its existing name to
+.IR NEW_SEQNAME .
+Exits with an error unless exactly one
+.I SEQ
+is being renamed and/or renumbered, and never renames to an
+already-existing sequence.
+.TP
+.B \-\-replace\-underscore
+If
+.I SEQ
+uses an underscore
+.RB ( _ )
+separating the descriptive name from the frame number, replace it with a
+dot
+.RB ( . )
+when renumbering. Use an offset of zero (the default) to change only the
+separator, leaving the frame numbers themselves unchanged.
+.SS Additional run-time behavior
+.TP
+.BR \-\-verbose ", " \-v
+List the mapping from old file name to new file name.
+.TP
+.B \-\-dry\-run
+Don't renumber
+.IR SEQ ;
+just display how the files would have been renumbered. Implies
+.BR \-\-verbose .
+.TP
+.BI \-\-touch " \fR[[CC]YYMMDD[\-hh[mm[ss]]]]"
+Update the timestamp of the files being renumbered. With no date given,
+set it to the current time; otherwise use the date provided. The optional
+.I CC
+(century) defaults to the current century, and
+.IR hh ", " mm ", and " ss
+default to zero if omitted. Default (no
+.B \-\-touch
+at all): leave the timestamp of
+.I SEQ
+unchanged, the same way
+.BR mv (1)
+does.
+.SH EXIT STATUS
+Exit codes are combined bitwise, so a single run can report more than one
+condition at once.
+.TP
+.B 0
+No error.
+.TP
+.B 1
+Attempted to rename a sequence to one that already exists.
+.TP
+.B 2
+Bad command-line argument (the standard argparse error code).
+.TP
+.B 4
+Warning: nothing to do (no offset, rename, or padding change requested).
+.TP
+.B 8
+Warning: an invalid frame range was specified for a sequence.
+.TP
+.B 16
+Warning: an argument was expected to be a sequence but doesn't appear to
+be one.
+.TP
+.B 32
+Warning: a specified sequence does not exist.
+.TP
+.B 64
+Warning: renumbering a sequence would have overwritten a frame outside
+the range specified; that sequence was skipped (see
+.BR \-\-force ).
+.SH EXAMPLES
+.TP
+Offset a sequence by 10 frames:
+.RS
+.nf
+$ renumseq \-o 10 'aaa.[001\-005].tif'
+.fi
+.RE
+.TP
+Renumber a sequence to start at frame 1001, and repad to 4 digits:
+.RS
+.nf
+$ renumseq \-\-start 1001 \-\-pad 4 'aaa.[1\-10].jpg'
+.fi
+.RE
+.TP
+Rename a sequence's descriptive name in place:
+.RS
+.nf
+$ renumseq \-\-rename bbb 'aaa.[011\-015].tif'
+.fi
+.RE
+.TP
+Replace an underscore separator with a dot, without changing frame numbers:
+.RS
+.nf
+$ renumseq \-\-replace\-underscore \-o 0 'aaa_[001\-010].tif'
+.fi
+.RE
+.TP
+Preview a rename/renumber without touching any files:
+.RS
+.nf
+$ renumseq \-\-dry\-run \-\-start 100 \-\-rename xxx 'aaa.[1\-10].jpg'
+.fi
+.RE
+.TP
+Force overwriting files that would otherwise block a renumber:
+.RS
+.nf
+$ renumseq \-\-force \-o 30 'a.[0100\-0110].jpg'
+.fi
+.RE
+.SH HISTORY
+.B renumseq
+follows Semantic Versioning 2.0.0.
+.PP
+As of
+.BR 2.0.0 ,
+all long options were renamed from camelCase to kebab-case (for example,
+.B \-\-replaceUnderscore
+became
+.BR \-\-replace\-underscore ),
+a breaking change reflected in the major version bump.
+.PP
+As of
+.BR 3.0.0 ,
+the
+.B \-s
+short form of
+.B \-\-silent
+was removed, another breaking change, freeing
+.B \-s
+for reuse as shorthand for
+.B \-\-start
+in a future release.
+.SH SEE ALSO
+.BR mv (1),
+.BR lsseq (1).
+.PP
+Related command-line utilities by the same author:
+.BR lsseq ,
+.BR expandseq ,
+.BR condenseseq ,
+and
+.BR fixseqpadding ,
+available at
+.BR https://github.com/jrowellfx .
+.SH AUTHOR
+James Philip Rowell, Alpha Eleven Incorporated
+.RI ( https://www.alpha\-eleven.com ).
+.SH BUGS
+Report bugs, suggestions, or praise to the address listed on the
+project's GitHub page:
+.BR https://github.com/jrowellfx/renumSeq .
