@@ -188,15 +188,14 @@ def main() :
     group = p.add_argument_group('overwrite protection')
     group.add_argument("--skip", action="store_false",
         dest="clobber", default=False,
-        help="if renumbering a file in SEQ would result in overwriting \
-        an existing file (which isn't also being renumbered) \
-        then skip renumbering SEQ altogether. [default] \
+        help="skip renumbering SEQ altogether if doing so would overwrite \
+        a frame outside the range being renumbered. [default] \
         The opposite of --force.")
     group.add_argument("--force", action="store_true",
         dest="clobber",
-        help="if renumbering a file in SEQ would result in overwriting \
-        an existing file (which isn't also being renumbered) \
-        then overwrite the file. The opposite of --skip")
+        help="overwrite any frames outside the range being renumbered, \
+        rather than skip renumbering SEQ because of any name collisions. \
+        The opposite of --skip.")
 
     group = p.add_argument_group('renaming sequences')
     group.add_argument("--rename", type=str, nargs=1,

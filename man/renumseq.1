@@ -26,7 +26,10 @@ Enclosing
 in quotes turns off the shell's special treatment of
 .RB \(aq [ \(aq
 and
-.RB \(aq ] \(aq .
+.RB \(aq ] \(aq
+if need be; see
+.B QUOTING AND SHELL GLOBBING
+below for the details, which vary by shell.
 .PP
 .RS
 .nf
@@ -46,7 +49,9 @@ was written to be safe: if renumbering a sequence would overwrite an
 existing file outside the range being renumbered, that sequence is skipped
 (with a warning) rather than clobbered; see
 .B \-\-force
-below to override this. Renumbering is done with a single
+below to override this.
+.PP
+Renumbering is done with a single
 .BR rename (2)
 call per file (no temporary copies are made), so it is fast, and, by
 default, leaves file timestamps untouched \(em see
@@ -93,19 +98,17 @@ digits. (Default: leave the padding unchanged.)
 .SS Overwrite protection
 .TP
 .B \-\-skip
-If renumbering a file in
+Skip renumbering
 .I SEQ
-would overwrite an existing file that isn't also being renumbered, skip
-renumbering that
-.I SEQ
-altogether. (Default.) The opposite of
+altogether if doing so would overwrite a frame outside the range being
+renumbered. (Default.) The opposite of
 .BR \-\-force .
 .TP
 .B \-\-force
-If renumbering a file in
+Overwrite any frames outside the range being renumbered, rather than skip
+renumbering
 .I SEQ
-would overwrite an existing file that isn't also being renumbered,
-overwrite it anyway. The opposite of
+because of them. The opposite of
 .BR \-\-skip .
 .SS Renaming sequences
 .TP
@@ -153,6 +156,98 @@ at all): leave the timestamp of
 unchanged, the same way
 .BR mv (1)
 does.
+.SH QUOTING AND SHELL GLOBBING
+.I SEQ
+uses
+.RB \(aq [ \(aq
+and
+.RB \(aq ] \(aq
+to delimit a frame range, but most shells also treat those same
+characters as pathname\-globbing metacharacters. Depending on the shell,
+and on whether the resulting pattern happens to match a real file in the
+current directory, the shell may rewrite
+.I SEQ
+before
+.B renumseq
+ever sees it \(em or refuse to run the command at all. Behavior differs
+by shell:
+.TP
+.BR bash (1)
+By default (unless a script has enabled the
+.B nullglob
+or
+.B failglob
+shell options, which change this), an unmatched glob pattern is passed
+through to the command unchanged, exactly as if it had been quoted. Since
+a
+.I SEQ
+argument such as
+.B aaa.[001\-005].tif
+rarely happens to coincide with an existing filename, quoting or escaping
+is often unnecessary in practice under
+.BR bash (1)
+\(em though it is never wrong to do so, and it is required whenever
+.I SEQ
+does happen to match something in the current directory.
+.TP
+.BR zsh (1)
+The default login shell on macOS. The
+.B NOMATCH
+option is set by default, so an unmatched glob pattern is treated as an
+error
+.RI ( "zsh: no matches found: " SEQ )
+and the command is not run at all. Quoting or escaping
+.I SEQ
+is effectively required under
+.BR zsh (1) .
+.TP
+\fBtcsh\fR(1) and \fBcsh\fR(1)
+Also treat an unmatched glob as an error
+.RI ( "renumseq: No match." )
+and abort the command entirely, the same as
+.BR zsh (1) .
+Quoting or escaping
+.I SEQ
+is effectively required here too.
+.PP
+Because this varies by shell, and even by what else happens to be in the
+current directory, the safest habit is to always enclose
+.I SEQ
+in single quotes, as in the examples throughout this page, regardless of
+which shell is in use.
+.PP
+When calling
+.B renumseq
+from a
+.BR bash (1)
+or
+.BR zsh (1)
+script rather than interactively, globbing can instead be disabled for
+the remainder of the script with:
+.PP
+.RS
+.nf
+set \-o noglob    # or: set \-f
+.fi
+.RE
+.PP
+and re\-enabled later, if the script needs normal globbing again
+afterward, with:
+.PP
+.RS
+.nf
+set +o noglob    # or: set +f
+.fi
+.RE
+.PP
+(In a
+.BR tcsh (1)
+or
+.BR csh (1)
+script, the equivalent is
+.B "set noglob"
+and
+.BR "unset noglob" .)
 .SH EXIT STATUS
 Exit codes are combined bitwise, so a single run can report more than one
 condition at once.
