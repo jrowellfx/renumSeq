@@ -4,7 +4,7 @@
 Darwin
 
 ----- Test 2 -+- dir: . -+- lsseq --version -----
-4.1.0
+5.1.0
 
 ----- Test 3 -+- dir: . -+- lsseq -RPl --no-error-lists --show-bad-padding -m -----
 a01/a.[0100-0140].jpg m:[101,134-139]
@@ -33,13 +33,15 @@ z01/z z.[001-011].jpg
 ----- Test 4 -+- dir: . -+- renumseq -----
 
 ----- Test 5 -+- dir: . -+- renumseq --version -----
-2.1.1
+3.0.0
 
 ----- Test 6 -+- dir: . -+- renumseq --help -----
 usage: renumseq [-h | --help] [OPTION]... [SEQ]...
 
 Renumber the frame range of each SEQ listed on the command line.
-SEQ should be specified using lsseq's native format.
+SEQ must be specified using lsseq's native format.
+
+This command also provides the ability to rename a sequence.
 
 Protip: Enclosing SEQ in quotes will turn off the special
 treatment of '[' and ']' by the shell.
@@ -50,54 +52,66 @@ Example usage:
     $ renumseq -o 10 'aaa.[001-005].tif'
     $ lsseq
     aaa.[011-015].tif
+    $ renumseq --rename bbb 'aaa.[011-015].tif'
+    $ lsseq
+    bbb.[011-015].tif
 
 positional arguments:
   SEQ                   image sequence in lsseq native format
 
-optional arguments:
-  -h, --help            show this help message and exit
+miscellaneous options:
+  --help, -h            show this help message and exit
   --version             show program's version number and exit
+  --silent, --quiet     suppress all errors and warnings
+  --                    end of options, all subsequent arguments are
+                        positional arguments.
+
+renumbering sequences:
   --start START_FRAME   Use START_FRAME as the first frame number of each SEQ.
                         This takes precedence over --offset
   --offset FRAME_OFFSET, -o FRAME_OFFSET
                         offset SEQ by this number of frames (can be negative).
                         Frame i becomes i + FRAME_OFFSET
-  --skip                if renumbering a file in SEQ would result in
-                        overwriting an existing file (which isn't also being
-                        renumbered) then skip renumbering SEQ altogether.
-                        [default] The opposite of --force.
-  --force               if renumbering a file in SEQ would result in
-                        overwriting an existing file (which isn't also being
-                        renumbered) then overwrite the file. The opposite of
-                        --skip
   --pad PAD             set the padding of the frame numbers to be PAD digits.
                         The default action is to leave the padding unchanged.
                         Note, lsseq's native format output properly lists the
                         sequence range with appropriate padding.
+
+overwrite protection:
+  --skip                skip renumbering SEQ altogether if doing so would
+                        overwrite a frame outside the range being renumbered.
+                        [default] The opposite of --force.
+  --force               overwrite any frames outside the range being
+                        renumbered, rather than skip renumbering SEQ because
+                        of any name collisions. The opposite of --skip.
+
+renaming sequences:
   --rename NEW_SEQNAME  Rename the DESCRIPTIVE_NAME part of SEQ from its
                         existing name to NEW_SEQNAME. When using this option
                         then the command will exit with an error unless
                         exactly one SEQ is being renamed and/or renumbered.
+                        Furthermore, a sequence will never be renamed to an
+                        already existing sequence.
   --replace-underscore  in the case that SEQ uses an underscore ('_')
                         separating the filename from the frame number; then
                         when renumbering SEQ, replace the underscore with a
                         dot-separator ('.'). Note that you can use an offset
                         of zero (default) to replace the underscore with a dot
                         leaving all else the same
-  --touch [[CC]YYMMDD[-hh[mm[ss]]]]
-                        If no date is provided then update the access time of
-                        the files being renumbered to the current time.
-                        Otherwise, use the date provided to update the file's
-                        access time. The optional CC (century) defaults to the
-                        current century and '-hh' (hours), 'mm' (minutes) or
-                        'ss' (seconds) default to zero if not specified. Note:
-                        the default action is to leave the access time of the
-                        SEQ unchanged.
+
+additional run-time behavior:
+  --verbose, -v         list the mapping from old file-name to new file-name
   --dry-run             Don't renumber SEQ, just display how the files would
                         have been renumbered. Forces --verbose
-  --silent, --quiet, -s
-                        suppress all errors and warnings
-  --verbose, -v         list the mapping from old file-name to new file-name
+  --touch [[CC]YYMMDD[-hh[mm[ss]]]]
+                        If no date is provided then update the timestamp of
+                        the files being renumbered to the current time.
+                        Otherwise, use the date provided to update the file's
+                        timestamp. The optional CC (century) defaults to the
+                        current century and '-hh' (hours), 'mm' (minutes) or
+                        'ss' (seconds) default to zero if not specified. Note:
+                        the default action is to leave the timestamp of the
+                        SEQ unchanged in the way that /bin/mv works.
 
 ----- Test 7 -+- dir: . -+- renumseq null/foo.jpg -----
 renumseq: warning: no offset, no rename, no padding change, etc., nothing to do
@@ -125,19 +139,19 @@ renumseq: warning: null/foo.[xx-a-b].jpg not a sequence or not in lsseq native f
 renumseq: warning: invalid range [011--003] for seq c01/c
 renumseq: warning: invalid range [11-03] for seq c02/c
 
------ Test 15 -+- dir: . -+- renumseq -s -o 1 null/foo.jpg -----
+----- Test 15 -+- dir: . -+- renumseq --silent -o 1 null/foo.jpg -----
 
------ Test 16 -+- dir: . -+- renumseq -s -o 1 null/foo.[bar].jpg -----
+----- Test 16 -+- dir: . -+- renumseq --silent -o 1 null/foo.[bar].jpg -----
 
------ Test 17 -+- dir: . -+- renumseq -s -o 1 null/foo.[a-b].jpg -----
+----- Test 17 -+- dir: . -+- renumseq --silent -o 1 null/foo.[a-b].jpg -----
 
------ Test 18 -+- dir: . -+- renumseq -s -o 1 null/foo.[-a-b].jpg -----
+----- Test 18 -+- dir: . -+- renumseq --silent -o 1 null/foo.[-a-b].jpg -----
 
------ Test 19 -+- dir: . -+- renumseq -s -o 1 null/foo.[-a--b].jpg -----
+----- Test 19 -+- dir: . -+- renumseq --silent -o 1 null/foo.[-a--b].jpg -----
 
------ Test 20 -+- dir: . -+- renumseq -s -o 1 null/foo.[xx-a-b].jpg -----
+----- Test 20 -+- dir: . -+- renumseq --silent -o 1 null/foo.[xx-a-b].jpg -----
 
------ Test 21 -+- dir: . -+- renumseq -s -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg -----
+----- Test 21 -+- dir: . -+- renumseq --silent -o 1 c01/c.[011--003].jpg c02/c.[11-03].jpg -----
 
 ----- Test 22 -+- dir: a03 -+- lsseq -RPl --no-error-lists --show-bad-padding -m -----
 a.[0100-0133].jpg m:[101]
@@ -145,7 +159,7 @@ a.[0100-0133].jpg m:[101]
 ----- Test 23 -+- dir: a03 -+- renumseq -o 30 a.[0100-0110].jpg -----
 renumseq: warning: skipping a.[0100-0110].jpg: renumbering would have overwritten a file outside the sequence being renumbered. e.g.: a.0133.jpg
 
------ Test 24 -+- dir: a03 -+- renumseq -s -o 30 a.[0100-0110].jpg -----
+----- Test 24 -+- dir: a03 -+- renumseq --silent -o 30 a.[0100-0110].jpg -----
 
 ----- Test 25 -+- dir: a03 -+- ls -o -----
 total 0
@@ -755,19 +769,19 @@ total 0
 
 ----- Test 79 -+- dir: h01 -+- ls -o -----
 total 0
--rw-rw-rw-  1 testUser  0 Feb  4 17:27 h.001.jpg
--rw-rw-rw-  1 testUser  0 Feb  4 17:27 h.002.jpg
--rw-rw-rw-  1 testUser  0 Feb  4 17:27 h.003.jpg
--rw-rw-rw-  1 testUser  0 Feb  4 17:27 h.004.jpg
--rw-rw-rw-  1 testUser  0 Feb  4 17:27 h.005.jpg
--rw-rw-rw-  1 testUser  0 Feb  4 17:27 h.006.jpg
--rw-rw-rw-  1 testUser  0 Feb  4 17:27 h.007.jpg
--rw-rw-rw-  1 testUser  0 Feb  4 17:27 h.008.jpg
--rw-rw-rw-  1 testUser  0 Feb  4 17:27 h.009.jpg
--rw-rw-rw-  1 testUser  0 Feb  4 17:27 h.010.jpg
+-rw-rw-rw-  1 testUser  0 Sep 24 10:47 h.001.jpg
+-rw-rw-rw-  1 testUser  0 Sep 24 10:47 h.002.jpg
+-rw-rw-rw-  1 testUser  0 Sep 24 10:47 h.003.jpg
+-rw-rw-rw-  1 testUser  0 Sep 24 10:47 h.004.jpg
+-rw-rw-rw-  1 testUser  0 Sep 24 10:47 h.005.jpg
+-rw-rw-rw-  1 testUser  0 Sep 24 10:47 h.006.jpg
+-rw-rw-rw-  1 testUser  0 Sep 24 10:47 h.007.jpg
+-rw-rw-rw-  1 testUser  0 Sep 24 10:47 h.008.jpg
+-rw-rw-rw-  1 testUser  0 Sep 24 10:47 h.009.jpg
+-rw-rw-rw-  1 testUser  0 Sep 24 10:47 h.010.jpg
 
 ----- Test 80 -+- dir: h01 -+- date -----
-Wed Feb  4 17:27:04 CST 2026
+Thu Sep 24 10:47:10 CDT 2026
 
 ----- Test 81 -+- dir: h01 -+- echo The dates of the files in the last ls -o should match the prior date command. -----
 The dates of the files in the last ls -o should match the prior date command.
